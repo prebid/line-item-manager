@@ -33,7 +33,7 @@ Local Development
 
 Running line_item_manager locally using docker:
 ::
-   command='line_item_manager' make docker-run
+   command='line_item_manager' extra_args='--help' make docker-run
 
 Credits
 -------

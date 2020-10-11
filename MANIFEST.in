@@ -3,6 +3,7 @@ include CONTRIBUTING.rst
 include HISTORY.rst
 include LICENSE
 include README.rst
+include line_item_manager/conf.d/*.yml
 
 recursive-include tests *
 recursive-exclude * __pycache__

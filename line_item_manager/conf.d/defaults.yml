@@ -1,0 +1,25 @@
+base:
+  currency: "USD"
+  advertiser_name: "Prebid"
+  sizes:
+    - height: 480
+      width: 640
+  targeting_rules:
+    - name: "{{ targeting_key }}"
+  order_base_name: "Prebid-{{ ssp_name }}-{{ time }}"
+  line_item_base_name: "Prebid-{{ ssp_name }}-{{ time }}"
+  line_item_configuration:
+    priority_type: "price_priority"
+  creative:
+    name: "Prebid {{ ssp_name }}"
+    redirect_url: "{{ creative_redirect_url }}"
+
+bidder_steps:
+  - price_rules:
+      min_cpm: 0.10
+      max_cpm: 30.00
+      interval: 0.10
+  - price_rules:
+      min_cpm: 30.50
+      max_cpm: 50.00
+      interval: 0.50
