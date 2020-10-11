@@ -1,4 +1,5 @@
 .PHONY: clean clean-test clean-pyc clean-build docs help
+.PHONY: docker-build docker-run-no-build docker-run
 .DEFAULT_GOAL := help
 
 define BROWSER_PYSCRIPT
@@ -25,6 +26,18 @@ BROWSER := python -c "$$BROWSER_PYSCRIPT"
 
 help:
 	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
+
+app_name:=line-item-manager
+ifndef image_repo
+image_repo:=${app_name}
+endif
+docker_org:=prebid
+
+docker-build: ## build docker image for local development
+	docker build ${extra_build_opts} --tag ${docker_org}/${image_repo}:${IMAGE_TAG_PREFIX}latest .
+docker-run-no-build: ## docker run without building docker image
+	docker run --init -it --rm ${extra_run_opts} ${docker_org}/${image_repo} ${command} ${extra_args}
+docker-run: docker-build docker-run-no-build  ## docker build and run
 
 clean: clean-build clean-pyc clean-test ## remove all build, test, coverage and Python artifacts
 

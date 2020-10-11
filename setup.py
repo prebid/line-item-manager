@@ -3,12 +3,14 @@
 """The setup script."""
 
 from setuptools import setup, find_packages
+import os.path
 
-with open('README.rst') as readme_file:
-    readme = readme_file.read()
+def get_txt(filename):
+    with open(filename) as txt_file:
+        return txt_file.read()
 
-with open('HISTORY.rst') as history_file:
-    history = history_file.read()
+readme = get_txt('README.rst') if os.path.isfile('README.rst') else ''
+history = get_txt('HISTORY.rst') if os.path.isfile('HISTORY.rst') else ''
 
 requirements = ['Click>=7.0', ]
 
