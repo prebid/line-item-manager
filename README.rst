@@ -35,10 +35,17 @@ Running line_item_manager locally using docker:
 ::
    command='line_item_manager' extra_args='--help' make docker-run
 
+Defaults
+--------
+
+See these defaults_ that you can overwrite with your own default and config files.
+
+
 Credits
 -------
 
 This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.
 
+.. _`defaults`: https://github.com/prebid/line-item-manager/blob/master/line_item_manager/conf.d/defaults.yml
 .. _Cookiecutter: https://github.com/audreyr/cookiecutter
 .. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
