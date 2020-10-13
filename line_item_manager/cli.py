@@ -15,6 +15,7 @@ click.option = partial(click.option, show_default=True)
 @click.option('--config-file', type=click.Path(exists=True), help='Path to configuration that overwrites the default configuration.')
 @click.option('--test-run', '-t', is_flag=True, help='Execute a limited GAM setup for testing and manual review.')
 @click.option('--dry-run', '-n', is_flag=True, help='Print commands that would be executed, but do not execute them.')
+@click.option('--archive-on-failure', is_flag=True, help='If a GAM operation fails, auto-archive already completed operations.')
 @click.pass_context
 def main(ctx, **kwargs):
     """Console script for line_item_manager."""
