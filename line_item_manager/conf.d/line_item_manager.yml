@@ -14,17 +14,23 @@
 #   --network-code <code>
 #   --network-name <name>
 #############################################################################
-publisher:
-  network_code: 1234
-  network_name: Video Publisher
+# publisher:
+#   network_code: 1234
+#   network_name: "Video Publisher"
 #############################################################################
 # Media (required)
 #############################################################################
-media:
-  type: "video" # choose one from: {"video", "display"}
-  sizes: # list
-    - height: 480
-      width: 640
+media: # at least one of the following is required {video, display}
+  video:
+    sizes: # list
+      - height: 480
+        width: 640
+      - height: 240
+        width: 320
+  display:
+    sizes: # list
+      - height: 480
+        width: 640
 #############################################################################
 # Advertiser (required)
 #############################################################################
