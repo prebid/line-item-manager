@@ -37,7 +37,7 @@ docker-build: ## build docker image for local development
 	docker build ${extra_build_opts} --tag ${docker_org}/${image_repo}:${IMAGE_TAG_PREFIX}latest .
 docker-run-no-build: ## docker run without building docker image
 	docker run -it --rm ${extra_run_opts} ${docker_org}/${image_repo} ${command} ${extra_args}
-docker-run: docker-build docker-run-no-build  ## docker build and run
+docker-run: docker-build docker-run-no-build  ## docker build and run with env vars 'extra_run_opts', 'command', and 'extra_args'
 
 clean: clean-build clean-pyc clean-test ## remove all build, test, coverage and Python artifacts
 

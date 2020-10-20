@@ -31,9 +31,11 @@ Features
 Local Development
 -----------------
 
-Running line_item_manager locally using docker:
+Installing and running line_item_manager locally using docker:
 ::
-   command='line_item_manager' extra_args='--help' make docker-run
+   $ git clone git://github.com/prebid/line-item-manager
+   $ cd line-item-manager
+   $ command='line_item_manager' extra_args='--help' make docker-run
 
 Defaults
 --------

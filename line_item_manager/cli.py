@@ -7,7 +7,8 @@ click.option = partial(click.option, show_default=True)
 
 
 @click.command()
-@click.option('--network-code', required=True, type=int, help='GAM network code.')
+@click.option('--network-code', required=True, type=int, help='GAM network code, must reconcile with the network name.')
+@click.option('--network-name', required=True, type=int, help='GAM network name, must reconcile with the network code.')
 @click.option('--private-key-file', '-k', required=True, default='gam_creds.json', type=click.Path(exists=True), help='Path to json GAM crendials file.')
 @click.option('--single-order', '-s', is_flag=True, help='Create a single set of orders instead of orders per bidder.')
 @click.option('--bidder-name', '-b', multiple=True, help='Bidder name, which may be used multiple times.')
