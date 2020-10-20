@@ -1,0 +1,86 @@
+# line_item_manager configuration
+#############################################################################
+# Templating Key Words:
+#   time = current UTC time represented as "%d/%m/%Y %H:%M:%S"
+#   cpm = line item rate as cost-per-thousand impressions
+#   cpm_min = order minimum cpm
+#   cpm_max = order maximum cpm
+#   bidder_name = 
+#   bidder_targeting_key = 
+#############################################################################
+# Publisher (optional)
+# This can be specified at run-time like this:
+#   --network-code <code>
+#   --network-name <name>
+#############################################################################
+publisher:
+  network_code: 1234
+  network_name: Video Publisher
+#############################################################################
+# Media (required)
+#############################################################################
+media:
+  type: "video" # choose one from: {"video", "display"}
+  sizes: # list
+    - height: 480
+      width: 640
+#############################################################################
+# Advertiser (required)
+#############################################################################
+advertiser:
+  name: "Prebid"
+#############################################################################
+# Orders (required)
+#############################################################################
+order:
+  name: "Prebid-{{ bidder_name }}-{{ time }} {{ cpm_min }}-{{ cpm_max }}"
+#############################################################################
+# Line Items (required)
+#############################################################################
+line_item:
+  name: "Prebid-{{ bidder_name }}-{{ time }} @ {{ cpm }}"
+  priority_type: "price_priority"
+#############################################################################
+# Creatives (required)
+#############################################################################
+creative:
+  name: "Prebid {{ bidder_name }}"
+  redirect_url: "{{ creative_redirect_url }}"
+#############################################################################
+# Targeting (required)
+#############################################################################
+targeting:
+  custom:
+    - name: "{{ bidder_targeting_key }}"
+      values:
+        - "{{ cpm }}"
+    # Examples of additional targeting
+    # - name: "country"
+    #   values:
+    #     - "US"
+    #     - "CAN"
+    # - name: "site"
+    #   values:
+    #     - "somesite"
+  placement_names: # list of names
+    - "placement name 1"
+    - "placement name 2"
+  ad_unit_names: # list of names
+    - "ad unit name 1"
+    - "ad unit name 2"
+#############################################################################
+# Rate (required)
+#############################################################################
+rate:
+  currency: "USD" # required
+  vcpm: 100000 # viewable impressions will be enabled
+  cpm_buckets: # required
+    - min: 0.10
+      max: 30.00
+      interval: 0.10
+    - min: 30.50
+      max: 50.00
+      interval: 0.50
+
+
+
