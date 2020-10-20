@@ -7,6 +7,7 @@
 #   cpm = line item rate as cost-per-thousand impressions
 #   cpm_max = order maximum cpm
 #   cpm_min = order minimum cpm
+#   media_type = video or display based on media configuration below
 #   time = current UTC time represented as "%d/%m/%Y %H:%M:%S"
 #############################################################################
 # Publisher (optional)
@@ -20,7 +21,7 @@
 #############################################################################
 # Media (required)
 #############################################################################
-media: # at least one of the following is required {video, display}
+media: # at least one of the following types is required {video, display}
   video:
     sizes: # list
       - height: 480
@@ -40,18 +41,18 @@ advertiser:
 # Orders (required)
 #############################################################################
 order:
-  name: "Prebid-{{ bidder_name }}-{{ time }} {{ cpm_min }}-{{ cpm_max }}"
+  name: "Prebid-{{ bidder_name }}-{{ media_type }}-{{ time }} {{ cpm_min }}-{{ cpm_max }}"
 #############################################################################
 # Line Items (required)
 #############################################################################
 line_item:
-  name: "Prebid-{{ bidder_name }}-{{ time }} @ {{ cpm }}"
+  name: "Prebid-{{ bidder_name }}-{{ media_type }}-{{ time }} @ {{ cpm }}"
   priority_type: "price_priority"
 #############################################################################
 # Creatives (required)
 #############################################################################
 creative:
-  name: "Prebid {{ bidder_name }}"
+  name: "Prebid {{ bidder_name }}-{{ media_type }}"
   vast_xml_url: "https://prebid_cache.site.com/cache?uuid=%%PATTERN:{{ bidder_targeting_key }}%%"
   snippet_template: |
     <script src = "https://..."></script>
