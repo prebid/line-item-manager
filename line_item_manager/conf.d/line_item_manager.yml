@@ -1,12 +1,13 @@
 # line_item_manager configuration
 #############################################################################
+# Templating assumes jinja2 rendering syntax (see https://palletsprojects.com/p/jinja/)
 # Templating Key Words:
-#   time = current UTC time represented as "%d/%m/%Y %H:%M:%S"
+#   bidder_name = bidder-name (see https://docs.prebid.org/dev-docs/bidder-data.csv)
+#   bidder_targeting_key = hp_pb_<bidder-code> (see https://docs.prebid.org/dev-docs/bidder-data.csv)
 #   cpm = line item rate as cost-per-thousand impressions
-#   cpm_min = order minimum cpm
 #   cpm_max = order maximum cpm
-#   bidder_name = 
-#   bidder_targeting_key = 
+#   cpm_min = order minimum cpm
+#   time = current UTC time represented as "%d/%m/%Y %H:%M:%S"
 #############################################################################
 # Publisher (optional)
 # This can be specified at run-time like this:
@@ -45,7 +46,12 @@ line_item:
 #############################################################################
 creative:
   name: "Prebid {{ bidder_name }}"
-  redirect_url: "{{ creative_redirect_url }}"
+  vast_xml_url: "https://prebid_cache.site.com/cache?uuid=%%PATTERN:{{ bidder_targeting_key }}%%"
+  snippet_template: |
+    <script src = "https://..."></script>
+      <script>
+        ...
+      </script>
 #############################################################################
 # Targeting (required)
 #############################################################################
