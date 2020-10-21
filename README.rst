@@ -26,37 +26,45 @@ Create and manage line items.
 Example Workflow
 ----------------
 
-When first using line_item_manager try this:
-::
-   # save and edit a copy of the package config
+1. Save and edit a copy of the package config
+.. code-block:: console
+
    $ line_item_manager show config > my_config.yml
 
-   # list bidder codes and names for reference
+2. List bidder codes and names for reference
+.. code-block:: console
+
    $ line_item_manager show bidders
 
-   # Do a dry run to see if everything looks right
+3. Do a dry run to see if everything looks right
+.. code-block:: console
+
    $ line_item_manager create my_config.yml \
    --dry-run \
+   --private-key-file my_gam_creds.json \
    --network-code 12345678 \
    --network-name Publisher_GAM_Name \
-   --private-key-file my_gam_creds.json \
    --bidder-code rubicon \
    --bidder-code ix
 
-   # Do a test run creating a limited number of line items for visual inspection
+4. Do a test run creating a limited number of line items for visual inspection
+.. code-block:: console
+
    $ line_item_manager create my_config.yml \
    --test-run \
+   --private-key-file my_gam_creds.json \
    --network-code 12345678 \
    --network-name Publisher_GAM_Name \
-   --private-key-file my_gam_creds.json \
    --bidder-code rubicon \
    --bidder-code ix
 
-   # Create line items
+5. Create line items
+.. code-block:: console
+
    $ line_item_manager create my_config.yml \
+   --private-key-file my_gam_creds.json \
    --network-code 12345678 \
    --network-name Publisher_GAM_Name \
-   --private-key-file my_gam_creds.json \
    --bidder-code rubicon \
    --bidder-code ix
 
