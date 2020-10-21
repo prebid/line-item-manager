@@ -12,7 +12,10 @@ def get_txt(filename):
 readme = get_txt('README.rst') if os.path.isfile('README.rst') else ''
 history = get_txt('HISTORY.rst') if os.path.isfile('HISTORY.rst') else ''
 
-requirements = ['Click>=7.0', ]
+requirements = [
+    'Click>=7.0',
+    'pyyaml==5.3.1',
+    ]
 
 setup_requirements = [ ]
 

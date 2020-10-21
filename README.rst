@@ -23,6 +23,43 @@ Create and manage line items.
 * Documentation: https://line-item-manager.readthedocs.io.
 
 
+Example Workflow
+----------------
+
+When first using line_item_manager try this:
+::
+   # save and edit a copy of the package config
+   $ line_item_manager show config > my_config.yml
+
+   # list bidder codes and names for reference
+   $ line_item_manager show bidders
+
+   # Do a dry run to see if everything looks right
+   $ line_item_manager create my_config.yml \
+   --dry-run \
+   --network-code 12345678 \
+   --network-name Publisher_GAM_Name \
+   --private-key-file my_gam_creds.json \
+   --bidder-code rubicon \
+   --bidder-code ix
+
+   # Do a test run creating a limited number of line items for visual inspection
+   $ line_item_manager create my_config.yml \
+   --test-run \
+   --network-code 12345678 \
+   --network-name Publisher_GAM_Name \
+   --private-key-file my_gam_creds.json \
+   --bidder-code rubicon \
+   --bidder-code ix
+
+   # Create line items
+   $ line_item_manager create my_config.yml \
+   --network-code 12345678 \
+   --network-name Publisher_GAM_Name \
+   --private-key-file my_gam_creds.json \
+   --bidder-code rubicon \
+   --bidder-code ix
+
 Features
 --------
 
@@ -33,6 +70,7 @@ Local Development
 
 Installing and running line_item_manager locally using docker:
 ::
+
    $ git clone git://github.com/prebid/line-item-manager
    $ cd line-item-manager
    $ command='line_item_manager' extra_args='--help' make docker-run
