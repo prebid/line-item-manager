@@ -27,17 +27,17 @@ Example Workflow
 ----------------
 
 1. Save and edit a copy of the package config
-.. code-block:: console
+::
 
    $ line_item_manager show config > my_config.yml
 
 2. List bidder codes and names for reference
-.. code-block:: console
+::
 
    $ line_item_manager show bidders
 
 3. Do a dry run to see if everything looks right
-.. code-block:: console
+::
 
    $ line_item_manager create my_config.yml \
    --dry-run \
@@ -48,7 +48,7 @@ Example Workflow
    --bidder-code ix
 
 4. Do a test run creating a limited number of line items for visual inspection
-.. code-block:: console
+::
 
    $ line_item_manager create my_config.yml \
    --test-run \
@@ -59,7 +59,7 @@ Example Workflow
    --bidder-code ix
 
 5. Create line items
-.. code-block:: console
+::
 
    $ line_item_manager create my_config.yml \
    --private-key-file my_gam_creds.json \
