@@ -26,18 +26,15 @@ Create and manage line items.
 Example Workflow
 ----------------
 
-1. Save and edit a copy of the package config
-::
+1. Save and edit a copy of the package config::
 
    $ line_item_manager show config > my_config.yml
 
-2. List bidder codes and names for reference
-::
+2. List bidder codes and names for reference::
 
    $ line_item_manager show bidders
 
-3. Do a dry run to see if everything looks right
-::
+3. Do a dry run to see if everything looks right::
 
    $ line_item_manager create my_config.yml \
    --dry-run \
@@ -47,8 +44,7 @@ Example Workflow
    --bidder-code rubicon \
    --bidder-code ix
 
-4. Do a test run creating a limited number of line items for visual inspection
-::
+4. Do a test run creating a limited number of line items for visual inspection::
 
    $ line_item_manager create my_config.yml \
    --test-run \
@@ -58,8 +54,7 @@ Example Workflow
    --bidder-code rubicon \
    --bidder-code ix
 
-5. Create line items
-::
+5. Create line items::
 
    $ line_item_manager create my_config.yml \
    --private-key-file my_gam_creds.json \
@@ -76,8 +71,7 @@ Features
 Local Development
 -----------------
 
-Installing and running line_item_manager locally using docker:
-::
+Installing and running line_item_manager locally using docker::
 
    $ git clone git://github.com/prebid/line-item-manager
    $ cd line-item-manager
