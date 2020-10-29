@@ -1,26 +1,26 @@
 # line_item_manager configuration
-#############################################################################
-# Templating assumes jinja2 rendering syntax (see https://palletsprojects.com/p/jinja/)
-# Templating Key Words:
-#   bidder_name = bidder-name (see https://docs.prebid.org/dev-docs/bidder-data.csv)
-#   bidder_targeting_key = hp_pb_<bidder-code> (see https://docs.prebid.org/dev-docs/bidder-data.csv)
+###############################################################################
+# Templating uses jinja2 rendering (see https://palletsprojects.com/p/jinja/)
+# Templating Key Words (see https://docs.prebid.org/dev-docs/bidder-data.csv):
+#   bidder_name = bidder-name
+#   bidder_targeting_key = hb_pb_<bidder-code> (20 char limit)
 #   cpm = line item rate as cost-per-thousand impressions
 #   cpm_max = order maximum cpm
 #   cpm_min = order minimum cpm
 #   media_type = video or banner based on media configuration below
 #   time = current UTC time represented as "%d/%m/%Y %H:%M:%S"
-#############################################################################
+###############################################################################
 # Publisher (optional)
 # This can be specified at run-time like this:
 #   --network-code <code>
 #   --network-name <name>
-#############################################################################
+#
 # publisher:
 #   network_code: 1234
 #   network_name: "Video Publisher"
-#############################################################################
+###############################################################################
 # Media (required)
-#############################################################################
+###############################################################################
 media: # at least one of the following types is required {video, banner}
   video:
     sizes: # list
@@ -32,25 +32,25 @@ media: # at least one of the following types is required {video, banner}
     sizes: # list
       - height: 480
         width: 640
-#############################################################################
+###############################################################################
 # Advertiser (required)
-#############################################################################
+###############################################################################
 advertiser:
   name: "Prebid"
-#############################################################################
+###############################################################################
 # Orders (required)
-#############################################################################
+###############################################################################
 order:
   name: "Prebid-{{ bidder_name }}-{{ media_type }}-{{ time }} {{ cpm_min }}-{{ cpm_max }}"
-#############################################################################
+###############################################################################
 # Line Items (required)
-#############################################################################
+###############################################################################
 line_item:
   name: "Prebid-{{ bidder_name }}-{{ media_type }}-{{ time }} @ {{ cpm }}"
   priority_type: "price_priority"
-#############################################################################
+###############################################################################
 # Creatives (required)
-#############################################################################
+###############################################################################
 creative:
   name: "Prebid {{ bidder_name }}-{{ media_type }}"
   vast_xml_url: "https://prebid_cache.site.com/cache?uuid=%%PATTERN:{{ bidder_targeting_key }}%%"
@@ -59,9 +59,17 @@ creative:
       <script>
         ...
       </script>
-#############################################################################
+###############################################################################
+# Bidder Targeting Key Override Map (optional):
+#   If provided override the default bidder_targeting_key and use these
+#   targeting keys specified by bidder_code.
+#
+# bidder_key_map:
+#   <bidder_code_1>: <bidder_targeting_key_1>
+#   <bidder_code_2>: <bidder_targeting_key_2>
+###############################################################################
 # Targeting (required)
-#############################################################################
+###############################################################################
 targeting:
   custom: # list
     - name: "{{ bidder_targeting_key }}"
@@ -81,12 +89,13 @@ targeting:
   ad_unit_names: # list of names
     - "ad unit name 1"
     - "ad unit name 2"
-#############################################################################
+###############################################################################
 # Rate (required)
-#############################################################################
+# NOTE: granularity in Prebid.js config must align with this granularity
+###############################################################################
 rate:
   currency: "USD" # required
-  vcpm: 100000 # viewable impressions will be enabled
+  # vcpm: 100000 # viewable impressions will be enabled (optional)
   cpm_buckets: # required
     - min: 0.10
       max: 30.00
