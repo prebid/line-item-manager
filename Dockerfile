@@ -13,6 +13,10 @@ RUN addgroup -S ${USER} && \
 RUN apk add --no-cache \
     bash \
     curl \
+    gcc \
+    libxml2-dev \
+    libxslt-dev \
+    musl-dev \
     tini
 
 WORKDIR ${APP_DIR}

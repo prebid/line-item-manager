@@ -8,10 +8,15 @@ import sys
 import click
 import yaml
 
-click.option = partial(click.option, show_default=True)
+from .config import config
 
-with open(pkg_resources.resource_filename('line_item_manager', 'conf.d/settings.yml')) as fp:
-    settings = yaml.safe_load(fp)
+def validate_client(ctx):
+    svc = config.client.GetService('NetworkService', version=config.app['googleads']['version'])
+    name = svc.getCurrentNetwork()['displayName']
+    if not name == config.cli['network_name']:
+        raise click.UsageError(f"Network name found \'{name}\' does not match the network name provided \'{config.cli['network_name']}\'.", ctx=ctx)
+
+click.option = partial(click.option, show_default=True)
 
 @click.group()
 def cli():
@@ -35,6 +40,9 @@ def create(ctx, configfile, **kwargs):
         raise click.UsageError('You must use --single-order or provide at least one --bidder-code', ctx=ctx)
     if kwargs['single_order'] and kwargs['bidder_code']:
         raise click.UsageError('Use of --single-order and --bidder-code is ambiguous.', ctx=ctx)
+    config.user_configfile = configfile
+    config.cli = kwargs
+    validate_client(ctx)
     return 0
 
 @cli.command()
@@ -46,7 +54,7 @@ def show(resource):
         with open(config_file) as fp:
             print(fp.read())
     if resource == 'bidders':
-        reader = csv.DictReader([l.decode('utf-8') for l in request.urlopen(settings['bidders']['data']).readlines()])
+        reader = csv.DictReader([l.decode('utf-8') for l in request.urlopen(config.app['bidders']['data']).readlines()])
         print("%-25s%s" % ('Code', 'Name'))
         print("%-25s%s" % ('----', '----'))
         for row in reader:

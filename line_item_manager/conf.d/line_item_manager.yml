@@ -1,7 +1,7 @@
 # line_item_manager configuration
 ###############################################################################
 # Templating uses jinja2 rendering (see https://palletsprojects.com/p/jinja/)
-# Templating Key Words (see https://docs.prebid.org/dev-docs/bidder-data.csv):
+# Templating Key Words:
 #   bidder_name = bidder-name
 #   bidder_targeting_key = hb_pb_<bidder-code> (20 char limit)
 #   cpm = line item rate as cost-per-thousand impressions
@@ -9,6 +9,9 @@
 #   cpm_min = order minimum cpm
 #   media_type = video or banner based on media configuration below
 #   time = current UTC time represented as "%d/%m/%Y %H:%M:%S"
+#
+# See https://docs.prebid.org/dev-docs/bidder-data.csv for referencing bidder
+# names and codes.
 ###############################################################################
 # Publisher (optional)
 # This can be specified at run-time like this:

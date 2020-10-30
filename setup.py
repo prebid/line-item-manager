@@ -14,6 +14,7 @@ history = get_txt('HISTORY.rst') if os.path.isfile('HISTORY.rst') else ''
 
 requirements = [
     'Click>=7.0',
+    'googleads==25.0.0',
     'pyyaml==5.3.1',
     ]
 
@@ -50,7 +51,7 @@ setup(
     name='line-item-manager',
     packages=find_packages(include=['line_item_manager', 'line_item_manager.*']),
     package_dir={'line_item_manager': 'line_item_manager'},
-    package_data={'line_item_manager': ['conf.d/*.yml']},
+    package_data={'line_item_manager': ['conf.d/*.yml', 'conf.d/*.yaml']},
     setup_requires=setup_requirements,
     test_suite='tests',
     tests_require=test_requirements,
