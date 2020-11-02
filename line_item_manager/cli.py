@@ -1,15 +1,18 @@
 """Console script for line_item_manager."""
 import csv
 from functools import partial
+import json
 import pkg_resources
 from urllib import request
 import sys
 
 import click
+from googleads.errors import GoogleAdsServerFault
 import yaml
 
 from .config import config
-
+from .validate import Validator
+from .app_operations import CurrentNetwork
 
 click.option = partial(click.option, show_default=True)
 
@@ -31,25 +34,46 @@ def cli():
 @click.pass_context
 def create(ctx, configfile, **kwargs):
     """Create line items"""
-    if not kwargs['single_order'] and not kwargs['bidder_code']:
-        raise click.UsageError('You must use --single-order or provide at least one --bidder-code', ctx=ctx)
-    if kwargs['single_order'] and kwargs['bidder_code']:
-        raise click.UsageError('Use of --single-order and --bidder-code is ambiguous.', ctx=ctx)
-
-    # set config
     config.user_configfile = configfile
     config.cli = kwargs
 
-    # validate
+    # validate CLI options
+    if not kwargs['single_order'] and not kwargs['bidder_code']:
+        raise click.UsageError('You must use --single-order or provide at least one --bidder-code', ctx=ctx)
+
+    if kwargs['single_order'] and kwargs['bidder_code']:
+        raise click.UsageError('Use of --single-order and --bidder-code is ambiguous and not allowed.', ctx=ctx)
+
     if not config.network_code:
-        raise click.UsageError('You must provide a network code as an option or set in the config file', ctx=ctx)
+        raise click.UsageError('Network code must be provided as an option or set in the config file', ctx=ctx)
 
     if not config.network_name:
-        raise click.UsageError('You must provide a network name as an option or set in the config file', ctx=ctx)
+        raise click.UsageError('Network name must be provided as an option or set in the config file', ctx=ctx)
 
-    name = config.client.GetService('NetworkService').getCurrentNetwork()['displayName']
+    # validate GAM client
+    try:
+        config.client
+    except json.decoder.JSONDecodeError:
+        raise click.UsageError('Check your private key file. File is not formatted properly as json')
+    except ValueError as e:
+        raise click.UsageError(f'Check your private key file. {e.args[0]}')
+    except Exception:
+        raise click.UsageError(f'Check your private key file. Not able to successfully access your service account.')
+
+    # validate GAM network access
+    try:
+        name = CurrentNetwork().fetch()['displayName']
+    except GoogleAdsServerFault:
+        raise click.UsageError(f'Check your network code and permissions. Not able to successfully access your service account.')
     if not name == config.network_name:
-        raise click.UsageError(f"Network name found \'{name}\' does not match the network name provided \'{config.network_name}\'", ctx=ctx)
+        raise click.UsageError(f"Network name found \'{name}\' does not match provided \'{config.network_name}\'", ctx=ctx)
+
+    # validate user configuration
+    user_cfg = Validator(config.schema, config.user)
+    if not user_cfg.is_valid():
+        err_str = '\n'.join([f'  - {user_cfg.fmt(_e)}' for _e in user_cfg.errors()])
+        raise click.UsageError(f'Check your configfile for the following validation errors:\n{err_str}')
+
     return 0
 
 @cli.command()

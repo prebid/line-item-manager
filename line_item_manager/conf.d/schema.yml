@@ -1,0 +1,11 @@
+$schema: "http://json-schema.org/draft-07/schema#"
+title: "Prebid Line Item Manager Schema"
+description: "Prebid Line Item Manager Schema for creating line items"
+type: "object"
+properties:
+  publisher:
+    type: "object"
+    description: "Publisher attributes"
+    properties:
+      network_code:
+        $ref: "http://json-schema.org/draft-07/schema#/definitions/nonNegativeInteger"

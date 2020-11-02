@@ -6,11 +6,10 @@ from googleads import ad_manager
 class Config:
 
     _client = None
+    _schema = None
 
     def __init__(self):
-        with open(pkg_resources.resource_filename('line_item_manager',
-                                                  'conf.d/settings.yml')) as fp:
-            self._app = yaml.safe_load(fp)
+        self._app = self.load_package_file('settings.yml')
 
     @property
     def app(self):
@@ -30,8 +29,7 @@ class Config:
 
     @user.setter
     def user_configfile(self, filename):
-        with open(filename) as fp:
-            self._user = yaml.safe_load(fp)
+        self._user = self.load_file(filename)
 
     @property
     def network_code(self):
@@ -44,13 +42,24 @@ class Config:
     @property
     def client(self):
         if self._client is None:
-            with open(pkg_resources.resource_filename('line_item_manager',
-                                                      'conf.d/googleads.yaml')) as fp:
-                _cfg = yaml.safe_load(fp)
+            _cfg = self.load_package_file('googleads.yaml')
             _cfg['ad_manager']['network_code'] = self.network_code
             _cfg['ad_manager']['path_to_private_key_file'] = self.cli['private_key_file']
             self._client = ad_manager.AdManagerClient.LoadFromString(yaml.dump(_cfg))
         return self._client
 
+    @property
+    def schema(self):
+        if self._schema is None:
+            self._schema = self.load_package_file('schema.yml')
+        return self._schema
+
+    def load_file(self, filename):
+        with open(filename) as fp:
+            return yaml.safe_load(fp)
+
+    def load_package_file(self, filename):
+        return self.load_file(pkg_resources.resource_filename('line_item_manager',
+                                                              f'conf.d/{filename}'))
 
 config = Config()
