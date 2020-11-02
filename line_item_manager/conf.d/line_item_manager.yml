@@ -86,6 +86,7 @@ targeting:
     # - name: "site"
     #   values:
     #     - "somesite"
+  # One of the below either placemane_names or ad_unit_names is required
   placement_names: # list of names
     - "placement name 1"
     - "placement name 2"

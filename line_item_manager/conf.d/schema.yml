@@ -1,11 +1,183 @@
 $schema: "http://json-schema.org/draft-07/schema#"
 title: "Prebid Line Item Manager Schema"
-description: "Prebid Line Item Manager Schema for creating line items"
 type: "object"
 properties:
   publisher:
     type: "object"
-    description: "Publisher attributes"
     properties:
       network_code:
         $ref: "http://json-schema.org/draft-07/schema#/definitions/nonNegativeInteger"
+      network_name:
+        type: "string"
+  media:
+    type: "object"
+    properties:
+      video:
+        type: "object"
+        properties:
+          sizes:
+            $ref: "#/definitions/sizeArray"
+      banner:
+        type: "object"
+        properties:
+          sizes:
+            $ref: "#/definitions/sizeArray"
+    anyOf:
+      - required:
+        - "video"
+      - required:
+        - "banner"
+  advertiser:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+    required:
+      - "name"
+  order:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+    required:
+      - "name"
+  line_item:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+      priority_type:
+        enum:
+          - "price_priority"
+          - "standard"
+    required:
+      - "name"
+      - "priority_type"
+  creative:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+      vast_xml_url:
+        type: "string"
+      snippet_template:
+        type: "string"
+    required:
+      - "name"
+      - "vast_xml_url"
+  targeting:
+    type: "object"
+    properties:
+      custom:
+        type: "array"
+        minItems: 1
+        items:
+          type: "object"
+          properties:
+            name:
+              type: "string"
+            values:
+              $ref: "http://json-schema.org/draft-07/schema#/definitions/stringArray"
+      placement_names:
+        $ref: "http://json-schema.org/draft-07/schema#/definitions/stringArray"
+      ad_unit_names:
+        $ref: "http://json-schema.org/draft-07/schema#/definitions/stringArray"
+    allOf:
+      - required:
+        - "custom"
+      - anyOf:
+        - required:
+          - "placement_names"
+        - required:
+          - "ad_unit_names"
+  rate:
+    type: "object"
+    properties:
+      currency:
+        $ref: "#/definitions/rateCurrencyType"
+      cpm_buckets:
+        $ref: "#/definitions/cpmBucketArray"
+      vcpm:
+        type:
+          $ref: "http://json-schema.org/draft-07/schema#/definitions/nonNegativeInteger"
+    required:
+      - "currency"
+      - "cpm_buckets"
+required:
+  - "advertiser"
+  - "media"
+  - "targeting"
+  - "rate"
+definitions:
+  sizeType:
+    type: "object"
+    properties:
+      height:
+        $ref: "http://json-schema.org/draft-07/schema#/definitions/nonNegativeInteger"
+      width:
+        $ref: "http://json-schema.org/draft-07/schema#/definitions/nonNegativeInteger"
+    required:
+      - "height"
+      - "width"
+  sizeArray:
+    type: "array"
+    minItems: 1
+    items:
+      $ref: "#/definitions/sizeType"
+  cpmType:
+    type: "number"
+    minimum: 0.01
+    multipleOf: 0.01
+  cpmBucketType:
+    type: "object"
+    properties:
+      min:
+        $ref: "#/definitions/cpmType"
+      max:
+        $ref: "#/definitions/cpmType"
+      interval:
+        $ref: "#/definitions/cpmType"
+    required:
+      - "min"
+      - "max"
+      - "interval"
+  cpmBucketArray:
+    type: "array"
+    minItems: 1
+    items:
+      $ref: "#/definitions/cpmBucketType"
+  rateCurrencyType:
+    enum:
+      - 'AUD'
+      - 'BGN'
+      - 'BRL'
+      - 'CAD'
+      - 'CHF'
+      - 'CNY'
+      - 'CZK'
+      - 'DKK'
+      - 'EUR'
+      - 'GBP'
+      - 'HKD'
+      - 'HRK'
+      - 'HUF'
+      - 'IDR'
+      - 'ILS'
+      - 'INR'
+      - 'ISK'
+      - 'JPY'
+      - 'KRW'
+      - 'MXN'
+      - 'MYR'
+      - 'NOK'
+      - 'NZD'
+      - 'PHP'
+      - 'PLN'
+      - 'RON'
+      - 'RUB'
+      - 'SEK'
+      - 'SGD'
+      - 'THB'
+      - 'TRY'
+      - 'USD'
+      - 'ZAR'

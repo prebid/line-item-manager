@@ -12,4 +12,4 @@ class Validator:
         return self.inst.iter_errors(self.config)
 
     def fmt(self, _e):
-        return f"Path({', '.join(_e.path)}): {_e.message}"
+        return f"Path({', '.join([str(_p) for _p in _e.path])}): {_e.message}"
