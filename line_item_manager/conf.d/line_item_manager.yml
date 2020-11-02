@@ -57,6 +57,7 @@ line_item:
 creative:
   name: "Prebid {{ bidder_name }}-{{ media_type }}"
   vast_xml_url: "https://prebid_cache.site.com/cache?uuid=%%PATTERN:{{ bidder_targeting_key }}%%"
+  # optional properties
   snippet_template: |
     <script src = "https://..."></script>
       <script>
@@ -99,7 +100,6 @@ targeting:
 ###############################################################################
 rate:
   currency: "USD" # required
-  # vcpm: 100000 # viewable impressions will be enabled (optional)
   cpm_buckets: # required
     - min: 0.10
       max: 30.00
@@ -107,3 +107,5 @@ rate:
     - min: 30.50
       max: 50.00
       interval: 0.50
+  # optional properties
+  # vcpm: 100000 # viewable impressions will be enabled

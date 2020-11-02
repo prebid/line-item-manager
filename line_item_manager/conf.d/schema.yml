@@ -104,30 +104,19 @@ properties:
       - "currency"
       - "cpm_buckets"
 required:
-  - "advertiser"
   - "media"
+  - "advertiser"
+  - "order"
+  - "line_item"
+  - "creative"
   - "targeting"
   - "rate"
 definitions:
-  sizeType:
-    type: "object"
-    properties:
-      height:
-        $ref: "http://json-schema.org/draft-07/schema#/definitions/nonNegativeInteger"
-      width:
-        $ref: "http://json-schema.org/draft-07/schema#/definitions/nonNegativeInteger"
-    required:
-      - "height"
-      - "width"
-  sizeArray:
+  cpmBucketArray:
     type: "array"
     minItems: 1
     items:
-      $ref: "#/definitions/sizeType"
-  cpmType:
-    type: "number"
-    minimum: 0.01
-    multipleOf: 0.01
+      $ref: "#/definitions/cpmBucketType"
   cpmBucketType:
     type: "object"
     properties:
@@ -141,11 +130,10 @@ definitions:
       - "min"
       - "max"
       - "interval"
-  cpmBucketArray:
-    type: "array"
-    minItems: 1
-    items:
-      $ref: "#/definitions/cpmBucketType"
+  cpmType:
+    type: "number"
+    minimum: 0.01
+    multipleOf: 0.01
   rateCurrencyType:
     enum:
       - 'AUD'
@@ -181,3 +169,18 @@ definitions:
       - 'TRY'
       - 'USD'
       - 'ZAR'
+  sizeArray:
+    type: "array"
+    minItems: 1
+    items:
+      $ref: "#/definitions/sizeType"
+  sizeType:
+    type: "object"
+    properties:
+      height:
+        $ref: "http://json-schema.org/draft-07/schema#/definitions/nonNegativeInteger"
+      width:
+        $ref: "http://json-schema.org/draft-07/schema#/definitions/nonNegativeInteger"
+    required:
+      - "height"
+      - "width"
