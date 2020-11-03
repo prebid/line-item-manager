@@ -14,6 +14,24 @@ class AppOperations(GAMOperations):
     def dry_run(self):
         return config.cli['dry_run']
 
+class AdUnit(AppOperations):
+    service = 'InventoryService'
+    method = 'getAdUnitsByStatement'
+
+class Advertiser(AppOperations):
+    service = 'CompanyService'
+    method = 'getCompaniesByStatement'
+    create_method = 'createCompanies'
+
+    def __init__(self, *args, **kwargs):
+        kwargs['type'] = 'ADVERTISER'
+        super().__init__(*args, **kwargs)
+
 class CurrentNetwork(AppOperations):
     service = 'NetworkService'
     method = 'getCurrentNetwork'
+
+class Placement(AppOperations):
+    service = 'PlacementService'
+    method = 'getPlacementsByStatement'
+

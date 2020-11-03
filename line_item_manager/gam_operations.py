@@ -37,12 +37,8 @@ class GAMOperations:
             _stm.offset += _stm.limit
         return results
 
-    def create_template(self):
-        keys = self.create_args or self.key_words.keys()
-        return {k: self.key_words[k] for k in keys}
-
     def _create(self):
-        return self.create([self.create_template()])
+        return self.create([self.params])
 
     def create(self, atts):
         return getattr(self.svc(), self.create_method)(atts)
@@ -51,8 +47,8 @@ class GAMOperations:
         if not result:
             raise ResourceNotFound('Service: {self.service_name}, Method: {self.method}, Atts: {self.key_words}')
 
-    def fetchone(self):
-        return self.fetch(one=True)
+    def fetchone(self, **kwargs):
+        return self.fetch(one=True, **kwargs)
 
     def svc(self):
         return self.client.GetService(self.service, version=self.version)
@@ -76,4 +72,3 @@ class GAMOperations:
     @property
     def dry_run(self):
         raise NotImplementedError
-

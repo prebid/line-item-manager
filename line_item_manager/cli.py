@@ -11,6 +11,8 @@ from googleads.errors import GoogleAdsServerFault
 import yaml
 
 from .config import config
+from .create import create_line_items
+from .exceptions import ResourceNotFound
 from .validate import Validator
 from .app_operations import CurrentNetwork
 
@@ -74,9 +76,11 @@ def create(ctx, configfile, **kwargs):
         err_str = '\n'.join([f'  - {user_cfg.fmt(_e)}' for _e in user_cfg.errors()])
         raise click.UsageError(f'Check your configfile for the following validation errors:\n{err_str}')
 
-    return 0
-
-@cli.command()
+    # create line items
+    try:
+        create_line_items()
+    except ResourceNotFound as _e:
+        raise click.UsageError(f'Not able to find the following resource:\n  - {_e}')
 @click.argument('resource', type=click.Choice(['config', 'bidders']))
 def show(resource):
     """Show resources"""
