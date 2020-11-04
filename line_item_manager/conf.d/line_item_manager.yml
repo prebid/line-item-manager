@@ -37,22 +37,26 @@ media: # at least one of the following types is required {video, banner}
         width: 640
 ###############################################################################
 # Advertiser (required)
+# Allowed Templating Key Words: None
 ###############################################################################
 advertiser:
   name: "Prebid"
 ###############################################################################
 # Orders (required)
+# Allowed Templating Key Words: bidder_name, media_type, time, cpm_min, cpm_max
 ###############################################################################
 order:
   name: "Prebid-{{ bidder_name }}-{{ media_type }}-{{ time }} {{ cpm_min }}-{{ cpm_max }}"
 ###############################################################################
 # Line Items (required)
+# Allowed Templating Key Words: bidder_name, media_type, time, cpm
 ###############################################################################
 line_item:
   name: "Prebid-{{ bidder_name }}-{{ media_type }}-{{ time }} @ {{ cpm }}"
   priority_type: "price_priority"
 ###############################################################################
 # Creatives (required)
+# Allowed Templating Key Words: bidder_name, bidder_targeting_key, media_type
 ###############################################################################
 creative:
   name: "Prebid {{ bidder_name }}-{{ media_type }}"
@@ -73,20 +77,20 @@ creative:
 #   <bidder_code_2>: <bidder_targeting_key_2>
 ###############################################################################
 # Targeting (required)
+# Allowed Templating Key Words: None
+#
+# Note: A Key-Value of 'bidder_targeting_key' with all CPM values is created
+# by default.
 ###############################################################################
 targeting:
-  custom: # list
-    - name: "{{ bidder_targeting_key }}"
-      values:
-        - "{{ cpm }}"
-    # Examples of additional targeting
-    # - name: "country"
-    #   values:
-    #     - "US"
-    #     - "CAN"
-    # - name: "site"
-    #   values:
-    #     - "somesite"
+  # custom: # list (optional)
+  #   - name: "country"
+  #     values:
+  #       - "US"
+  #       - "CAN"
+  #   - name: "site"
+  #     values:
+  #       - "somesite"
   # One of the below either placemane_names or ad_unit_names is required
   placement_names: # list of names
     - "placement name 1"
@@ -97,6 +101,7 @@ targeting:
 ###############################################################################
 # Rate (required)
 # NOTE: granularity in Prebid.js config must align with this granularity
+# Allowed Templating Key Words: None
 ###############################################################################
 rate:
   currency: "USD" # required

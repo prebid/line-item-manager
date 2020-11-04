@@ -11,6 +11,7 @@ gam = dict(
 )
 
 def create_line_items():
+
     # 1. create advertiser if null
     gam['advertiser'] = Advertiser(name=config.user['advertiser']['name']).fetchone(create=True)
 
@@ -28,6 +29,7 @@ def create_line_items():
             raise ResourceNotFound(f'Placement named \'{name}\' was not found')
         gam['placements'].append(placement)
 
+    # 4. create creatives for each media and size if null
+    #   (raise ValueError on advertiser id mismatch if found)
 
-    # 4. create creatives for each media and size
-    #   (raise ValueError on advertiser id mismatch)
+    # 5. create all bidder targeting keys if null

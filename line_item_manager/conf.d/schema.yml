@@ -82,14 +82,11 @@ properties:
         $ref: "http://json-schema.org/draft-07/schema#/definitions/stringArray"
       ad_unit_names:
         $ref: "http://json-schema.org/draft-07/schema#/definitions/stringArray"
-    allOf:
+    anyOf:
       - required:
-        - "custom"
-      - anyOf:
-        - required:
-          - "placement_names"
-        - required:
-          - "ad_unit_names"
+        - "placement_names"
+      - required:
+        - "ad_unit_names"
   rate:
     type: "object"
     properties:

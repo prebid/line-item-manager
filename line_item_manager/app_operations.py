@@ -35,3 +35,12 @@ class Placement(AppOperations):
     service = 'PlacementService'
     method = 'getPlacementsByStatement'
 
+class TargetingKey(AppOperations):
+    service = 'CustomTargetingService'
+    method = 'getCustomTargetingKeysByStatement'
+    create_method = 'createCustomTargetingKeys'
+
+    def __init__(self, *args, **kwargs):
+        kwargs['type'] = 'PREDEFINED'
+        kwargs['displayName'] = kwargs['name']
+        super().__init__(*args, **kwargs)

@@ -81,6 +81,8 @@ def create(ctx, configfile, **kwargs):
         create_line_items()
     except ResourceNotFound as _e:
         raise click.UsageError(f'Not able to find the following resource:\n  - {_e}')
+
+@cli.command()
 @click.argument('resource', type=click.Choice(['config', 'bidders']))
 def show(resource):
     """Show resources"""
