@@ -23,8 +23,8 @@ class Advertiser(AppOperations):
     method = 'getCompaniesByStatement'
     create_method = 'createCompanies'
 
-    def __init__(self, *args, **kwargs):
-        kwargs['type'] = 'ADVERTISER'
+    def __init__(self, *args, _type='ADVERTISER', **kwargs):
+        kwargs['type'] = _type
         super().__init__(*args, **kwargs)
 
 class CurrentNetwork(AppOperations):
@@ -40,7 +40,7 @@ class TargetingKey(AppOperations):
     method = 'getCustomTargetingKeysByStatement'
     create_method = 'createCustomTargetingKeys'
 
-    def __init__(self, *args, **kwargs):
-        kwargs['type'] = 'PREDEFINED'
-        kwargs['displayName'] = kwargs['name']
+    def __init__(self, *args, name=None, _type='PREDEFINED', **kwargs):
+        kwargs['displayName'] = kwargs.get('displayName', name)
+        kwargs['type'] = _type
         super().__init__(*args, **kwargs)

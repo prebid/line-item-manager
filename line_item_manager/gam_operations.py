@@ -6,9 +6,9 @@ class ResourceNotFound(Exception):
     """
 
 class GAMOperations:
-    service = None
-    method = None
-    create_method = None
+    service = ''
+    method = ''
+    create_method = ''
 
     def __init__(self, *args, **kwargs):
         self.params = kwargs

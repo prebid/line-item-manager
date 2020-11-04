@@ -24,12 +24,13 @@ WORKDIR ${APP_DIR}
 # File upload
 COPY setup.py ${APP_DIR}/
 COPY MANIFEST.in ${APP_DIR}/
-COPY line_item_manager/ ${APP_DIR}/line_item_manager
-COPY tests/ ${APP_DIR}/tests/
-RUN chown -R ${USER}: ${APP_DIR}
 
 RUN pip install --upgrade pip
 RUN pip3 install -e .
+
+COPY line_item_manager/ ${APP_DIR}/line_item_manager
+COPY tests/ ${APP_DIR}/tests/
+RUN chown -R ${USER}: ${APP_DIR}
 
 USER ${USER}
 
