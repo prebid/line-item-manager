@@ -7,7 +7,7 @@
 #   cpm = line item rate as cost-per-thousand impressions
 #   cpm_max = order maximum cpm
 #   cpm_min = order minimum cpm
-#   media_type = video or banner based on media configuration below
+#   media_type = video or banner based on creative configuration below
 #   time = current UTC time represented as "%d/%m/%Y %H:%M:%S"
 #
 # See https://docs.prebid.org/dev-docs/bidder-data.csv for referencing bidder
@@ -22,26 +22,34 @@
 #   network_code: 1234
 #   network_name: "Video Publisher"
 ###############################################################################
-# Media (required)
+# Advertiser (required)
 # Allowed Templating Key Words: None
 ###############################################################################
-media: # at least one of the following types is required {video, banner}
+advertiser:
+  name: "Prebid"
+###############################################################################
+# Creatives (required)
+# Allowed Templating Key Words: bidder_name, bidder_targeting_key, media_type
+###############################################################################
+creative: # at least one of the following types is required {video, banner}
+  name: "Prebid {{ bidder_name }}-{{ media_type }}"
   video:
     sizes: # list
       - height: 480
         width: 640
       - height: 240
         width: 320
+    vast_xml_url: "https://prebid_cache.site.com/cache?uuid=%%PATTERN:{{ bidder_targeting_key }}%%"
   banner:
     sizes: # list
       - height: 480
         width: 640
-###############################################################################
-# Advertiser (required)
-# Allowed Templating Key Words: None
-###############################################################################
-advertiser:
-  name: "Prebid"
+    snippet: |
+      <script src = "https://..."></script>
+        <script>
+          ...
+        </script>
+    # safe_frame: False (optional: defaults to True)
 ###############################################################################
 # Orders (required)
 # Allowed Templating Key Words: bidder_name, media_type, time, cpm_min, cpm_max
@@ -55,19 +63,6 @@ order:
 line_item:
   name: "Prebid-{{ bidder_name }}-{{ media_type }}-{{ time }} @ {{ cpm }}"
   priority_type: "price_priority"
-###############################################################################
-# Creatives (required)
-# Allowed Templating Key Words: bidder_name, bidder_targeting_key, media_type
-###############################################################################
-creative:
-  name: "Prebid {{ bidder_name }}-{{ media_type }}"
-  vast_xml_url: "https://prebid_cache.site.com/cache?uuid=%%PATTERN:{{ bidder_targeting_key }}%%"
-  # optional properties
-  snippet_template: |
-    <script src = "https://..."></script>
-      <script>
-        ...
-      </script>
 ###############################################################################
 # Bidder Targeting Key Override Map (optional):
 #   If provided override the default bidder_targeting_key and use these

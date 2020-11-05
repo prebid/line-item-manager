@@ -1,4 +1,5 @@
-from .app_operations import Advertiser, AdUnit, Placement, TargetingKey, TargetingValues
+from .app_operations import Advertiser, AdUnit, Placement, TargetingKey, TargetingValues, \
+     CreativeBanner
 from .config import config
 from .exceptions import ResourceNotFound
 
@@ -29,6 +30,13 @@ def create_line_items():
     # 5. create all bidder targeting keys
     for name in config.targeting_keys():
         key = TargetingKey(name=name).fetchone(create=True)
-        targeting_values = TargetingValues(key_id=key['id']).create(names=config.cpm_names())
+        targeting_values = TargetingValues(key_id=key['id']).create(names=config.cpm_names(),
+                                                                    validate=True)
 
     # 6. create custom targeting keys
+    for name, values in config.custom_targeting_key_values():
+        key = TargetingKey(name=name).fetchone(create=True)
+        custom_targeting_values = TargetingValues(key_id=key['id']).create(names=values,
+                                                                           validate=True)
+
+    # 7. create line items

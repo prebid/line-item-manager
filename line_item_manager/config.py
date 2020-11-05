@@ -82,6 +82,9 @@ class Config:
             names.update(self.bucket_cpm_names(bucket))
         return names
 
+    def custom_targeting_key_values(self):
+        return [(_c['name'], set(_c['values'])) for _c in self.user['targeting'].get('custom', [])]
+
     def fmt_targeting_key(self, bidder_code):
         char_limit = self.app['prebid']['targeting_key']['bidder_char_limit']
         template = self.app['prebid']['targeting_key']['bidder_template']

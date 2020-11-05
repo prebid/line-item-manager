@@ -9,24 +9,41 @@ properties:
         $ref: "http://json-schema.org/draft-07/schema#/definitions/nonNegativeInteger"
       network_name:
         type: "string"
-  media:
+  creative:
     type: "object"
     properties:
+      name:
+        type: "string"
       video:
         type: "object"
         properties:
           sizes:
             $ref: "#/definitions/sizeArray"
+          vast_xml_url:
+            type: "string"
+        required:
+          - "sizes"
+          - "vast_xml_url"
       banner:
         type: "object"
         properties:
           sizes:
             $ref: "#/definitions/sizeArray"
-    anyOf:
+          snippet:
+            type: "string"
+          safe_frame:
+            type: "boolean"
+        required:
+          - "sizes"
+          - "snippet"
+    allOf:
       - required:
-        - "video"
-      - required:
-        - "banner"
+        - "name"
+      - anyOf:
+        - required:
+          - "video"
+        - required:
+          - "banner"
   advertiser:
     type: "object"
     properties:
@@ -53,18 +70,6 @@ properties:
     required:
       - "name"
       - "priority_type"
-  creative:
-    type: "object"
-    properties:
-      name:
-        type: "string"
-      vast_xml_url:
-        type: "string"
-      snippet_template:
-        type: "string"
-    required:
-      - "name"
-      - "vast_xml_url"
   targeting:
     type: "object"
     properties:
@@ -101,7 +106,6 @@ properties:
       - "currency"
       - "cpm_buckets"
 required:
-  - "media"
   - "advertiser"
   - "order"
   - "line_item"

@@ -63,7 +63,7 @@ class TargetingValues(AppOperations):
             matchType=matchType
         )
 
-    def create(self, names=None, validate=True):
+    def create(self, names=None, validate=False):
         results = self._results()
         cur_names = {_r['name'] for _r in results}
         recs = [self.values(_n) for _n in names if _n not in cur_names]
@@ -75,3 +75,25 @@ class TargetingValues(AppOperations):
             missing = [_n for _n in names if _n not in cur_names]
             if missing:
                 raise ValueError(f'Following names were not found after creation: \'{missing}\'')
+
+class Creative(AppOperations):
+    service = "CreativeService"
+    method = 'getCreativesByStatement'
+    create_method = 'createCreatives'
+    query_fields = ('id', 'name', 'advertiserId', 'width', 'height')
+
+class CreativeVideo(Creative):
+    create_fields = ('xsi_type', 'name', 'advertiserId', 'size', 'vastXmlUrl', 'vastRedirectType', 'duration')
+
+    def __init__(self, *args, xsi_type='VastRedirectCreative', vastRedirectType='LINEAR', **kwargs):
+        kwargs['xsi_type'] = xsi_type
+        kwargs['vastRedirectType'] = vastRedirectType
+        super().__init__(*args, **kwargs)
+
+class CreativeBanner(Creative):
+    create_fields = ('xsi_type', 'name', 'advertiserId', 'size', 'isSafeFrameCompatible', 'snippet')
+
+    def __init__(self, *args, xsi_type='ThirdPartyCreative', isSafeFrameCompatible=True, **kwargs):
+        kwargs['xsi_type'] = xsi_type
+        kwargs['isSafeFrameCompatible'] = isSafeFrameCompatible
+        super().__init__(*args, **kwargs)

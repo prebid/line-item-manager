@@ -1,4 +1,5 @@
 from googleads import ad_manager
+from typing import Tuple
 
 class ResourceNotFound(Exception):
     """
@@ -9,9 +10,17 @@ class GAMOperations:
     service = ''
     method = ''
     create_method = ''
+    query_fields: Tuple = ()
+    create_fields: Tuple = ()
 
     def __init__(self, *args, **kwargs):
         self.params = kwargs
+        self.query_params = self.params
+        self.create_params = self.params
+        if self.query_fields:
+            self.query_params = {k:kwargs[k] for k in self.query_fields if k in kwargs}
+        if self.create_fields:
+            self.create_params = {k:kwargs[k] for k in self.create_fields if k in kwargs}
 
     def fetch(self, one=False, create=False, validate=False):
         result = self._results(one=one)
@@ -38,7 +47,7 @@ class GAMOperations:
         return results
 
     def _create(self):
-        return self.create([self.params])
+        return self.create([self.create_params])
 
     def create(self, atts):
         return getattr(self.svc(), self.create_method)(atts)
@@ -54,11 +63,11 @@ class GAMOperations:
         return self.client.GetService(self.service, version=self.version)
 
     def statement(self):
-        if not self.params:
+        if not self.query_params:
             return None
         _stm = ad_manager.StatementBuilder(version=self.version)
-        _stm.Where(' AND '.join([f"{k} = :{k}" for k in self.params]))
-        _ = [_stm.WithBindVariable(k, v) for k, v in self.params.items()]
+        _stm.Where(' AND '.join([f"{k} = :{k}" for k in self.query_params]))
+        _ = [_stm.WithBindVariable(k, v) for k, v in self.query_params.items()]
         return _stm
 
     @property
