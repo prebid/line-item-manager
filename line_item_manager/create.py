@@ -1,4 +1,4 @@
-from .app_operations import Advertiser, AdUnit, Placement
+from .app_operations import Advertiser, AdUnit, Placement, TargetingKey, TargetingValues
 from .config import config
 from .exceptions import ResourceNotFound
 
@@ -26,4 +26,9 @@ def create_line_items():
     # 4. create creatives for each media and size if null
     #   (raise ValueError on advertiser id mismatch if found)
 
-    # 5. create all bidder targeting keys if null
+    # 5. create all bidder targeting keys
+    for name in config.targeting_keys():
+        key = TargetingKey(name=name).fetchone(create=True)
+        targeting_values = TargetingValues(key_id=key['id']).create(names=config.cpm_names())
+
+    # 6. create custom targeting keys

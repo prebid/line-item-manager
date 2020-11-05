@@ -23,6 +23,7 @@
 #   network_name: "Video Publisher"
 ###############################################################################
 # Media (required)
+# Allowed Templating Key Words: None
 ###############################################################################
 media: # at least one of the following types is required {video, banner}
   video:

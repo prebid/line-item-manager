@@ -1,9 +1,7 @@
 """Console script for line_item_manager."""
-import csv
 from functools import partial
 import json
 import pkg_resources
-from urllib import request
 import sys
 
 import click
@@ -52,21 +50,25 @@ def create(ctx, configfile, **kwargs):
     if not config.network_name:
         raise click.UsageError('Network name must be provided as an option or set in the config file', ctx=ctx)
 
+    for bidder_code in kwargs['bidder_code']:
+        if not bidder_code in config.bidder_data():
+            raise click.UsageError(f'Bidder code \'{bidder_code}\' is not recognized', ctx=ctx)
+
     # validate GAM client
     try:
         config.client
     except json.decoder.JSONDecodeError:
-        raise click.UsageError('Check your private key file. File is not formatted properly as json')
+        raise click.UsageError('Check your private key file. File is not formatted properly as json', ctx=ctx)
     except ValueError as e:
-        raise click.UsageError(f'Check your private key file. {e.args[0]}')
+        raise click.UsageError(f'Check your private key file. {e.args[0]}', ctx=ctx)
     except Exception:
-        raise click.UsageError(f'Check your private key file. Not able to successfully access your service account.')
+        raise click.UsageError(f'Check your private key file. Not able to successfully access your service account', ctx=ctx)
 
     # validate GAM network access
     try:
         name = CurrentNetwork().fetch()['displayName']
     except GoogleAdsServerFault:
-        raise click.UsageError(f'Check your network code and permissions. Not able to successfully access your service account.')
+        raise click.UsageError(f'Check your network code and permissions. Not able to successfully access your service account', ctx=ctx)
     if not name == config.network_name:
         raise click.UsageError(f"Network name found \'{name}\' does not match provided \'{config.network_name}\'", ctx=ctx)
 
@@ -80,7 +82,7 @@ def create(ctx, configfile, **kwargs):
     try:
         create_line_items()
     except ResourceNotFound as _e:
-        raise click.UsageError(f'Not able to find the following resource:\n  - {_e}')
+        raise click.UsageError(f'Not able to find the following resource:\n  - {_e}', ctx=ctx)
 
 @cli.command()
 @click.argument('resource', type=click.Choice(['config', 'bidders']))
@@ -91,10 +93,9 @@ def show(resource):
         with open(config_file) as fp:
             print(fp.read())
     if resource == 'bidders':
-        reader = csv.DictReader([l.decode('utf-8') for l in request.urlopen(config.app['bidders']['data']).readlines()])
         print("%-25s%s" % ('Code', 'Name'))
         print("%-25s%s" % ('----', '----'))
-        for row in reader:
+        for row in sorted(config.bidder_data().values(), key=lambda x: x['bidder-code']):
             print("%-25s%s" % (row['bidder-code'], row['bidder-name']))
 
 def main():

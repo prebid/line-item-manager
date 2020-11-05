@@ -1,4 +1,7 @@
+import csv
+from jinja2 import Template
 import pkg_resources
+from urllib import request
 import yaml
 
 from googleads import ad_manager
@@ -7,6 +10,7 @@ class Config:
 
     _client = None
     _schema = None
+    _bidder_data = None
 
     def __init__(self):
         self._app = self.load_package_file('settings.yml')
@@ -61,5 +65,33 @@ class Config:
     def load_package_file(self, filename):
         return self.load_file(pkg_resources.resource_filename('line_item_manager',
                                                               f'conf.d/{filename}'))
+    def bidder_data(self):
+        if self._bidder_data is None:
+            reader = csv.DictReader([l.decode('utf-8') for l in request.urlopen(self.app['bidders']['data']).readlines()])
+            self._bidder_data = {row['bidder-code']:row for row in reader}
+        return self._bidder_data
+
+    def bucket_cpm_names(self, bucket):
+        rng = [int(100 * bucket[_k]) for _k in ('min', 'max', 'interval')]
+        rng[1] += rng[2] # make stop inclusive
+        return {'%.2f' % (_x / 100) for _x in range(*rng)}
+
+    def cpm_names(self):
+        names = set()
+        for bucket in self.user['rate']['cpm_buckets']:
+            names.update(self.bucket_cpm_names(bucket))
+        return names
+
+    def fmt_targeting_key(self, bidder_code):
+        char_limit = self.app['prebid']['targeting_key']['bidder_char_limit']
+        template = self.app['prebid']['targeting_key']['bidder_template']
+        return Template(template).render(bidder_code=bidder_code)[:char_limit]
+
+    def targeting_keys(self):
+        _map = self.user.get('bidder_key_map', {})
+        if self.cli['single_order']:
+            return [self.app['prebid']['targeting_key']['single_order']]
+        return [_map.get(_b, self.fmt_targeting_key(_b)) for _b in self.cli['bidder_code']]
+
 
 config = Config()

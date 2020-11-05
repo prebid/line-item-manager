@@ -2,3 +2,8 @@ bidders:
   data: https://docs.prebid.org/dev-docs/bidder-data.csv
 googleads:
   version: 'v202008'
+prebid:
+  targeting_key:
+    single_order: "hb_pb"
+    bidder_template: "hb_pb_{{ bidder_code }}"
+    bidder_char_limit: 20

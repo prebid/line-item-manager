@@ -41,6 +41,37 @@ class TargetingKey(AppOperations):
     create_method = 'createCustomTargetingKeys'
 
     def __init__(self, *args, name=None, _type='PREDEFINED', **kwargs):
+        kwargs['name'] = name
         kwargs['displayName'] = kwargs.get('displayName', name)
         kwargs['type'] = _type
         super().__init__(*args, **kwargs)
+
+class TargetingValues(AppOperations):
+    service = 'CustomTargetingService'
+    method = 'getCustomTargetingValuesByStatement'
+    create_method = 'createCustomTargetingValues'
+
+    def __init__(self, *args, key_id=None, **kwargs):
+        kwargs['customTargetingKeyId'] = key_id
+        super().__init__(*args, **kwargs)
+
+    def values(self, name, matchType='EXACT'):
+        return dict(
+            customTargetingKeyId=self.params['customTargetingKeyId'],
+            name=name,
+            displayName=name,
+            matchType=matchType
+        )
+
+    def create(self, names=None, validate=True):
+        results = self._results()
+        cur_names = {_r['name'] for _r in results}
+        recs = [self.values(_n) for _n in names if _n not in cur_names]
+        if recs:
+            _ = super().create(recs)
+            results = self._results()
+        if validate:
+            cur_names = {_r['name'] for _r in results}
+            missing = [_n for _n in names if _n not in cur_names]
+            if missing:
+                raise ValueError(f'Following names were not found after creation: \'{missing}\'')
