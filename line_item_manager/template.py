@@ -29,10 +29,10 @@ class Template:
         if media_type:
             params['media_type'] = media_type
         if cpm:
-            params['cpm'] = '%.2f' % cpm
+            params['cpm'] = cpm
         if cpm_min:
-            params['cpm_min'] = '%.2f' % cpm_min
+            params['cpm_min'] = cpm_min
         if cpm_max:
-            params['cpm_max'] = '%.2f' % cpm_max
+            params['cpm_max'] = cpm_max
         objstr = J2Template(yaml.safe_dump(self.config.user[objname])).render(**params)
         return yaml.safe_load(objstr)

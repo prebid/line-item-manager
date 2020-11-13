@@ -31,6 +31,10 @@ class CurrentNetwork(AppOperations):
     service = 'NetworkService'
     method = 'getCurrentNetwork'
 
+class CurrentUser(AppOperations):
+    service = 'UserService'
+    method = 'getCurrentUser'
+
 class Placement(AppOperations):
     service = 'PlacementService'
     method = 'getPlacementsByStatement'
@@ -75,6 +79,11 @@ class TargetingValues(AppOperations):
             missing = [_n for _n in names if _n not in cur_names]
             if missing:
                 raise ValueError(f'Following names were not found after creation: \'{missing}\'')
+
+class Order(AppOperations):
+    service = "OrderService"
+    method = 'getOrdersByStatement'
+    create_method = 'createOrders'
 
 class Creative(AppOperations):
     service = "CreativeService"

@@ -5,6 +5,8 @@ line_item_manager:
 
 googleads:
   version: 'v202008'
+  line_items:
+    max_per_order: 450
 
 prebid:
   bidders:

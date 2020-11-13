@@ -84,12 +84,12 @@ class Config:
     def bucket_cpm_names(self, bucket):
         rng = [int(100 * bucket[_k]) for _k in ('min', 'max', 'interval')]
         rng[1] += rng[2] # make stop inclusive
-        return {'%.2f' % (_x / 100) for _x in range(*rng)}
+        return ['%.2f' % (_x / 100) for _x in range(*rng)]
 
     def cpm_names(self):
-        names = set()
+        names = []
         for bucket in self.user['rate']['cpm_buckets']:
-            names.update(self.bucket_cpm_names(bucket))
+            names += self.bucket_cpm_names(bucket)
         return names
 
     def custom_targeting_key_values(self):
