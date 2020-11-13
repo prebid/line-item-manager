@@ -1,9 +1,25 @@
-bidders:
-  data: https://docs.prebid.org/dev-docs/bidder-data.csv
+line_item_manager:
+  single_order:
+    bidder_code: "hb"
+    bidder_name: "Top Bid"
+
 googleads:
   version: 'v202008'
+
 prebid:
-  targeting_key:
-    single_order: "hb_pb"
-    bidder_template: "hb_pb_{{ bidder_code }}"
-    bidder_char_limit: 20
+  bidders:
+    data: https://docs.prebid.org/dev-docs/bidder-data.csv
+    key_char_limit: 20
+    keys:
+      - "hb_pb"
+      - "hb_bidder"
+      - "hb_adid"
+      - "hb_size"
+      - "hb_source"
+      - "hb_format"
+      - "hb_cache_host"
+      - "hb_cache_id"
+      - "hb_uuid"
+      - "hb_cache_path"
+      - "hb_deal"
+    targeting_key: "hb_pb"

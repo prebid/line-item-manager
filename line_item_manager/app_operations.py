@@ -82,12 +82,19 @@ class Creative(AppOperations):
     create_method = 'createCreatives'
     query_fields = ('id', 'name', 'advertiserId', 'width', 'height')
 
+    def __init__(self, *args, **kwargs):
+        if 'size' in kwargs:
+            kwargs['height'] = kwargs['size']['height']
+            kwargs['width'] = kwargs['size']['width']
+        super().__init__(*args, **kwargs)
+
 class CreativeVideo(Creative):
     create_fields = ('xsi_type', 'name', 'advertiserId', 'size', 'vastXmlUrl', 'vastRedirectType', 'duration')
 
-    def __init__(self, *args, xsi_type='VastRedirectCreative', vastRedirectType='LINEAR', **kwargs):
+    def __init__(self, *args, xsi_type='VastRedirectCreative', vastRedirectType='LINEAR', duration=60, **kwargs):
         kwargs['xsi_type'] = xsi_type
         kwargs['vastRedirectType'] = vastRedirectType
+        kwargs['duration'] = duration
         super().__init__(*args, **kwargs)
 
 class CreativeBanner(Creative):

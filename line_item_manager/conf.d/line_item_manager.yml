@@ -1,14 +1,20 @@
 # line_item_manager configuration
 ###############################################################################
 # Templating uses jinja2 rendering (see https://palletsprojects.com/p/jinja/)
-# Templating Key Words:
+# The following key word types are supported:
+# Bidder:
+#   bidder_code = bidder-code
 #   bidder_name = bidder-name
-#   bidder_targeting_key = hb_pb_<bidder-code> (20 char limit)
+#   hb_<keystr> = hb_<keystr>_<bidder-code> (20 char limit)
+# CPM:
 #   cpm = line item rate as cost-per-thousand impressions
+# Media:
+#   media_type = video or banner based on creative configuration below
+# Misc:
+#   time = current UTC time represented as "%d/%m/%Y %H:%M:%S"
+# Order:
 #   cpm_max = order maximum cpm
 #   cpm_min = order minimum cpm
-#   media_type = video or banner based on creative configuration below
-#   time = current UTC time represented as "%d/%m/%Y %H:%M:%S"
 #
 # See https://docs.prebid.org/dev-docs/bidder-data.csv for referencing bidder
 # names and codes.
@@ -29,7 +35,7 @@ advertiser:
   name: "Prebid"
 ###############################################################################
 # Creatives (required)
-# Allowed Templating Key Words: bidder_name, bidder_targeting_key, media_type
+# Allowed Templating Key Words: Bidder, Media, Misc
 ###############################################################################
 creative: # at least one of the following types is required {video, banner}
   name: "Prebid {{ bidder_name }}-{{ media_type }}"
@@ -39,7 +45,7 @@ creative: # at least one of the following types is required {video, banner}
         width: 640
       - height: 240
         width: 320
-    vast_xml_url: "https://prebid_cache.site.com/cache?uuid=%%PATTERN:{{ bidder_targeting_key }}%%"
+    vast_xml_url: "https://prebid.adnxs.com/pbc/v1/cache?uuid=%%PATTERN:{{ hb_cache_id }}%%"
   banner:
     sizes: # list
       - height: 480
@@ -52,13 +58,13 @@ creative: # at least one of the following types is required {video, banner}
     # safe_frame: False (optional: defaults to True)
 ###############################################################################
 # Orders (required)
-# Allowed Templating Key Words: bidder_name, media_type, time, cpm_min, cpm_max
+# Allowed Templating Key Words: Bidder, Media, Order, Misc
 ###############################################################################
 order:
   name: "Prebid-{{ bidder_name }}-{{ media_type }}-{{ time }} {{ cpm_min }}-{{ cpm_max }}"
 ###############################################################################
 # Line Items (required)
-# Allowed Templating Key Words: bidder_name, media_type, time, cpm
+# Allowed Templating Key Words: Bidder, Media, CPM, Misc
 ###############################################################################
 line_item:
   name: "Prebid-{{ bidder_name }}-{{ media_type }}-{{ time }} @ {{ cpm }}"

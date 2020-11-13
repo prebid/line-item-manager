@@ -1,9 +1,14 @@
 from .app_operations import Advertiser, AdUnit, Placement, TargetingKey, TargetingValues, \
-     CreativeBanner
+     CreativeBanner, CreativeVideo
 from .config import config
 from .exceptions import ResourceNotFound
+from .template import Template
+
+CREATIVE_CLASS = dict(video=CreativeVideo, banner=CreativeBanner)
 
 def create_line_items():
+
+    template = Template(config)
 
     # 1. create advertiser if null
     advertiser = Advertiser(name=config.user['advertiser']['name']).fetchone(create=True)
@@ -24,19 +29,36 @@ def create_line_items():
             raise ResourceNotFound(f'Placement named \'{name}\' was not found')
         placements.append(placement)
 
-    # 4. create creatives for each media and size if null
-    #   (raise ValueError on advertiser id mismatch if found)
-
-    # 5. create all bidder targeting keys
-    for name in config.targeting_keys():
-        key = TargetingKey(name=name).fetchone(create=True)
-        targeting_values = TargetingValues(key_id=key['id']).create(names=config.cpm_names(),
-                                                                    validate=True)
-
-    # 6. create custom targeting keys
+    # 4. create custom targeting keys
     for name, values in config.custom_targeting_key_values():
         key = TargetingKey(name=name).fetchone(create=True)
         custom_targeting_values = TargetingValues(key_id=key['id']).create(names=values,
                                                                            validate=True)
+    creatives = dict(video=[], banner=[])
+    for bidder_code in config.bidder_codes():
+        # 5. create creatives for each media type and size only if null
+        for media in [m_ for m_ in ('video', 'banner') if config.user['creative'].get(m_)]:
+            cfg = template.render('creative', bidder_code=bidder_code, media_type=media)
+            for size in cfg[media]['sizes']:
+                params = dict(
+                    name=cfg['name'],
+                    advertiserId=advertiser['id'],
+                    size=size,
+                )
+                if media == 'video':
+                    params.update(dict(
+                        vastXmlUrl=cfg['video']['vast_xml_url'],
+                    ))
+                if media == 'banner':
+                    params.update(dict(
+                        snippet=cfg['banner']['snippet'],
+                        isSafeFrameCompatible=cfg['banner'].get('safe_frame', True),
+                    ))
+                creatives[media].append(CREATIVE_CLASS[media](**params).fetchone(create=True))
 
-    # 7. create line items
+        # 6. create targeting keys
+        key = TargetingKey(name=config.targeting_key(bidder_code)).fetchone(create=True)
+        targeting_values = TargetingValues(key_id=key['id']).create(names=config.cpm_names(),
+                                                                    validate=True)
+
+        # 7. create line items

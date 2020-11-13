@@ -34,7 +34,11 @@ def cli():
 @click.pass_context
 def create(ctx, configfile, **kwargs):
     """Create line items"""
-    config.user_configfile = configfile
+    try:
+        config.user_configfile = configfile
+    except yaml.reader.ReaderError as e:
+        raise click.UsageError(f'Check your configfile. {e}', ctx=ctx)
+
     config.cli = kwargs
 
     # validate CLI options

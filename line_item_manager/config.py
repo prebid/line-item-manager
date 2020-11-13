@@ -1,5 +1,5 @@
 import csv
-from jinja2 import Template
+from datetime import datetime
 import pkg_resources
 from urllib import request
 import yaml
@@ -14,6 +14,7 @@ class Config:
 
     def __init__(self):
         self._app = self.load_package_file('settings.yml')
+        self._start_time = datetime.now()
 
     @property
     def app(self):
@@ -30,6 +31,10 @@ class Config:
     @property
     def user(self):
         return self._user
+
+    @property
+    def start_time(self):
+        return self._start_time
 
     @user.setter
     def user_configfile(self, filename):
@@ -67,9 +72,14 @@ class Config:
                                                               f'conf.d/{filename}'))
     def bidder_data(self):
         if self._bidder_data is None:
-            reader = csv.DictReader([l.decode('utf-8') for l in request.urlopen(self.app['bidders']['data']).readlines()])
+            reader = csv.DictReader([l.decode('utf-8') for l in request.urlopen(self.app['prebid']['bidders']['data']).readlines()])
             self._bidder_data = {row['bidder-code']:row for row in reader}
         return self._bidder_data
+
+    def bidder_codes(self):
+        if self.cli['single_order']:
+            return [self.app['line_item_manager']['single_order']['bidder_code']]
+        return self.cli['bidder_code']
 
     def bucket_cpm_names(self, bucket):
         rng = [int(100 * bucket[_k]) for _k in ('min', 'max', 'interval')]
@@ -85,16 +95,14 @@ class Config:
     def custom_targeting_key_values(self):
         return [(_c['name'], set(_c['values'])) for _c in self.user['targeting'].get('custom', [])]
 
-    def fmt_targeting_key(self, bidder_code):
-        char_limit = self.app['prebid']['targeting_key']['bidder_char_limit']
-        template = self.app['prebid']['targeting_key']['bidder_template']
-        return Template(template).render(bidder_code=bidder_code)[:char_limit]
+    def fmt_bidder_key(self, prefix, code):
+        return f'{prefix}_{code}'[:self.app['prebid']['bidders']['key_char_limit']]
 
-    def targeting_keys(self):
+    def targeting_key(self, bidder_code):
         _map = self.user.get('bidder_key_map', {})
+        prefix = self.app['prebid']['bidders']['targeting_key']
         if self.cli['single_order']:
-            return [self.app['prebid']['targeting_key']['single_order']]
-        return [_map.get(_b, self.fmt_targeting_key(_b)) for _b in self.cli['bidder_code']]
-
+            return _map.get(bidder_code, prefix)
+        return _map.get(bidder_code, self.fmt_bidder_key(prefix, bidder_code))
 
 config = Config()
