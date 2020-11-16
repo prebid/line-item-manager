@@ -1,15 +1,17 @@
-from .app_operations import Advertiser, AdUnit, Placement, TargetingKey, TargetingValues, \
-     CreativeBanner, CreativeVideo, Order, CurrentUser
 from .config import config
 from .exceptions import ResourceNotFound
+from .operations import Advertiser, AdUnit, Placement, TargetingKey, TargetingValues, \
+     CreativeBanner, CreativeVideo, Order, CurrentUser
 from .template import Template
 from .utils import ichunk
 
 CREATIVE_CLASS = dict(video=CreativeVideo, banner=CreativeBanner)
 
+log = config.getLogger(__name__)
+
 def create_line_items():
 
-    template = Template(config)
+    template = Template()
 
     # 1. create advertiser if null
     advertiser = Advertiser(name=config.user['advertiser']['name']).fetchone(create=True)

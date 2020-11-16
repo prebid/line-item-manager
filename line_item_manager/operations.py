@@ -1,6 +1,8 @@
 from .config import config
 from .gam_operations import GAMOperations
 
+log = config.getLogger('operations')
+
 class AppOperations(GAMOperations):
     @property
     def client(self):
@@ -24,6 +26,7 @@ class Advertiser(AppOperations):
     create_method = 'createCompanies'
 
     def __init__(self, *args, _type='ADVERTISER', **kwargs):
+        self.create_dry_run = dict(id=f"ID-{kwargs['name']}")
         kwargs['type'] = _type
         super().__init__(*args, **kwargs)
 

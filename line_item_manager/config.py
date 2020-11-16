@@ -1,20 +1,26 @@
 import csv
 from datetime import datetime
+import logging
 import pkg_resources
 from urllib import request
 import yaml
 
 from googleads import ad_manager
 
+logging.basicConfig()
+
 class Config:
 
     _client = None
     _schema = None
     _bidder_data = None
+    _cpm_names = None
 
     def __init__(self):
         self._app = self.load_package_file('settings.yml')
         self._start_time = datetime.now()
+        self._logger = logging.getLogger(__package__)
+        self._logger.setLevel(logging.INFO)
 
     @property
     def app(self):
@@ -35,6 +41,15 @@ class Config:
     @property
     def start_time(self):
         return self._start_time
+
+    def getLogger(self, name):
+        return self._logger.getChild(name.split('.')[-1])
+
+    def verbose(self):
+        self._logger.setLevel(logging.DEBUG)
+
+    def quiet(self):
+        self._logger.setLevel(logging.WARNING)
 
     @user.setter
     def user_configfile(self, filename):
@@ -81,16 +96,18 @@ class Config:
             return [self.app['line_item_manager']['single_order']['bidder_code']]
         return self.cli['bidder_code']
 
-    def bucket_cpm_names(self, bucket):
+    def bucket_cpm_values(self, bucket):
         rng = [int(100 * bucket[_k]) for _k in ('min', 'max', 'interval')]
         rng[1] += rng[2] # make stop inclusive
-        return ['%.2f' % (_x / 100) for _x in range(*rng)]
+        return {_x / 100 for _x in range(*rng)}
 
     def cpm_names(self):
-        names = []
-        for bucket in self.user['rate']['cpm_buckets']:
-            names += self.bucket_cpm_names(bucket)
-        return names
+        if self._cpm_names is None:
+            values = set()
+            for bucket in self.user['rate']['cpm_buckets']:
+                values.update(self.bucket_cpm_values(bucket))
+            self._cpm_names = ['%.2f' % v_ for v_ in sorted(values)]
+        return self._cpm_names
 
     def custom_targeting_key_values(self):
         return [(_c['name'], set(_c['values'])) for _c in self.user['targeting'].get('custom', [])]

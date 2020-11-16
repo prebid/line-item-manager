@@ -1,5 +1,14 @@
 from googleads import ad_manager
-from typing import Tuple
+from typing import Dict, Tuple
+
+from .config import config
+
+log = config.getLogger('operations')
+
+_CREATE_LOG_LINE = 'Create: "%s" w/ Rec(s): "%s"'
+_QUERY_LOG_LINE = 'Service: "%s" Method: "%s" Params: "%s"'
+_FETCH_ONE_LOG_LINE = 'Service: "%s" Method: "%s" Fetch One: "%s"'
+_RESULTS_LOG_LINE = 'Service: "%s" Method: "%s" Results: "%s"'
 
 class ResourceNotFound(Exception):
     """
@@ -7,6 +16,7 @@ class ResourceNotFound(Exception):
     """
 
 class GAMOperations:
+    create_dry_run: Dict = {}
     service = ''
     method = ''
     create_method = ''
@@ -31,6 +41,7 @@ class GAMOperations:
         return result
 
     def _results(self, one=False):
+        log.debug(_QUERY_LOG_LINE, self.service, self.method, self.query_params)
         _stm = self.statement()
         if not _stm:
             return getattr(self.svc(), self.method)()
@@ -41,16 +52,19 @@ class GAMOperations:
                 break
             for result in response["results"]:
                 if one:
+                    log.debug(_FETCH_ONE_LOG_LINE, self.service, self.method, result)
                     return result
                 results.append(result)
             _stm.offset += _stm.limit
+        log.debug(_RESULTS_LOG_LINE, self.service, self.method, results)
         return results
 
     def _create(self):
         return self.create([self.create_params])
 
     def create(self, atts):
-        return getattr(self.svc(), self.create_method)(atts)
+        log.info(_CREATE_LOG_LINE, type(self).__name__, atts)
+        return [self.create_dry_run] if self.dry_run else getattr(self.svc(), self.create_method)(atts)
 
     def validate(self, result):
         if not result:

@@ -11,8 +11,8 @@ import yaml
 from .config import config
 from .create import create_line_items
 from .exceptions import ResourceNotFound
+from .operations import CurrentNetwork
 from .validate import Validator
-from .app_operations import CurrentNetwork
 
 click.option = partial(click.option, show_default=True)
 
@@ -29,11 +29,18 @@ def cli():
 @click.option('--bidder-code', '-b', multiple=True, help='Bidder code, which may be used multiple times.')
 @click.option('--test-run', '-t', is_flag=True, help='Execute a limited number of line_items for testing and manual review which will be auto-archived.')
 @click.option('--dry-run', '-n', is_flag=True, help='Print commands that would be executed, but do not execute them.')
+@click.option('--quiet', '-q', is_flag=True, help='Logging is limited to warnings and errors.')
+@click.option('--verbose', '-v', is_flag=True, help='Logging is verbose.')
 @click.option('--archive-on-failure', is_flag=True, help='If a GAM operation fails, auto-archive already completed operations.')
 @click.option('--delete-on-failure', is_flag=True, help='If a GAM operation fails, auto-delete already completed operations.')
 @click.pass_context
 def create(ctx, configfile, **kwargs):
     """Create line items"""
+    if kwargs['quiet']:
+        config.quiet()
+    if kwargs['verbose']:
+        config.verbose()
+
     try:
         config.user_configfile = configfile
     except yaml.reader.ReaderError as e:
