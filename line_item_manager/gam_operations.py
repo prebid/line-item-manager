@@ -1,7 +1,8 @@
 from googleads import ad_manager
-from typing import Dict, Tuple
+from typing import Dict, List, Tuple
 
 from .config import config
+from .exceptions import ResourceNotFound
 
 log = config.getLogger('operations')
 
@@ -10,13 +11,8 @@ _QUERY_LOG_LINE = 'Service: "%s" Method: "%s" Params: "%s"'
 _FETCH_ONE_LOG_LINE = 'Service: "%s" Method: "%s" Fetch One: "%s"'
 _RESULTS_LOG_LINE = 'Service: "%s" Method: "%s" Results: "%s"'
 
-class ResourceNotFound(Exception):
-    """
-    Raised when specified resource is not found
-    """
-
 class GAMOperations:
-    create_dry_run: Dict = {}
+    create_dry_run: List[Dict] = [{}]
     service = ''
     method = ''
     create_method = ''
@@ -64,7 +60,7 @@ class GAMOperations:
 
     def create(self, atts):
         log.info(_CREATE_LOG_LINE, type(self).__name__, atts)
-        return [self.create_dry_run] if self.dry_run else getattr(self.svc(), self.create_method)(atts)
+        return self.create_dry_run if self.dry_run else getattr(self.svc(), self.create_method)(atts)
 
     def validate(self, result):
         if not result:

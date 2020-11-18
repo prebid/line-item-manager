@@ -1,3 +1,6 @@
+from datetime import datetime
+import pytz
+
 def ichunk(iterable, n):
     """Yield n sized chunks, with tail chunk truncated.
 
@@ -21,3 +24,8 @@ def ichunk(iterable, n):
                     yield out
                 return
         yield out
+
+def date_from_string(dtstr, fmt, timezone):
+    if not dtstr:
+        return None
+    return datetime.strptime(dtstr, fmt).replace(tzinfo=pytz.timezone(timezone))

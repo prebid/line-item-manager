@@ -1,12 +1,20 @@
 line_item_manager:
+  timezone: "UTC"
+  date_fmt: "%m/%d/%y %H:%M"
   single_order:
     bidder_code: "hb"
     bidder_name: "Top Bid"
 
 googleads:
-  version: 'v202008'
+  version: 'v202011'
   line_items:
+    micro_cent_factor: 1000000
     max_per_order: 450
+    unlimited_end_datetime_types:
+      - HOUSE
+      - NETWORK
+      - PRICE_PRIORITY
+      - SPONSORSHIP
 
 prebid:
   bidders:

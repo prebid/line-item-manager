@@ -11,7 +11,7 @@
 # Media:
 #   media_type = video or banner based on creative configuration below
 # Misc:
-#   time = current UTC time represented as "%d/%m/%Y %H:%M:%S"
+#   time = current UTC time represented as "%m/%d/%Y %H:%M:%S"
 # Order:
 #   cpm_max = order maximum cpm
 #   cpm_min = order minimum cpm
@@ -65,10 +65,19 @@ order:
 ###############################################################################
 # Line Items (required)
 # Allowed Templating Key Words: Bidder, Media, CPM, Misc
+#
+# Supported Types: price_priority, standard
+# datetimes use: "%m/%d/%y %H:%M" (ex. 11/17/20 21:28)
+#   - default timezone is UTC
+# timezones: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 ###############################################################################
 line_item:
   name: "Prebid-{{ bidder_name }}-{{ media_type }}-{{ time }} @ {{ cpm }}"
-  priority_type: "price_priority"
+  item_type: "price_priority"
+  # Optional
+  # start_datetime: "11/17/20 21:28"
+  # end_datetime: "12/17/20 21:28"
+  # timezone: "UTC"
 ###############################################################################
 # Bidder Targeting Key Override Map (optional):
 #   If provided override the default bidder_targeting_key and use these

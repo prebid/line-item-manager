@@ -26,7 +26,7 @@ class Advertiser(AppOperations):
     create_method = 'createCompanies'
 
     def __init__(self, *args, _type='ADVERTISER', **kwargs):
-        self.create_dry_run = dict(id=f"ID-{kwargs['name']}")
+        self.create_dry_run = [dict(id=f"{kwargs['name']}-0")]
         kwargs['type'] = _type
         super().__init__(*args, **kwargs)
 
@@ -48,10 +48,28 @@ class TargetingKey(AppOperations):
     create_method = 'createCustomTargetingKeys'
 
     def __init__(self, *args, name=None, _type='PREDEFINED', **kwargs):
+        self.create_dry_run = [dict(id=f"{name}-0")]
         kwargs['name'] = name
         kwargs['displayName'] = kwargs.get('displayName', name)
         kwargs['type'] = _type
         super().__init__(*args, **kwargs)
+
+class LineItem(AppOperations):
+    service = 'LineItemService'
+    method = 'getLineItemsByStatement'
+    create_method = 'createLineItems'
+
+    def create(self, recs=None):
+        if self.dry_run:
+            _ = [rec.update({'id': f"{rec['name']}-{_i}"}) for _i, rec in enumerate(recs)]
+            self.create_dry_run = recs
+        results = super().create(recs)
+        names = {_r['name'] for _r in recs}
+        cur_names = {_r['name'] for _r in results}
+        missing = [_n for _n in names if _n not in cur_names]
+        if missing:
+            raise ValueError(f'Following names were not found after creation: \'{missing}\'')
+        return results
 
 class TargetingValues(AppOperations):
     service = 'CustomTargetingService'
@@ -70,23 +88,29 @@ class TargetingValues(AppOperations):
             matchType=matchType
         )
 
-    def create(self, names=None, validate=False):
-        results = self._results()
+    def create(self, names=None):
+        results = self.fetch()
         cur_names = {_r['name'] for _r in results}
         recs = [self.values(_n) for _n in names if _n not in cur_names]
         if recs:
-            _ = super().create(recs)
-            results = self._results()
-        if validate:
-            cur_names = {_r['name'] for _r in results}
-            missing = [_n for _n in names if _n not in cur_names]
-            if missing:
-                raise ValueError(f'Following names were not found after creation: \'{missing}\'')
+            if self.dry_run:
+                _ = [rec.update({'id': f"{rec['name']}-{_i}"}) for _i, rec in enumerate(recs)]
+                self.create_dry_run = recs
+            results += super().create(recs)
+        cur_names = {_r['name'] for _r in results}
+        missing = [_n for _n in names if _n not in cur_names]
+        if missing:
+            raise ValueError(f'Following names were not found after creation: \'{missing}\'')
+        return results
 
 class Order(AppOperations):
     service = "OrderService"
     method = 'getOrdersByStatement'
     create_method = 'createOrders'
+
+    def __init__(self, *args, **kwargs):
+        self.create_dry_run = [dict(id=f"{kwargs['name']}-0")]
+        super().__init__(*args, **kwargs)
 
 class Creative(AppOperations):
     service = "CreativeService"

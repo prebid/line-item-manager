@@ -11,7 +11,7 @@ import yaml
 from .config import config
 from .create import create_line_items
 from .exceptions import ResourceNotFound
-from .operations import CurrentNetwork
+from .gam_config import GAMConfig
 from .validate import Validator
 
 click.option = partial(click.option, show_default=True)
@@ -40,6 +40,8 @@ def create(ctx, configfile, **kwargs):
         config.quiet()
     if kwargs['verbose']:
         config.verbose()
+
+    gam = GAMConfig()
 
     try:
         config.user_configfile = configfile
@@ -77,21 +79,26 @@ def create(ctx, configfile, **kwargs):
 
     # validate GAM network access
     try:
-        name = CurrentNetwork().fetch()['displayName']
+        if not gam.network['displayName'] == config.network_name:
+            raise click.UsageError(f"Network name found \'{gam.network['displayName']}\' does not match provided \'{config.network_name}\'", ctx=ctx)
     except GoogleAdsServerFault:
         raise click.UsageError(f'Check your network code and permissions. Not able to successfully access your service account', ctx=ctx)
-    if not name == config.network_name:
-        raise click.UsageError(f"Network name found \'{name}\' does not match provided \'{config.network_name}\'", ctx=ctx)
 
     # validate user configuration
     user_cfg = Validator(config.schema, config.user)
     if not user_cfg.is_valid():
         err_str = '\n'.join([f'  - {user_cfg.fmt(_e)}' for _e in user_cfg.errors()])
-        raise click.UsageError(f'Check your configfile for the following validation errors:\n{err_str}')
+        raise click.UsageError(f'Check your configfile for the following validation errors:\n{err_str}', ctx=ctx)
+
+    # pre-create line items config
+    try:
+        config.pre_create()
+    except ValueError as e:
+        raise click.UsageError(f'{e}', ctx=ctx)
 
     # create line items
     try:
-        create_line_items()
+        create_line_items(gam)
     except ResourceNotFound as _e:
         raise click.UsageError(f'Not able to find the following resource:\n  - {_e}', ctx=ctx)
 

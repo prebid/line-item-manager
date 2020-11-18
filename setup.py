@@ -18,7 +18,13 @@ requirements = [
     'jinja2==2.11.2',
     'jsonschema==3.2.0',
     'pyyaml==5.3.1',
-    ]
+]
+
+package_data = [
+    'conf.d/*.yml',
+    'conf.d/*.yaml',
+    'conf.d/templates/*.yaml',
+]
 
 setup_requirements = [ ]
 
@@ -53,7 +59,7 @@ setup(
     name='line-item-manager',
     packages=find_packages(include=['line_item_manager', 'line_item_manager.*']),
     package_dir={'line_item_manager': 'line_item_manager'},
-    package_data={'line_item_manager': ['conf.d/*.yml', 'conf.d/*.yaml']},
+    package_data={'line_item_manager': package_data},
     setup_requires=setup_requirements,
     test_suite='tests',
     tests_require=test_requirements,

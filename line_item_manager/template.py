@@ -10,6 +10,10 @@ class Template:
             time=config.start_time.strftime("%m/%d/%Y-%H:%M:%S")
         )
 
+    def package_file(self, name, **kwargs):
+        with open(config.package_filename(name)) as fp:
+            return yaml.safe_load(J2Template(fp.read()).render(**kwargs))
+
     def single_order_params(self):
         p_ = {k:k for k in config.app['prebid']['bidders']['keys']}
         p_.update({'bidder_code': '',

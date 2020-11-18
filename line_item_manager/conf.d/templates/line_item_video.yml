@@ -1,0 +1,65 @@
+orderId: {{ li.order.id }}
+name: {{ li_cfg.name }}
+
+startDateTime: {{ user_cfg.line_item.start_dt }}
+startDateTimeType: {{ user_cfg.line_item.start_dt_type }}
+{% if user_cfg.line_item.end_dt %}
+endDateTime: {{ user_cfg.line_item.end_dt }}
+{% else %}
+unlimitedEndDateTime: {{ user_cfg.line_item.unlimited_end_dt }}
+{% endif %}
+
+creativeRotationType: "EVEN"
+
+lineItemType: {{ li_cfg.item_type.upper() }}
+
+costPerUnit:
+  currencyCode: {{ user_cfg.rate.currency }}
+  microAmount: {{ micro_amount }}
+costType: {{ user_cfg.rate.cost_type }}
+
+creativePlaceholders:
+  {% for creative in li.creatives %}
+  - size: {{ creative.size }}
+  {% endfor %}
+environmentType: "VIDEO_PLAYER"
+companionDeliveryOption: "OPTIONAL"
+
+{% if user_cfg.line_item.goal %}
+primaryGoal: {{ user_cfg.line_item.goal }}
+{% endif %}
+
+targeting:
+  inventoryTargeting:
+    targetedAdUnits:
+      {% for ad_unit in li.gam.ad_units %}
+      - {{ ad_unit.id }}
+      {% endfor %}
+    targetedPlacementIds:
+      {% for placement in li.gam.placements %}
+      - {{ placement.id }}
+      {% endfor %}
+    requestPlatformTargeting:
+      targetedRequestPlatforms: "VIDEO_PLAYER"
+    customTargeting:
+       xsi_type: "CustomCriteriaSet"
+       logicalOperator: "AND"
+       children:
+         {% for rule in li.gam.targeting_custom %}
+         - xsi_type: "CustomCriteria"
+           operator: "IS"
+           keyId: {{ rule.key.id }}
+           valueIds:
+             {% for value in rule['values'] %}
+             - {{ value.id }}
+             {% endfor %}
+         {% endfor %}
+         - xsi_type: "CustomCriteria"
+           operator: "IS"
+           keyId: {{ li.targeting_key.key.id }}
+           valueIds:
+             - {{ li.targeting_key.names[cpm].id }}
+
+
+
+

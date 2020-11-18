@@ -63,13 +63,13 @@ properties:
     properties:
       name:
         type: "string"
-      priority_type:
+      item_type:
         enum:
           - "price_priority"
           - "standard"
     required:
       - "name"
-      - "priority_type"
+      - "item_type"
   targeting:
     type: "object"
     properties:
@@ -100,8 +100,7 @@ properties:
       cpm_buckets:
         $ref: "#/definitions/cpmBucketArray"
       vcpm:
-        type:
-          $ref: "http://json-schema.org/draft-07/schema#/definitions/nonNegativeInteger"
+        $ref: "http://json-schema.org/draft-07/schema#/definitions/nonNegativeInteger"
     required:
       - "currency"
       - "cpm_buckets"

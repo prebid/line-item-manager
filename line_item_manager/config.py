@@ -2,10 +2,13 @@ import csv
 from datetime import datetime
 import logging
 import pkg_resources
+import pytz
 from urllib import request
 import yaml
 
 from googleads import ad_manager
+
+from .utils import date_from_string
 
 logging.basicConfig()
 
@@ -82,9 +85,12 @@ class Config:
         with open(filename) as fp:
             return yaml.safe_load(fp)
 
-    def load_package_file(self, filename):
-        return self.load_file(pkg_resources.resource_filename('line_item_manager',
-                                                              f'conf.d/{filename}'))
+    def package_filename(self, name):
+        return pkg_resources.resource_filename('line_item_manager', f'conf.d/{name}')
+
+    def load_package_file(self, name):
+        return self.load_file(self.package_filename(name))
+
     def bidder_data(self):
         if self._bidder_data is None:
             reader = csv.DictReader([l.decode('utf-8') for l in request.urlopen(self.app['prebid']['bidders']['data']).readlines()])
@@ -121,5 +127,43 @@ class Config:
         if self.cli['single_order']:
             return _map.get(bidder_code, prefix)
         return _map.get(bidder_code, self.fmt_bidder_key(prefix, bidder_code))
+
+    def pre_create(self):
+        li_ = self.user['line_item']
+        is_standard = li_['item_type'].upper() == "STANDARD"
+        end_str = li_.get('end_datetime')
+        start_str = li_.get('start_datetime')
+        fmt = self.app['line_item_manager']['date_fmt']
+        vcpm = self.user['rate'].get('vcpm')
+
+        try:
+            tz_str = li_.get('timezone', self.app['line_item_manager']['timezone'])
+            tz = pytz.timezone(tz_str)
+        except pytz.exceptions.UnknownTimeZoneError as e:
+            raise ValueError(f'Unknown Time Zone, {e}')
+
+        if vcpm and not is_standard:
+            raise ValueError("Specifying 'vcpm' requires using line item type 'standard'")
+
+        if is_standard and not end_str:
+            raise ValueError("No end date specified when using line item type 'standard'")
+
+        li_.update(dict(
+            start_dt=date_from_string(start_str, fmt, tz_str) if start_str else "IMMEDIATELY",
+            start_dt_type="USE_START_DATE_TIME" if start_str else "IMMEDIATELY",
+            end_dt=date_from_string(end_str, fmt, tz_str),
+            unlimited_end_dt=not end_str,
+        ))
+
+        if vcpm:
+            li_.update(dict(goal=dict(
+                goalType="LIFETIME",
+                unitType="VIEWABLE_IMPRESSIONS",
+                units=vcpm,
+            )))
+
+        self.user['rate'].update(dict(
+            cost_type="VCPM" if vcpm else "CPM"
+        ))
 
 config = Config()
