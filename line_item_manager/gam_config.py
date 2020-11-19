@@ -6,9 +6,17 @@ from .operations import Advertiser, AdUnit, Placement, TargetingKey, TargetingVa
      CreativeBanner, CreativeVideo, Order, CurrentNetwork, CurrentUser, LineItem, LICA
 from .template import Template
 
-def target(key, values):
+def target(key, names, match_type='EXACT'):
     tgt_key = TargetingKey(name=key).fetchone(create=True)
-    tgt_values = TargetingValues(key_id=tgt_key['id']).create(names=values)
+    recs = []
+    for name in names:
+        recs.append(dict(
+            customTargetingKeyId=tgt_key['id'],
+            name=name,
+            displayName=name,
+            matchType=match_type,
+        ))
+    tgt_values = TargetingValues(key_id=tgt_key['id']).fetch(create=True, recs=recs, validate=True)
     return dict(
         key=tgt_key,
         values=tgt_values,

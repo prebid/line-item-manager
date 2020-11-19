@@ -19,34 +19,27 @@ class AppOperations(GAMOperations):
     def dry_run(self):
         return config.cli['dry_run']
 
-    def id_dry_run(self):
-        if 'name' in self.params:
-            return self.params['name']
-        return ''
+    def dry_run_id(self, rec):
+        return rec.get('name', 'Record')
 
-    def create_dry_run(self):
-        rec = copy.deepcopy(self.create_params)
-        rec['id'] = f"DRY-{self.id_dry_run()}-{uuid.uuid4().hex[:8]}"
-        return [rec]
+    def dry_run_recs(self, recs):
+        out = copy.deepcopy(recs)
+        _ = [r_.update({'id': f"DryID-{uuid.uuid4().hex[:8]}-{self.dry_run_id(r_)}"}) for r_ in out]
+        return out
 
-class CreateMixIn:
-    def create_dry_run(self):
-        return self._create_dry_run
-
+class CreateRecsMixIn:
     def check(self, rec):
         return rec['name']
 
-    def create(self, recs):
-        if self.dry_run:
-            if 'name' in recs[0]:
-                _ = [rec.update({'id': f"{rec['name']}-{_i}"}) for _i, rec in enumerate(recs)]
-            self._create_dry_run = recs
-        results = super().create(recs)
-        expected = {self.check(_r) for _r in recs}
-        created = {self.check(_r) for _r in results}
-        missing = [_n for _n in expected if _n not in created]
+    def validate(self, recs, results):
+        observed = {self.check(r_) for r_ in results}
+        missing = [self.check(r_) for r_ in recs if self.check(r_) not in observed]
         if missing:
             raise ValueError(f'Following items were not found after creation: \'{missing}\'')
+
+    def create(self, recs):
+        results = super().create(recs)
+        self.validate(recs, results)
         return results
 
 class AdUnit(AppOperations):
@@ -68,8 +61,8 @@ class Creative(AppOperations):
     create_method = 'createCreatives'
     query_fields = ('id', 'name', 'advertiserId', 'width', 'height')
 
-    def id_dry_run(self):
-        return f"{self.params['name']}-{self.params['height']}X{self.params['width']}"
+    def dry_run_id(self, rec):
+        return f"{rec['name']}-{rec['size']['height']}X{rec['size']['width']}"
 
     def __init__(self, *args, **kwargs):
         if 'size' in kwargs:
@@ -102,14 +95,14 @@ class CurrentUser(AppOperations):
     service = 'UserService'
     method = 'getCurrentUser'
 
-class LICA(CreateMixIn, AppOperations):
+class LICA(CreateRecsMixIn, AppOperations):
     service = 'LineItemCreativeAssociationService'
     create_method = 'createLineItemCreativeAssociations'
 
     def check(self, rec):
         return (rec['lineItemId'], rec['creativeId'])
 
-class LineItem(CreateMixIn, AppOperations):
+class LineItem(CreateRecsMixIn, AppOperations):
     service = 'LineItemService'
     method = 'getLineItemsByStatement'
     create_method = 'createLineItems'
@@ -137,7 +130,7 @@ class TargetingKey(AppOperations):
         kwargs['type'] = _type
         super().__init__(*args, **kwargs)
 
-class TargetingValues(AppOperations):
+class TargetingValues(CreateRecsMixIn, AppOperations):
     service = 'CustomTargetingService'
     method = 'getCustomTargetingValuesByStatement'
     create_method = 'createCustomTargetingValues'
@@ -145,29 +138,3 @@ class TargetingValues(AppOperations):
     def __init__(self, *args, key_id=None, **kwargs):
         kwargs['customTargetingKeyId'] = key_id
         super().__init__(*args, **kwargs)
-
-    def create_dry_run(self):
-        return self._create_dry_run
-
-    def values(self, name, matchType='EXACT'):
-        return dict(
-            customTargetingKeyId=self.params['customTargetingKeyId'],
-            name=name,
-            displayName=name,
-            matchType=matchType
-        )
-
-    def create(self, names=None):
-        results = self.fetch()
-        cur_names = {_r['name'] for _r in results}
-        recs = [self.values(_n) for _n in names if _n not in cur_names]
-        if recs:
-            if self.dry_run:
-                _ = [rec.update({'id': f"{rec['name']}-{_i}"}) for _i, rec in enumerate(recs)]
-                self._create_dry_run = recs
-            results += super().create(recs)
-        cur_names = {_r['name'] for _r in results}
-        missing = [_n for _n in names if _n not in cur_names]
-        if missing:
-            raise ValueError(f'Following names were not found after creation: \'{missing}\'')
-        return results

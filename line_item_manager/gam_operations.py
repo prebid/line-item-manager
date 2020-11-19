@@ -27,13 +27,18 @@ class GAMOperations:
         if self.create_fields:
             self.create_params = {k:kwargs[k] for k in self.create_fields if k in kwargs}
 
-    def fetch(self, one=False, create=False, validate=False):
-        result = self._results(one=one)
-        if not result and create:
-            result = self._create()[0]
+    def fetch(self, one=False, create=False, recs=None, validate=False):
+        results = self._results(one=one)
+        if create and recs:
+            current = {self.check(r_) for r_ in results}
+            new_recs = [r_ for r_ in recs if self.check(r_) not in current]
+            if new_recs:
+                results += self._create(new_recs)
+        elif create and not results:
+            results = self._create()[0]
         if validate:
-            self.validate(result)
-        return result
+            self.validate(recs, results)
+        return results
 
     def _results(self, one=False):
         log.debug(_QUERY_LOG_LINE, self.service, self.method, self.query_params)
@@ -54,16 +59,14 @@ class GAMOperations:
         log.debug(_RESULTS_LOG_LINE, self.service, self.method, results)
         return results
 
-    def _create(self):
-        return self.create([self.create_params])
+    def _create(self, recs=None):
+        return self.create(recs if recs else [self.create_params])
 
     def create(self, atts):
         log.info(_CREATE_LOG_LINE, type(self).__name__, atts)
-        return self.create_dry_run() if self.dry_run else getattr(self.svc(), self.create_method)(atts)
-
-    def validate(self, result):
-        if not result:
-            raise ResourceNotFound('Service: {self.service_name}, Method: {self.method}, Atts: {self.key_words}')
+        if self.dry_run:
+            return self.dry_run_recs(atts)
+        return getattr(self.svc(), self.create_method)(atts)
 
     def fetchone(self, **kwargs):
         return self.fetch(one=True, **kwargs)
@@ -79,8 +82,14 @@ class GAMOperations:
         _ = [_stm.WithBindVariable(k, v) for k, v in self.query_params.items()]
         return _stm
 
+    def validate(self, recs, results):
+        raise NotImplementedError
+
+    def check(self, rec):
+        raise NotImplementedError
+
     @property
-    def create_dry_run(self):
+    def dry_run_recs(self):
         raise NotImplementedError
 
     @property
