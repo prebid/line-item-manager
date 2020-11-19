@@ -1,8 +1,8 @@
-from .config import config
-
 import copy
 from jinja2 import Template as J2Template
 import yaml
+
+from .config import config
 
 class Template:
     def __init__(self):

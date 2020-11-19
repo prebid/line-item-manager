@@ -1,10 +1,9 @@
-from datetime import datetime
-from typing import Dict, List
+from typing import Dict
 
 from .config import config
 from .exceptions import ResourceNotFound
 from .operations import Advertiser, AdUnit, Placement, TargetingKey, TargetingValues, \
-     CreativeBanner, CreativeVideo, Order, CurrentNetwork, CurrentUser, LineItem
+     CreativeBanner, CreativeVideo, Order, CurrentNetwork, CurrentUser, LineItem, LICA
 from .template import Template
 
 def target(key, values):
@@ -79,6 +78,7 @@ class GAMLineItems:
     _creatives = None
     _order = None
     _targeting_key = None
+    _line_items = None
 
     def __init__(self, gam: GAMConfig, media_type, bidder_code, cpms):
         self.gam = gam
@@ -91,19 +91,30 @@ class GAMLineItems:
             media_type=media_type,
         )
 
+    @property
+    def line_items(self):
+        if self._line_items is None:
+            recs = []
+            for cpm in self.cpms:
+                li_cfg = self.template.render('line_item', cpm=cpm, **self.atts)
+                params = dict(
+                    microAmount=int(float(cpm) * \
+                                    config.app['googleads']['line_items']['micro_cent_factor']),
+                    cpm=cpm,
+                    li=self,
+                    li_cfg=li_cfg,
+                    user_cfg=config.user,
+                )
+                recs.append(self.template.package_file('templates/line_item_video.yml', **params))
+            self._line_items = LineItem().create(recs)
+        return self._line_items
+
     def create(self):
         recs = []
-        for cpm in self.cpms:
-            li_cfg = self.template.render('line_item', cpm=cpm, **self.atts)
-            params = dict(
-                microAmount=int(float(cpm) * config.app['googleads']['line_items']['micro_cent_factor']),
-                cpm=cpm,
-                li=self,
-                li_cfg=li_cfg,
-                user_cfg=config.user,
-            )
-            recs.append(self.template.package_file('templates/line_item_video.yml', **params))
-        LineItem().create(recs)
+        for line_item in self.line_items:
+            for creative in self.creatives:
+                recs.append(dict(lineItemId=line_item['id'], creativeId=creative['id']))
+        return LICA().create(recs)
 
     @property
     def creatives(self):

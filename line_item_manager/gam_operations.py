@@ -1,5 +1,5 @@
 from googleads import ad_manager
-from typing import Dict, List, Tuple
+from typing import Tuple
 
 from .config import config
 from .exceptions import ResourceNotFound
@@ -12,7 +12,6 @@ _FETCH_ONE_LOG_LINE = 'Service: "%s" Method: "%s" Fetch One: "%s"'
 _RESULTS_LOG_LINE = 'Service: "%s" Method: "%s" Results: "%s"'
 
 class GAMOperations:
-    create_dry_run: List[Dict] = [{}]
     service = ''
     method = ''
     create_method = ''
@@ -60,7 +59,7 @@ class GAMOperations:
 
     def create(self, atts):
         log.info(_CREATE_LOG_LINE, type(self).__name__, atts)
-        return self.create_dry_run if self.dry_run else getattr(self.svc(), self.create_method)(atts)
+        return self.create_dry_run() if self.dry_run else getattr(self.svc(), self.create_method)(atts)
 
     def validate(self, result):
         if not result:
@@ -79,6 +78,10 @@ class GAMOperations:
         _stm.Where(' AND '.join([f"{k} = :{k}" for k in self.query_params]))
         _ = [_stm.WithBindVariable(k, v) for k, v in self.query_params.items()]
         return _stm
+
+    @property
+    def create_dry_run(self):
+        raise NotImplementedError
 
     @property
     def client(self):
