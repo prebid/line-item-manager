@@ -26,10 +26,12 @@ class Template:
                    'bidder_name': config.bidder_data()[code]['bidder-name']})
         return p_
 
-    def render(self, objname, bidder_code=None, media_type=None, cpm=None, cpm_min=None, cpm_max=None):
+    def render(self, objname, bidder_code=None, media_type=None, cpm=None,
+               cpm_min=None, cpm_max=None):
         params = copy.deepcopy(self._params)
         if bidder_code:
-            params.update(self.single_order_params() if config.cli['single_order'] else self.bidder_params(bidder_code))
+            params.update(self.single_order_params() if config.cli['single_order'] else \
+                          self.bidder_params(bidder_code))
         if media_type:
             params['media_type'] = media_type
         if cpm:

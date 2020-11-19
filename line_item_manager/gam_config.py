@@ -49,7 +49,8 @@ class GAMConfig:
     @property
     def advertiser(self):
         if not self._advertiser:
-            self._advertiser = Advertiser(name=config.user['advertiser']['name']).fetchone(create=True)
+            self._advertiser = \
+              Advertiser(name=config.user['advertiser']['name']).fetchone(create=True)
         return self._advertiser
 
     @property
@@ -114,7 +115,7 @@ class GAMLineItems:
                     user_cfg=config.user,
                 )
                 recs.append(self.template.package_file('templates/line_item_video.yml', **params))
-            self._line_items = LineItem().create(recs)
+            self._line_items = LineItem().create(recs, validate=True)
         return self._line_items
 
     def create(self):
@@ -122,7 +123,7 @@ class GAMLineItems:
         for line_item in self.line_items:
             for creative in self.creatives:
                 recs.append(dict(lineItemId=line_item['id'], creativeId=creative['id']))
-        return LICA().create(recs)
+        return LICA().create(recs, validate=True)
 
     @property
     def creatives(self):
@@ -154,7 +155,8 @@ class GAMLineItems:
     @property
     def order(self):
         if self._order is None:
-            cfg = self.template.render('order', cpm_min=self.cpms[0], cpm_max=self.cpms[-1], **self.atts)
+            cfg = self.template.render('order', cpm_min=self.cpms[0],
+                                       cpm_max=self.cpms[-1], **self.atts)
             self._order = Order(name=cfg['name'], advertiserId=self.gam.advertiser['id'],
                                 traffickerId=self.gam.user['id']).fetchone(create=True)
         return self._order

@@ -4,8 +4,6 @@ import uuid
 from .config import config
 from .gam_operations import GAMOperations
 
-log = config.getLogger('operations')
-
 class AppOperations(GAMOperations):
     @property
     def client(self):
@@ -27,7 +25,6 @@ class AppOperations(GAMOperations):
         _ = [r_.update({'id': f"DryID-{uuid.uuid4().hex[:8]}-{self.dry_run_id(r_)}"}) for r_ in out]
         return out
 
-class CreateRecsMixIn:
     def check(self, rec):
         return rec['name']
 
@@ -36,11 +33,6 @@ class CreateRecsMixIn:
         missing = [self.check(r_) for r_ in recs if self.check(r_) not in observed]
         if missing:
             raise ValueError(f'Following items were not found after creation: \'{missing}\'')
-
-    def create(self, recs):
-        results = super().create(recs)
-        self.validate(recs, results)
-        return results
 
 class AdUnit(AppOperations):
     service = 'InventoryService'
@@ -71,9 +63,11 @@ class Creative(AppOperations):
         super().__init__(*args, **kwargs)
 
 class CreativeVideo(Creative):
-    create_fields = ('xsi_type', 'name', 'advertiserId', 'size', 'vastXmlUrl', 'vastRedirectType', 'duration')
+    create_fields = ('xsi_type', 'name', 'advertiserId', 'size', 'vastXmlUrl',
+                     'vastRedirectType', 'duration')
 
-    def __init__(self, *args, xsi_type='VastRedirectCreative', vastRedirectType='LINEAR', duration=60, **kwargs):
+    def __init__(self, *args, xsi_type='VastRedirectCreative', vastRedirectType='LINEAR',
+                 duration=60, **kwargs):
         kwargs['xsi_type'] = xsi_type
         kwargs['vastRedirectType'] = vastRedirectType
         kwargs['duration'] = duration
@@ -95,14 +89,14 @@ class CurrentUser(AppOperations):
     service = 'UserService'
     method = 'getCurrentUser'
 
-class LICA(CreateRecsMixIn, AppOperations):
+class LICA(AppOperations):
     service = 'LineItemCreativeAssociationService'
     create_method = 'createLineItemCreativeAssociations'
 
     def check(self, rec):
         return (rec['lineItemId'], rec['creativeId'])
 
-class LineItem(CreateRecsMixIn, AppOperations):
+class LineItem(AppOperations):
     service = 'LineItemService'
     method = 'getLineItemsByStatement'
     create_method = 'createLineItems'
@@ -111,9 +105,6 @@ class Order(AppOperations):
     service = "OrderService"
     method = 'getOrdersByStatement'
     create_method = 'createOrders'
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
 
 class Placement(AppOperations):
     service = 'PlacementService'
@@ -130,7 +121,7 @@ class TargetingKey(AppOperations):
         kwargs['type'] = _type
         super().__init__(*args, **kwargs)
 
-class TargetingValues(CreateRecsMixIn, AppOperations):
+class TargetingValues(AppOperations):
     service = 'CustomTargetingService'
     method = 'getCustomTargetingValuesByStatement'
     create_method = 'createCustomTargetingValues'

@@ -41,6 +41,9 @@ class Config:
     def user(self):
         return self._user
 
+    def set_user_configfile(self, filename):
+        self._user = self.load_file(filename)
+
     @property
     def start_time(self):
         return self._start_time
@@ -53,10 +56,6 @@ class Config:
 
     def quiet(self):
         self._logger.setLevel(logging.WARNING)
-
-    @user.setter
-    def user_configfile(self, filename):
-        self._user = self.load_file(filename)
 
     @property
     def network_code(self):
@@ -93,7 +92,8 @@ class Config:
 
     def bidder_data(self):
         if self._bidder_data is None:
-            reader = csv.DictReader([l.decode('utf-8') for l in request.urlopen(self.app['prebid']['bidders']['data']).readlines()])
+            reader = csv.DictReader([l.decode('utf-8') for l in \
+                request.urlopen(self.app['prebid']['bidders']['data']).readlines()])
             self._bidder_data = {row['bidder-code']:row for row in reader}
         return self._bidder_data
 
@@ -138,7 +138,7 @@ class Config:
 
         try:
             tz_str = li_.get('timezone', self.app['line_item_manager']['timezone'])
-            tz = pytz.timezone(tz_str)
+            _ = pytz.timezone(tz_str)
         except pytz.exceptions.UnknownTimeZoneError as e:
             raise ValueError(f'Unknown Time Zone, {e}')
 

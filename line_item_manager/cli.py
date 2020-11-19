@@ -44,7 +44,7 @@ def create(ctx, configfile, **kwargs):
     gam = GAMConfig()
 
     try:
-        config.user_configfile = configfile
+        config.set_user_configfile(configfile)
     except yaml.reader.ReaderError as e:
         raise click.UsageError(f'Check your configfile. {e}', ctx=ctx)
 
@@ -75,14 +75,14 @@ def create(ctx, configfile, **kwargs):
     except ValueError as e:
         raise click.UsageError(f'Check your private key file. {e.args[0]}', ctx=ctx)
     except Exception:
-        raise click.UsageError(f'Check your private key file. Not able to successfully access your service account', ctx=ctx)
+        raise click.UsageError('Check your private key file. Not able to successfully access your service account', ctx=ctx)
 
     # validate GAM network access
     try:
         if not gam.network['displayName'] == config.network_name:
             raise click.UsageError(f"Network name found \'{gam.network['displayName']}\' does not match provided \'{config.network_name}\'", ctx=ctx)
     except GoogleAdsServerFault:
-        raise click.UsageError(f'Check your network code and permissions. Not able to successfully access your service account', ctx=ctx)
+        raise click.UsageError('Check your network code and permissions. Not able to successfully access your service account', ctx=ctx)
 
     # validate user configuration
     user_cfg = Validator(config.schema, config.user)
