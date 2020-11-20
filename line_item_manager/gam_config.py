@@ -4,7 +4,7 @@ from .config import config
 from .exceptions import ResourceNotFound
 from .operations import Advertiser, AdUnit, Placement, TargetingKey, TargetingValues, \
      CreativeBanner, CreativeVideo, Order, CurrentNetwork, CurrentUser, LineItem, LICA
-from .template import Template
+from .template import template
 
 def target(key, names, match_type='EXACT'):
     tgt_key = TargetingKey(name=key).fetchone(create=True)
@@ -23,6 +23,9 @@ def target(key, names, match_type='EXACT'):
         names={v['name']:v for v in tgt_values}
     )
 
+def micro_amount(cpm):
+    return int(float(cpm) * config.app['googleads']['line_items']['micro_cent_factor'])
+
 class GAMConfig:
 
     _advertiser: Dict = {}
@@ -31,9 +34,6 @@ class GAMConfig:
     _placements = None
     _targeting_custom = None
     _user: Dict = {}
-
-    def __init__(self):
-        self.template = Template()
 
     @property
     def ad_units(self):
@@ -94,7 +94,6 @@ class GAMLineItems:
         self.media_type = media_type
         self.bidder_code = bidder_code
         self.cpms = cpms
-        self.template = Template()
         self.atts = dict(
             bidder_code=bidder_code,
             media_type=media_type,
@@ -105,16 +104,15 @@ class GAMLineItems:
         if self._line_items is None:
             recs = []
             for cpm in self.cpms:
-                li_cfg = self.template.render('line_item', cpm=cpm, **self.atts)
+                li_cfg = template.render('line_item', cpm=cpm, **self.atts)
                 params = dict(
-                    microAmount=int(float(cpm) * \
-                                    config.app['googleads']['line_items']['micro_cent_factor']),
+                    microAmount=micro_amount(cpm),
                     cpm=cpm,
                     li=self,
                     li_cfg=li_cfg,
                     user_cfg=config.user,
                 )
-                recs.append(self.template.package_file('templates/line_item_video.yml', **params))
+                recs.append(template.package_file('line_item_template.yml', **params))
             self._line_items = LineItem().create(recs, validate=True)
         return self._line_items
 
@@ -128,7 +126,7 @@ class GAMLineItems:
     @property
     def creatives(self):
         if self._creatives is None:
-            cfg = self.template.render('creative', **self.atts)
+            cfg = template.render('creative', **self.atts)
             _method = getattr(self, f'creative_{self.media_type}')
             self._creatives = [_method(cfg, size) for size in cfg[self.media_type]['sizes']]
         return self._creatives
@@ -155,8 +153,7 @@ class GAMLineItems:
     @property
     def order(self):
         if self._order is None:
-            cfg = self.template.render('order', cpm_min=self.cpms[0],
-                                       cpm_max=self.cpms[-1], **self.atts)
+            cfg = template.render('order', cpm_min=self.cpms[0], cpm_max=self.cpms[-1], **self.atts)
             self._order = Order(name=cfg['name'], advertiserId=self.gam.advertiser['id'],
                                 traffickerId=self.gam.user['id']).fetchone(create=True)
         return self._order

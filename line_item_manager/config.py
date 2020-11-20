@@ -24,6 +24,11 @@ class Config:
         self._start_time = datetime.now()
         self._logger = logging.getLogger(__package__)
         self._logger.setLevel(logging.INFO)
+        self._dry_id = 8000000
+
+    def new_dry_id(self):
+        self._dry_id += 1
+        return self._dry_id
 
     @property
     def app(self):
@@ -155,12 +160,16 @@ class Config:
             unlimited_end_dt=not end_str,
         ))
 
+        li_.update({'goal': dict(
+            goalType="NONE",
+        )})
+
         if vcpm:
-            li_.update(dict(goal=dict(
+            li_.update({'goal': dict(
                 goalType="LIFETIME",
                 unitType="VIEWABLE_IMPRESSIONS",
                 units=vcpm,
-            )))
+            )})
 
         self.user['rate'].update(dict(
             cost_type="VCPM" if vcpm else "CPM"

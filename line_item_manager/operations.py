@@ -5,6 +5,7 @@ from .config import config
 from .gam_operations import GAMOperations
 
 class AppOperations(GAMOperations):
+
     @property
     def client(self):
         return config.client
@@ -17,12 +18,9 @@ class AppOperations(GAMOperations):
     def dry_run(self):
         return config.cli['dry_run']
 
-    def dry_run_id(self, rec):
-        return rec.get('name', 'Record')
-
     def dry_run_recs(self, recs):
         out = copy.deepcopy(recs)
-        _ = [r_.update({'id': f"DryID-{uuid.uuid4().hex[:8]}-{self.dry_run_id(r_)}"}) for r_ in out]
+        _ = [r_.update(dict(id=config.new_dry_id())) for r_ in out]
         return out
 
     def check(self, rec):
@@ -53,8 +51,8 @@ class Creative(AppOperations):
     create_method = 'createCreatives'
     query_fields = ('id', 'name', 'advertiserId', 'width', 'height')
 
-    def dry_run_id(self, rec):
-        return f"{rec['name']}-{rec['size']['height']}X{rec['size']['width']}"
+    # def dry_run_id(self, rec):
+    #     return f"{rec['name']}-{rec['size']['height']}X{rec['size']['width']}"
 
     def __init__(self, *args, **kwargs):
         if 'size' in kwargs:
@@ -100,6 +98,7 @@ class LineItem(AppOperations):
     service = 'LineItemService'
     method = 'getLineItemsByStatement'
     create_method = 'createLineItems'
+    log_fields = ('name', 'orderId', 'environmentType')
 
 class Order(AppOperations):
     service = "OrderService"

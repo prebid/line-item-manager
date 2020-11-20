@@ -42,3 +42,5 @@ class Template:
             params['cpm_max'] = cpm_max
         objstr = J2Template(yaml.safe_dump(config.user[objname])).render(**params)
         return yaml.safe_load(objstr)
+
+template = Template()

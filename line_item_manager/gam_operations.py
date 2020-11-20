@@ -16,6 +16,7 @@ class GAMOperations:
     create_method = ''
     query_fields: Tuple = ()
     create_fields: Tuple = ()
+    log_fields: Tuple = ()
 
     def __init__(self, *args, **kwargs):
         self.params = kwargs
@@ -25,7 +26,7 @@ class GAMOperations:
           if self.create_fields else self.params
 
     def create(self, atts, validate=False):
-        log.info(_CREATE_LOG_LINE, type(self).__name__, atts)
+        log.info(_CREATE_LOG_LINE, type(self).__name__, self.log_recs(atts))
         results = self.dry_run_recs(atts) if self.dry_run else \
           getattr(self.svc(), self.create_method)(atts)
         if validate:
@@ -77,6 +78,11 @@ class GAMOperations:
 
     def svc(self):
         return self.client.GetService(self.service, version=self.version)
+
+    def log_recs(self, recs):
+        if self.log_fields:
+            return [{f_:r_[f_] for f_ in self.log_fields if f_ in r_} for r_ in recs]
+        return recs
 
     def validate(self, recs, results):
         raise NotImplementedError
