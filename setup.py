@@ -23,7 +23,6 @@ requirements = [
 package_data = [
     'conf.d/*.yml',
     'conf.d/*.yaml',
-    'conf.d/templates/*.yaml',
 ]
 
 setup_requirements = [ ]

@@ -4,7 +4,7 @@ from .config import config
 from .exceptions import ResourceNotFound
 from .operations import Advertiser, AdUnit, Placement, TargetingKey, TargetingValues, \
      CreativeBanner, CreativeVideo, Order, CurrentNetwork, CurrentUser, LineItem, LICA
-from .template import template
+from .template import render_cfg, render_src
 
 def target(key, names, match_type='EXACT'):
     tgt_key = TargetingKey(name=key).fetchone(create=True)
@@ -99,23 +99,6 @@ class GAMLineItems:
             media_type=media_type,
         )
 
-    @property
-    def line_items(self):
-        if self._line_items is None:
-            recs = []
-            for cpm in self.cpms:
-                li_cfg = template.render('line_item', cpm=cpm, **self.atts)
-                params = dict(
-                    microAmount=micro_amount(cpm),
-                    cpm=cpm,
-                    li=self,
-                    li_cfg=li_cfg,
-                    user_cfg=config.user,
-                )
-                recs.append(template.package_file('line_item_template.yml', **params))
-            self._line_items = LineItem().create(recs, validate=True)
-        return self._line_items
-
     def create(self):
         recs = []
         for line_item in self.line_items:
@@ -126,7 +109,7 @@ class GAMLineItems:
     @property
     def creatives(self):
         if self._creatives is None:
-            cfg = template.render('creative', **self.atts)
+            cfg = render_cfg('creative', **self.atts)
             _method = getattr(self, f'creative_{self.media_type}')
             self._creatives = [_method(cfg, size) for size in cfg[self.media_type]['sizes']]
         return self._creatives
@@ -151,9 +134,27 @@ class GAMLineItems:
         return CreativeVideo(**params).fetchone(create=True)
 
     @property
+    def line_items(self):
+        if self._line_items is None:
+            recs = []
+            src = config.read_package_file('line_item_template.yml')
+            for cpm in self.cpms:
+                li_cfg = render_cfg('line_item', cpm=cpm, **self.atts)
+                params = dict(
+                    microAmount=micro_amount(cpm),
+                    cpm=cpm,
+                    li=self,
+                    li_cfg=li_cfg,
+                    user_cfg=config.user,
+                )
+                recs.append(render_src(src, **params))
+            self._line_items = LineItem().create(recs, validate=True)
+        return self._line_items
+
+    @property
     def order(self):
         if self._order is None:
-            cfg = template.render('order', cpm_min=self.cpms[0], cpm_max=self.cpms[-1], **self.atts)
+            cfg = render_cfg('order', cpm_min=self.cpms[0], cpm_max=self.cpms[-1], **self.atts)
             self._order = Order(name=cfg['name'], advertiserId=self.gam.advertiser['id'],
                                 traffickerId=self.gam.user['id']).fetchone(create=True)
         return self._order

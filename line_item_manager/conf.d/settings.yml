@@ -4,6 +4,8 @@ line_item_manager:
   single_order:
     bidder_code: "hb"
     bidder_name: "Top Bid"
+  test_run:
+    line_item_limit: 2
 
 googleads:
   version: 'v202011'

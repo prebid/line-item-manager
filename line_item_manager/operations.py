@@ -20,7 +20,7 @@ class AppOperations(GAMOperations):
 
     def dry_run_recs(self, recs):
         out = copy.deepcopy(recs)
-        _ = [r_.update(dict(id=config.new_dry_id())) for r_ in out]
+        _ = [r_.update(dict(id=helper.new_dry_id())) for r_ in out]
         return out
 
     def check(self, rec):
@@ -50,9 +50,6 @@ class Creative(AppOperations):
     method = 'getCreativesByStatement'
     create_method = 'createCreatives'
     query_fields = ('id', 'name', 'advertiserId', 'width', 'height')
-
-    # def dry_run_id(self, rec):
-    #     return f"{rec['name']}-{rec['size']['height']}X{rec['size']['width']}"
 
     def __init__(self, *args, **kwargs):
         if 'size' in kwargs:
@@ -128,3 +125,13 @@ class TargetingValues(AppOperations):
     def __init__(self, *args, key_id=None, **kwargs):
         kwargs['customTargetingKeyId'] = key_id
         super().__init__(*args, **kwargs)
+
+class Helper:
+    dry_id = 8000000
+
+    def new_dry_id(self):
+        self.dry_id += 1
+        return self.dry_id
+
+helper = Helper()
+

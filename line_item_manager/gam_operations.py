@@ -84,16 +84,6 @@ class GAMOperations:
             return [{f_:r_[f_] for f_ in self.log_fields if f_ in r_} for r_ in recs]
         return recs
 
-    def validate(self, recs, results):
-        raise NotImplementedError
-
-    def check(self, rec):
-        raise NotImplementedError
-
-    @property
-    def dry_run_recs(self):
-        raise NotImplementedError
-
     @property
     def client(self):
         raise NotImplementedError
@@ -105,3 +95,14 @@ class GAMOperations:
     @property
     def dry_run(self):
         raise NotImplementedError
+
+    @property
+    def dry_run_recs(self):
+        raise NotImplementedError
+
+    def check(self, rec):
+        raise NotImplementedError
+
+    def validate(self, recs, results):
+        raise NotImplementedError
+

@@ -24,11 +24,6 @@ class Config:
         self._start_time = datetime.now()
         self._logger = logging.getLogger(__package__)
         self._logger.setLevel(logging.INFO)
-        self._dry_id = 8000000
-
-    def new_dry_id(self):
-        self._dry_id += 1
-        return self._dry_id
 
     @property
     def app(self):
@@ -95,6 +90,10 @@ class Config:
     def load_package_file(self, name):
         return self.load_file(self.package_filename(name))
 
+    def read_package_file(self, name):
+        with open(self.package_filename(name)) as fp:
+            return fp.read()
+
     def bidder_data(self):
         if self._bidder_data is None:
             reader = csv.DictReader([l.decode('utf-8') for l in \
@@ -118,12 +117,19 @@ class Config:
             for bucket in self.user['rate']['cpm_buckets']:
                 values.update(self.bucket_cpm_values(bucket))
             self._cpm_names = ['%.2f' % v_ for v_ in sorted(values)]
+        if self.cli['test_run']:
+            return self._cpm_names[:self.app['line_item_manager']['test_run']['line_item_limit']]
         return self._cpm_names
 
     def custom_targeting_key_values(self):
         return [(_c['name'], set(_c['values'])) for _c in self.user['targeting'].get('custom', [])]
 
+    def bidder_params(self, code):
+        return {k:self.fmt_bidder_key(k, code) for k in self.app['prebid']['bidders']['keys']}
+
     def fmt_bidder_key(self, prefix, code):
+        if not code:
+            return prefix
         return f'{prefix}_{code}'[:self.app['prebid']['bidders']['key_char_limit']]
 
     def targeting_key(self, bidder_code):
@@ -140,6 +146,9 @@ class Config:
         start_str = li_.get('start_datetime')
         fmt = self.app['line_item_manager']['date_fmt']
         vcpm = self.user['rate'].get('vcpm')
+
+        for i_ in ('line_item', 'order'):
+            self.user[i_]['name'] = ''.join(['{{ run_mode }}', self.user[i_]['name']])
 
         try:
             tz_str = li_.get('timezone', self.app['line_item_manager']['timezone'])
