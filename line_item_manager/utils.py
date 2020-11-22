@@ -1,5 +1,19 @@
 from datetime import datetime
+from pprint import pformat
 import pytz
+
+
+def date_from_string(dtstr, fmt, timezone):
+    if not dtstr:
+        return None
+    return datetime.strptime(dtstr, fmt).replace(tzinfo=pytz.timezone(timezone))
+
+def format_long_list(vals, cnt=3):
+    fmt = pformat(vals)
+    out = fmt.split('\n')
+    if len(out) <= (2 * cnt):
+        return fmt
+    return ''.join(out[:3]) + ' ...,' + ''.join(out[-3:])
 
 def ichunk(iterable, n):
     """Yield n sized chunks, with tail chunk truncated.
@@ -24,8 +38,3 @@ def ichunk(iterable, n):
                     yield out
                 return
         yield out
-
-def date_from_string(dtstr, fmt, timezone):
-    if not dtstr:
-        return None
-    return datetime.strptime(dtstr, fmt).replace(tzinfo=pytz.timezone(timezone))

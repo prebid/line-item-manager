@@ -95,7 +95,7 @@ class LineItem(AppOperations):
     service = 'LineItemService'
     method = 'getLineItemsByStatement'
     create_method = 'createLineItems'
-    log_fields = ('name', 'orderId', 'environmentType')
+    # log_fields = ('name', 'orderId', 'environmentType')
 
 class Order(AppOperations):
     service = "OrderService"
@@ -134,4 +134,3 @@ class Helper:
         return self.dry_id
 
 helper = Helper()
-

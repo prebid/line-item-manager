@@ -12,6 +12,9 @@ from .utils import date_from_string
 
 logging.basicConfig()
 
+VERBOSE1 = logging.INFO - 1
+VERBOSE2 = logging.INFO - 2
+
 class Config:
 
     _client = None
@@ -22,8 +25,25 @@ class Config:
     def __init__(self):
         self._app = self.load_package_file('settings.yml')
         self._start_time = datetime.now()
+        self.set_logger()
+
+    def isLoggingEnabled(self, level):
+        return self._logger.getEffectiveLevel() <= level
+
+    def set_logger(self):
         self._logger = logging.getLogger(__package__)
         self._logger.setLevel(logging.INFO)
+        logging.addLevelName(VERBOSE1, 'VERBOSE1')
+        logging.addLevelName(VERBOSE2, 'VERBOSE2')
+
+    def getLogger(self, name):
+        return self._logger.getChild(name.split('.')[-1])
+
+    def set_log_level(self):
+        if config.cli['verbose']:
+            self._logger.setLevel(logging.INFO - len(config.cli['verbose']))
+        if config.cli['quiet']:
+            self._logger.setLevel(logging.WARNING)
 
     @property
     def app(self):
@@ -36,6 +56,7 @@ class Config:
     @cli.setter
     def cli(self, obj):
         self._cli = obj
+        self.set_log_level()
 
     @property
     def user(self):
@@ -47,15 +68,6 @@ class Config:
     @property
     def start_time(self):
         return self._start_time
-
-    def getLogger(self, name):
-        return self._logger.getChild(name.split('.')[-1])
-
-    def verbose(self):
-        self._logger.setLevel(logging.DEBUG)
-
-    def quiet(self):
-        self._logger.setLevel(logging.WARNING)
 
     @property
     def network_code(self):
@@ -93,6 +105,11 @@ class Config:
     def read_package_file(self, name):
         with open(self.package_filename(name)) as fp:
             return fp.read()
+
+    def bidder_name(self, code):
+        if self.cli['single_order']:
+            return self.app['line_item_manager']['single_order']['bidder_name']
+        return self.bidder_data()[code]['bidder-name']
 
     def bidder_data(self):
         if self._bidder_data is None:
@@ -138,6 +155,9 @@ class Config:
         if self.cli['single_order']:
             return _map.get(bidder_code, prefix)
         return _map.get(bidder_code, self.fmt_bidder_key(prefix, bidder_code))
+
+    def micro_amount(self, cpm):
+        return int(float(cpm) * self.app['googleads']['line_items']['micro_cent_factor'])
 
     def pre_create(self):
         li_ = self.user['line_item']

@@ -1,14 +1,15 @@
-from googleads import ad_manager
+from pprint import pformat
 from typing import Tuple
 
-from .config import config
+from googleads import ad_manager
 
-log = config.getLogger('operations')
+from .config import config, VERBOSE2
 
-_CREATE_LOG_LINE = 'Create: "%s" w/ Rec(s): "%s"'
-_QUERY_LOG_LINE = 'Service: "%s" Method: "%s" Params: "%s"'
-_FETCH_ONE_LOG_LINE = 'Service: "%s" Method: "%s" Fetch One: "%s"'
-_RESULTS_LOG_LINE = 'Service: "%s" Method: "%s" Results: "%s"'
+logger = config.getLogger('operations')
+
+_CREATE_LOG_LINE = 'Create: "%s" w/ Rec(s):\n"%s"'
+_QUERY_LOG_LINE = 'Service: "%s" Method: "%s" Params:\n"%s"'
+_RESULTS_LOG_LINE = 'Service: "%s" Method: "%s" Results:\n"%s"'
 
 class GAMOperations:
     service = ''
@@ -18,7 +19,7 @@ class GAMOperations:
     create_fields: Tuple = ()
     log_fields: Tuple = ()
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, **kwargs):
         self.params = kwargs
         self.query_params = {k:kwargs[k] for k in self.query_fields if k in kwargs} \
           if self.query_fields else self.params
@@ -26,7 +27,7 @@ class GAMOperations:
           if self.create_fields else self.params
 
     def create(self, atts, validate=False):
-        log.info(_CREATE_LOG_LINE, type(self).__name__, self.log_recs(atts))
+        logger.log(VERBOSE2, _CREATE_LOG_LINE, type(self).__name__, pformat(self.log_recs(atts)))
         results = self.dry_run_recs(atts) if self.dry_run else \
           getattr(self.svc(), self.create_method)(atts)
         if validate:
@@ -34,6 +35,7 @@ class GAMOperations:
         return results
 
     def fetch(self, one=False, create=False, recs=None, validate=False):
+        logger.log(VERBOSE2, _QUERY_LOG_LINE, self.service, self.method, pformat(self.query_params))
         results = self._results(one=one)
         if create and recs:
             current = {self.check(r_) for r_ in results}
@@ -44,13 +46,13 @@ class GAMOperations:
             results = self.create([self.create_params])[0]
         if validate:
             self.validate(recs, results)
+        logger.log(VERBOSE2, _RESULTS_LOG_LINE, self.service, self.method, pformat(results))
         return results
 
     def fetchone(self, **kwargs):
         return self.fetch(one=True, **kwargs)
 
     def _results(self, one=False):
-        log.debug(_QUERY_LOG_LINE, self.service, self.method, self.query_params)
         _stm = self.statement()
         if not _stm:
             return getattr(self.svc(), self.method)()
@@ -61,11 +63,9 @@ class GAMOperations:
                 break
             for result in response["results"]:
                 if one:
-                    log.debug(_FETCH_ONE_LOG_LINE, self.service, self.method, result)
                     return result
                 results.append(result)
             _stm.offset += _stm.limit
-        log.debug(_RESULTS_LOG_LINE, self.service, self.method, results)
         return results
 
     def statement(self):
@@ -105,4 +105,3 @@ class GAMOperations:
 
     def validate(self, recs, results):
         raise NotImplementedError
-

@@ -26,29 +26,23 @@ def cli():
 @click.option('--network-name', help='GAM network name, must reconcile with the network code.')
 @click.option('--private-key-file', '-k', required=True, default='gam_creds.json', type=click.Path(exists=True), help='Path to json GAM crendials file.')
 @click.option('--single-order', '-s', is_flag=True, help='Create a single set of orders instead of orders per bidder.')
-@click.option('--bidder-code', '-b', multiple=True, help='Bidder code, which may be used multiple times.')
+@click.option('--bidder-code', '-b', multiple=True, help='Bidder code, may be used multiple times.')
 @click.option('--test-run', '-t', is_flag=True, help='Execute a limited number of line_items for testing and manual review which will be auto-archived.')
 @click.option('--dry-run', '-n', is_flag=True, help='Print commands that would be executed, but do not execute them.')
 @click.option('--quiet', '-q', is_flag=True, help='Logging is limited to warnings and errors.')
-@click.option('--verbose', '-v', is_flag=True, help='Logging is verbose.')
+@click.option('--verbose', '-v', multiple=True, is_flag=True, help='Verbose logging, use multiple times to increase verbosity.')
 @click.option('--archive-on-failure', is_flag=True, help='If a GAM operation fails, auto-archive already completed operations.')
 @click.option('--delete-on-failure', is_flag=True, help='If a GAM operation fails, auto-delete already completed operations.')
 @click.pass_context
 def create(ctx, configfile, **kwargs):
-    """Create line items"""
-    if kwargs['quiet']:
-        config.quiet()
-    if kwargs['verbose']:
-        config.verbose()
-
-    gam = GAMConfig()
+    config.cli = kwargs
 
     try:
         config.set_user_configfile(configfile)
     except yaml.reader.ReaderError as e:
         raise click.UsageError(f'Check your configfile. {e}', ctx=ctx)
 
-    config.cli = kwargs
+    gam = GAMConfig()
 
     # validate CLI options
     if not kwargs['single_order'] and not kwargs['bidder_code']:
