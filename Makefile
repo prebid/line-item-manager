@@ -64,13 +64,15 @@ lint: ## check style with flake8
 	flake8 line_item_manager tests
 
 test: ## run tests quickly with the default Python
-	python setup.py test
+	pytest \
+	--cov=line_item_manager \
+	--cov-report term-missing
 
 test-all: ## run tests on every Python version with tox
 	tox
 
 coverage: ## check code coverage quickly with the default Python
-	coverage run --source line_item_manager setup.py test
+	coverage run --source line_item_manager -m pytest
 	coverage report -m
 	coverage html
 	$(BROWSER) htmlcov/index.html

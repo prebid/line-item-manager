@@ -39,7 +39,7 @@ def create(ctx, configfile, **kwargs):
 
     try:
         config.set_user_configfile(configfile)
-    except yaml.reader.ReaderError as e:
+    except (yaml.reader.ReaderError, yaml.parser.ParserError) as e:
         raise click.UsageError(f'Check your configfile. {e}', ctx=ctx)
 
     gam = GAMConfig()

@@ -67,6 +67,14 @@ properties:
         enum:
           - "price_priority"
           - "standard"
+      start_datetime:
+        type: "string"
+        format: "date-time"
+      end_datetime:
+        type: "string"
+        format: "date-time"
+      timezone:
+        type: "string"
     required:
       - "name"
       - "item_type"

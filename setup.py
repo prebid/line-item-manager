@@ -27,7 +27,12 @@ package_data = [
 
 setup_requirements = [ ]
 
-test_requirements = [ ]
+test_requirements = [
+     'coverage==5.3',
+     'pytest==6.1.2',
+     'pytest-cov==2.10.1',
+     'pytest-runner==5.2',
+ ]
 
 setup(
     author="the prebid contributors",
@@ -50,6 +55,9 @@ setup(
             'line_item_manager=line_item_manager.cli:main',
         ],
     },
+    extras_require={
+        'test': test_requirements,
+    },
     install_requires=requirements,
     license="Apache Software License 2.0",
     long_description=readme + '\n\n' + history,
@@ -61,7 +69,6 @@ setup(
     package_data={'line_item_manager': package_data},
     setup_requires=setup_requirements,
     test_suite='tests',
-    tests_require=test_requirements,
     url='https://github.com/prebid/line-item-manager',
     version='0.1.0',
     zip_safe=False,
