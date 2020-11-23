@@ -9,7 +9,6 @@ from googleads.errors import GoogleAdsServerFault
 import yaml
 
 from .config import config
-from .create import create_line_items
 from .exceptions import ResourceNotFound
 from .gam_config import GAMConfig
 from .validate import Validator
@@ -92,7 +91,7 @@ def create(ctx, configfile, **kwargs):
 
     # create line items
     try:
-        create_line_items(gam)
+        gam.create_line_items()
     except ResourceNotFound as _e:
         raise click.UsageError(f'Not able to find the following resource:\n  - {_e}', ctx=ctx)
 

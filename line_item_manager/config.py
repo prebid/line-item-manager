@@ -8,7 +8,7 @@ import yaml
 
 from googleads import ad_manager
 
-from .utils import date_from_string
+from .utils import date_from_string, values_from_bucket, ichunk
 
 logging.basicConfig()
 
@@ -123,20 +123,22 @@ class Config:
             return [self.app['line_item_manager']['single_order']['bidder_code']]
         return self.cli['bidder_code']
 
-    def bucket_cpm_values(self, bucket):
-        rng = [int(100 * bucket[_k]) for _k in ('min', 'max', 'interval')]
-        rng[1] += rng[2] # make stop inclusive
-        return {_x / 100 for _x in range(*rng)}
+    def media_types(self):
+        return [m_ for m_ in ('video', 'banner') if self.user['creative'].get(m_)]
+
 
     def cpm_names(self):
         if self._cpm_names is None:
             values = set()
             for bucket in self.user['rate']['cpm_buckets']:
-                values.update(self.bucket_cpm_values(bucket))
+                values.update(values_from_bucket(bucket))
             self._cpm_names = ['%.2f' % v_ for v_ in sorted(values)]
         if self.cli['test_run']:
             return self._cpm_names[:self.app['line_item_manager']['test_run']['line_item_limit']]
         return self._cpm_names
+
+    def cpm_names_batched(self):
+        return ichunk(self.cpm_names(), self.app['googleads']['line_items']['max_per_order'])
 
     def custom_targeting_key_values(self):
         return [(_c['name'], set(_c['values'])) for _c in self.user['targeting'].get('custom', [])]

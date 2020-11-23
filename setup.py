@@ -28,10 +28,12 @@ package_data = [
 setup_requirements = [ ]
 
 test_requirements = [
-     'coverage==5.3',
-     'pytest==6.1.2',
-     'pytest-cov==2.10.1',
-     'pytest-runner==5.2',
+    'coverage==5.3',
+    'flake8==3.8.4',
+    'pytest==6.1.2',
+    'pytest-cov==2.10.1',
+    'pytest-runner==5.2',
+    'tox==3.20.1',
  ]
 
 setup(

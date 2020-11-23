@@ -3,6 +3,11 @@ from pprint import pformat
 import pytz
 
 
+def values_from_bucket(bucket):
+    rng = [int(100 * bucket[_k]) for _k in ('min', 'max', 'interval')]
+    rng[1] += rng[2] # make stop inclusive
+    return {_x / 100 for _x in range(*rng)}
+
 def date_from_string(dtstr, fmt, timezone):
     if not dtstr:
         return None

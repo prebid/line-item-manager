@@ -26,6 +26,7 @@ WORKDIR ${APP_DIR}
 
 # File upload
 COPY setup.py ${APP_DIR}/
+COPY setup.cfg ${APP_DIR}/
 COPY MANIFEST.in ${APP_DIR}/
 
 RUN pip install --upgrade pip
@@ -34,6 +35,7 @@ RUN pip3 install -e .[test]
 COPY line_item_manager/ ${APP_DIR}/line_item_manager
 COPY tests/ ${APP_DIR}/tests/
 COPY Makefile ${APP_DIR}/
+COPY tox.ini requirements_dev.txt ${APP_DIR}/
 RUN chown -R ${USER}: ${APP_DIR}
 
 USER ${USER}
