@@ -95,12 +95,17 @@ class LineItem(AppOperations):
     service = 'LineItemService'
     method = 'getLineItemsByStatement'
     create_method = 'createLineItems'
-    # log_fields = ('name', 'orderId', 'environmentType')
 
 class Order(AppOperations):
     service = "OrderService"
     method = 'getOrdersByStatement'
     create_method = 'createOrders'
+
+    def archive(self):
+        if self.dry_run:
+            return dict(numChanges=len(self.params['id']))
+        return self.svc().performOrderAction(
+            {'xsi_type': 'ArchiveOrders'}, self.statement().ToStatement())
 
 class Placement(AppOperations):
     service = 'PlacementService'

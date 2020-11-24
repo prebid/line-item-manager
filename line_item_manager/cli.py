@@ -5,7 +5,7 @@ import pkg_resources
 import sys
 
 import click
-from googleads.errors import GoogleAdsServerFault
+from googleads.errors import GoogleAdsError, GoogleAdsServerFault
 import yaml
 
 from .config import config
@@ -14,6 +14,8 @@ from .gam_config import GAMConfig
 from .validate import Validator
 
 click.option = partial(click.option, show_default=True)
+
+logger = config.getLogger(__name__)
 
 @click.group()
 def cli():
@@ -30,8 +32,7 @@ def cli():
 @click.option('--dry-run', '-n', is_flag=True, help='Print commands that would be executed, but do not execute them.')
 @click.option('--quiet', '-q', is_flag=True, help='Logging is limited to warnings and errors.')
 @click.option('--verbose', '-v', multiple=True, is_flag=True, help='Verbose logging, use multiple times to increase verbosity.')
-@click.option('--archive-on-failure', is_flag=True, help='If a GAM operation fails, auto-archive already completed operations.')
-@click.option('--delete-on-failure', is_flag=True, help='If a GAM operation fails, auto-delete already completed operations.')
+@click.option('--skip-auto-archive', is_flag=True, help='Upon failure or interruption, do NOT auto-archive already created orders.')
 @click.pass_context
 def create(ctx, configfile, **kwargs):
     config.cli = kwargs
@@ -92,8 +93,18 @@ def create(ctx, configfile, **kwargs):
     # create line items
     try:
         gam.create_line_items()
+        gam.success = True
     except ResourceNotFound as _e:
-        raise click.UsageError(f'Not able to find the following resource:\n  - {_e}', ctx=ctx)
+        logger.error('Not able to find the following resource:\n  - %s', _e)
+    except GoogleAdsError as _e:
+        logger.error('Google Ads Error, %s', _e)
+    except KeyboardInterrupt:
+        logger.warning('User Interrupt')
+    finally:
+        try:
+            gam.cleanup()
+        except GoogleAdsError as _e:
+            logger.error('Cleanup: Google Ads Error, %s', _e)
 
 @cli.command()
 @click.argument('resource', type=click.Choice(['config', 'bidders']))

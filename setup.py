@@ -25,6 +25,11 @@ package_data = [
     'conf.d/*.yaml',
 ]
 
+release_requirements = [
+    'bumpversion==0.6.0',
+    'twine==3.2.0',
+]
+
 setup_requirements = [ ]
 
 test_requirements = [
@@ -58,6 +63,7 @@ setup(
         ],
     },
     extras_require={
+        'release': release_requirements,
         'test': test_requirements,
     },
     install_requires=requirements,
@@ -72,6 +78,6 @@ setup(
     setup_requires=setup_requirements,
     test_suite='tests',
     url='https://github.com/prebid/line-item-manager',
-    version='0.1.0',
+    version='0.1.1',
     zip_safe=False,
 )

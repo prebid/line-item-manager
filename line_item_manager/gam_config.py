@@ -1,5 +1,5 @@
 from pprint import pformat
-from typing import Dict
+from typing import Dict, List
 
 from .config import config, VERBOSE1, VERBOSE2
 from .exceptions import ResourceNotFound
@@ -38,6 +38,8 @@ class GAMConfig:
     _placements = None
     _targeting_custom = None
     _user: Dict = {}
+    _li_objs: List = []
+    _success = False
 
     def __init__(self):
         _ = [log(i_) for i_ in ('advertiser', 'targeting', 'rate')]
@@ -60,7 +62,30 @@ class GAMConfig:
               Advertiser(name=config.user['advertiser']['name']).fetchone(create=True)
         return self._advertiser
 
+    def add_li_obj(self, media_type, bidder_code, cpms):
+        self._li_objs.append(GAMLineItems(self, media_type, bidder_code, cpms))
+        return self._li_objs[-1]
+
+    def archive(self):
+        order_ids = [i_.order['id'] for i_ in self._li_objs]
+        if order_ids:
+            logger.info('Auto-archiving Orders:\n%s', pformat(order_ids))
+            response = Order(id=order_ids).archive()
+            changes = response['numChanges'] if 'numChanges' in response else None
+            if not changes == len(order_ids):
+                logger.error('Order archive, %s, of %d changes, reported %s changes',
+                             order_ids, len(order_ids), changes)
+
+    def cleanup(self):
+        if not self.success and not config.cli['skip_auto_archive']:
+            self.archive()
+
+    def check_resources(self):
+        _ = self.ad_units
+        _ = self.placements
+
     def create_line_items(self):
+        self.check_resources()
         for bidder_code in config.bidder_codes():
             logger.info('#' * 80)
             logger.info('Bidder: name="%s", code="%s"',
@@ -73,10 +98,10 @@ class GAMConfig:
                 for cpms in config.cpm_names_batched():
                     logger.info('Line Items: CPMs(min=%s, max=%s, cnt=%d)',
                                 cpms[0], cpms[-1], len(cpms))
-                    gam_li = GAMLineItems(self, media_type, bidder_code, cpms)
+                    li_ = self.add_li_obj(media_type, bidder_code, cpms)
                     logger.info('Line Item Creative Associations: Creative Count=%d',
-                                len(gam_li.creatives))
-                    _ = gam_li.create()
+                                len(li_.creatives))
+                    _ = li_.create()
 
     @property
     def network(self):
@@ -94,6 +119,14 @@ class GAMConfig:
                     raise ResourceNotFound(f'Placement named \'{name}\' was not found')
                 self._placements.append(placement)
         return self._placements
+
+    @property
+    def success(self):
+        return self._success
+
+    @success.setter
+    def success(self, val):
+        self._success = val
 
     @property
     def targeting_custom(self):

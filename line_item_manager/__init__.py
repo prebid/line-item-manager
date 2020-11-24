@@ -2,4 +2,4 @@
 
 __author__ = """the prebid contributors"""
 __email__ = 'info@prebid.org'
-__version__ = '0.1.0'
+__version__ = '0.1.1'
