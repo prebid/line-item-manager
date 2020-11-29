@@ -35,6 +35,7 @@ setup_requirements = [ ]
 test_requirements = [
     'coverage==5.3',
     'flake8==3.8.4',
+    'mock==4.0.2',
     'pytest==6.1.2',
     'pytest-cov==2.10.1',
     'pytest-runner==5.2',
@@ -78,6 +79,6 @@ setup(
     setup_requires=setup_requirements,
     test_suite='tests',
     url='https://github.com/prebid/line-item-manager',
-    version='0.1.1',
+    version='0.1.2',
     zip_safe=False,
 )

@@ -3,6 +3,7 @@ import uuid
 
 from .config import config
 from .gam_operations import GAMOperations
+from .utils import num_hash
 
 class AppOperations(GAMOperations):
 
@@ -18,9 +19,13 @@ class AppOperations(GAMOperations):
     def dry_run(self):
         return config.cli['dry_run']
 
+    def create_id(self, rec):
+        n_ = num_hash([type(self).__name__, str(rec)])
+        return int(''.join([str(config.app['mgr']['dry_run']['id_prefix']), str(n_)]))
+
     def dry_run_recs(self, recs):
         out = copy.deepcopy(recs)
-        _ = [r_.update(dict(id=helper.new_dry_id())) for r_ in out]
+        _ = [r_.update(dict(id=self.create_id(r_))) for r_ in out]
         return out
 
     def check(self, rec):
@@ -130,12 +135,3 @@ class TargetingValues(AppOperations):
     def __init__(self, *args, key_id=None, **kwargs):
         kwargs['customTargetingKeyId'] = key_id
         super().__init__(*args, **kwargs)
-
-class Helper:
-    dry_id = 8000000
-
-    def new_dry_id(self):
-        self.dry_id += 1
-        return self.dry_id
-
-helper = Helper()

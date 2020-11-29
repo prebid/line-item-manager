@@ -1,7 +1,11 @@
 from datetime import datetime
+from hashlib import sha1
 from pprint import pformat
 import pytz
 
+
+def num_hash(obj, digits=6):
+    return int(sha1(str(obj).encode('utf-8')).hexdigest(), 16) % 10**digits
 
 def values_from_bucket(bucket):
     rng = [int(100 * bucket[_k]) for _k in ('min', 'max', 'interval')]

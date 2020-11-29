@@ -35,6 +35,7 @@ def cli():
 @click.option('--skip-auto-archive', is_flag=True, help='Upon failure or interruption, do NOT auto-archive already created orders.')
 @click.pass_context
 def create(ctx, configfile, **kwargs):
+    """Create line items"""
     config.cli = kwargs
 
     try:

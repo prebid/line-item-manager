@@ -26,10 +26,12 @@ class GAMOperations:
         self.create_params = {k:kwargs[k] for k in self.create_fields if k in kwargs} \
           if self.create_fields else self.params
 
-    def create(self, atts, validate=False):
+    def create(self, atts, validate=False, verbose=True):
         logger.log(VERBOSE2, _CREATE_LOG_LINE, type(self).__name__, pformat(self.log_recs(atts)))
         results = self.dry_run_recs(atts) if self.dry_run else \
           getattr(self.svc(), self.create_method)(atts)
+        if verbose:
+            logger.log(VERBOSE2, _RESULTS_LOG_LINE, self.service, self.method, pformat(results))
         if validate:
             self.validate(atts, results)
         return results
@@ -41,12 +43,12 @@ class GAMOperations:
             current = {self.check(r_) for r_ in results}
             new_recs = [r_ for r_ in recs if self.check(r_) not in current]
             if new_recs:
-                results += self.create(new_recs)
+                results += self.create(new_recs, verbose=False)
         elif create and not results:
-            results = self.create([self.create_params])[0]
+            results = self.create([self.create_params], verbose=False)[0]
+        logger.log(VERBOSE2, _RESULTS_LOG_LINE, self.service, self.method, pformat(results))
         if validate:
             self.validate(recs, results)
-        logger.log(VERBOSE2, _RESULTS_LOG_LINE, self.service, self.method, pformat(results))
         return results
 
     def fetchone(self, **kwargs):
@@ -65,6 +67,8 @@ class GAMOperations:
                 if one:
                     return result
                 results.append(result)
+            if len(results) < _stm.limit:
+                break
             _stm.offset += _stm.limit
         return results
 

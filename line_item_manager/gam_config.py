@@ -32,7 +32,6 @@ def target(key, names, match_type='EXACT'):
 
 class GAMConfig:
 
-    _advertiser: Dict = {}
     _ad_units = None
     _network: Dict = {}
     _placements = None
@@ -42,7 +41,7 @@ class GAMConfig:
     _success = False
 
     def __init__(self):
-        _ = [log(i_) for i_ in ('advertiser', 'targeting', 'rate')]
+        _ = [log(i_) for i_ in ('targeting', 'rate')]
 
     @property
     def ad_units(self):
@@ -54,13 +53,6 @@ class GAMConfig:
                     raise ResourceNotFound(f'Ad Unit named \'{name}\' was not found')
                 self._ad_units.append(ad_unit)
         return self._ad_units
-
-    @property
-    def advertiser(self):
-        if not self._advertiser:
-            self._advertiser = \
-              Advertiser(name=config.user['advertiser']['name']).fetchone(create=True)
-        return self._advertiser
 
     def add_li_obj(self, media_type, bidder_code, cpms):
         self._li_objs.append(GAMLineItems(self, media_type, bidder_code, cpms))
@@ -142,6 +134,7 @@ class GAMConfig:
 
 class GAMLineItems:
 
+    _advertiser: Dict = {}
     _creatives = None
     _order = None
     _targeting_key = None
@@ -156,6 +149,15 @@ class GAMLineItems:
             bidder_code=bidder_code,
             media_type=media_type,
         )
+
+    @property
+    def advertiser(self):
+        if not self._advertiser:
+            cfg = render_cfg('advertiser', bidder_code=self.bidder_code)
+            log('advertiser', obj=cfg)
+            self._advertiser = \
+              Advertiser(name=cfg['name']).fetchone(create=True)
+        return self._advertiser
 
     def create(self):
         recs = []
@@ -177,7 +179,7 @@ class GAMLineItems:
     def creative_banner(self, cfg, size):
         params = dict(
             name=cfg['name'],
-            advertiserId=self.gam.advertiser['id'],
+            advertiserId=self.advertiser['id'],
             size=size,
             snippet=cfg['banner']['snippet'],
             isSafeFrameCompatible=cfg['banner'].get('safe_frame', True),
@@ -187,7 +189,7 @@ class GAMLineItems:
     def creative_video(self, cfg, size):
         params = dict(
             name=cfg['name'],
-            advertiserId=self.gam.advertiser['id'],
+            advertiserId=self.advertiser['id'],
             size=size,
             vastXmlUrl=cfg['video']['vast_xml_url'],
         )
@@ -203,7 +205,7 @@ class GAMLineItems:
                 if (i_ == 0) or (i_ == len(self.cpms) - 1) or config.isLoggingEnabled(VERBOSE2):
                     log('line_item', obj=li_cfg)
                 params = dict(
-                    microAmount=config.micro_amount(cpm),
+                    micro_amount=config.micro_amount(cpm),
                     cpm=cpm,
                     li=self,
                     li_cfg=li_cfg,
@@ -218,7 +220,7 @@ class GAMLineItems:
         if self._order is None:
             cfg = render_cfg('order', cpm_min=self.cpms[0], cpm_max=self.cpms[-1], **self.atts)
             log('order', obj=cfg)
-            self._order = Order(name=cfg['name'], advertiserId=self.gam.advertiser['id'],
+            self._order = Order(name=cfg['name'], advertiserId=self.advertiser['id'],
                                 traffickerId=self.gam.user['id']).fetchone(create=True)
         return self._order
 

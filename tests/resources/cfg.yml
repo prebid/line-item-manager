@@ -24,9 +24,9 @@
 #   --network-code <code>
 #   --network-name <name>
 #
-# publisher:
-#   network_code: 1234
-#   network_name: "Video Publisher"
+publisher:
+  network_code: 1234
+  network_name: "Video Publisher"
 ###############################################################################
 # Advertiser (required)
 # Allowed Templating Key Words: Bidder
@@ -94,14 +94,11 @@ line_item:
 # by default.
 ###############################################################################
 targeting:
-  # custom: # list (optional)
-  #   - name: "country"
-  #     values:
-  #       - "US"
-  #       - "CAN"
-  #   - name: "site"
-  #     values:
-  #       - "somesite"
+  custom: # list (optional)
+    - name: "country"
+      values:
+        - "US"
+        - "CAN"
   # One of the below either placemane_names or ad_unit_names is required
   placement_names: # list of names
     - "placement name 1"
@@ -118,10 +115,11 @@ rate:
   currency: "USD" # required
   cpm_buckets: # required
     - min: 0.10
-      max: 30.00
+      max: 0.30
       interval: 0.10
-    - min: 30.50
-      max: 50.00
+    - min: 0.30
+      max: 1.30
       interval: 0.50
   # optional properties
   # vcpm: 100000 # viewable impressions will be enabled
+

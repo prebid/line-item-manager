@@ -108,7 +108,7 @@ class Config:
 
     def bidder_name(self, code):
         if self.cli['single_order']:
-            return self.app['line_item_manager']['single_order']['bidder_name']
+            return self.app['mgr']['single_order']['bidder_name']
         return self.bidder_data()[code]['bidder-name']
 
     def bidder_data(self):
@@ -120,12 +120,11 @@ class Config:
 
     def bidder_codes(self):
         if self.cli['single_order']:
-            return [self.app['line_item_manager']['single_order']['bidder_code']]
+            return [self.app['mgr']['single_order']['bidder_code']]
         return self.cli['bidder_code']
 
     def media_types(self):
         return [m_ for m_ in ('video', 'banner') if self.user['creative'].get(m_)]
-
 
     def cpm_names(self):
         if self._cpm_names is None:
@@ -134,7 +133,7 @@ class Config:
                 values.update(values_from_bucket(bucket))
             self._cpm_names = ['%.2f' % v_ for v_ in sorted(values)]
         if self.cli['test_run']:
-            return self._cpm_names[:self.app['line_item_manager']['test_run']['line_item_limit']]
+            return self._cpm_names[:self.app['mgr']['test_run']['line_item_limit']]
         return self._cpm_names
 
     def cpm_names_batched(self):
@@ -166,14 +165,14 @@ class Config:
         is_standard = li_['item_type'].upper() == "STANDARD"
         end_str = li_.get('end_datetime')
         start_str = li_.get('start_datetime')
-        fmt = self.app['line_item_manager']['date_fmt']
+        fmt = self.app['mgr']['date_fmt']
         vcpm = self.user['rate'].get('vcpm')
 
         for i_ in ('line_item', 'order'):
             self.user[i_]['name'] = ''.join(['{{ run_mode }}', self.user[i_]['name']])
 
         try:
-            tz_str = li_.get('timezone', self.app['line_item_manager']['timezone'])
+            tz_str = li_.get('timezone', self.app['mgr']['timezone'])
             _ = pytz.timezone(tz_str)
         except pytz.exceptions.UnknownTimeZoneError as e:
             raise ValueError(f'Unknown Time Zone, {e}')

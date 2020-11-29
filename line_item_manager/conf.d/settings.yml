@@ -1,4 +1,4 @@
-line_item_manager:
+mgr:
   timezone: "UTC"
   date_fmt: "%m/%d/%y %H:%M"
   single_order:
@@ -6,6 +6,8 @@ line_item_manager:
     bidder_name: "Top Bid"
   test_run:
     line_item_limit: 2
+  dry_run:
+    id_prefix: 9999
 
 googleads:
   version: 'v202011'
