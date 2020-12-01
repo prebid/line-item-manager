@@ -5,10 +5,6 @@ from .config import config
 
 logger = config.getLogger(__name__)
 
-def package_file(name, **kwargs):
-    with open(config.package_filename(name)) as fp:
-        return yaml.safe_load(J2Template(fp.read()).render(**kwargs))
-
 def render_src(src, **kwargs):
     return yaml.safe_load(J2Template(src).render(**kwargs))
 

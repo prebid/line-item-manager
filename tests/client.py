@@ -121,6 +121,26 @@ BIDDER_VIDEO_SVC_IDS = dict(
     },
 )
 
+BIDDER_TEST_RUN_VIDEO_SVC_IDS = dict(
+    OrderService={
+        dump(dict(
+            name="Test: Prebid-InteractiveOffers-video-01/02/2020-08:09:10 1.25-1.50",
+            advertiserId=1001,
+            traffickerId=5001,
+        )): 6001,
+    },
+    LineItemService={
+        dump(dict(
+            name="Test: Prebid-InteractiveOffers-video-01/02/2020-08:09:10 @ 1.25",
+            orderId=6001,
+        )): 8001,
+        dump(dict(
+            name="Test: Prebid-InteractiveOffers-video-01/02/2020-08:09:10 @ 1.50",
+            orderId=6001,
+        )): 8002,
+    },
+)
+
 BIDDER_BANNER_SVC_IDS = dict(
     CreativeService={
         dump(dict(
