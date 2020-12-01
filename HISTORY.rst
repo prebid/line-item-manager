@@ -2,6 +2,12 @@
 History
 =======
 
+0.1.4 (2020-12-1)
+------------------
+
+* Code cleanup. Deletion of unused code.
+* Testing: Additional coverage.
+
 0.1.3 (2020-11-30)
 ------------------
 
