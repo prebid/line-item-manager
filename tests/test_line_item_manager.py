@@ -3,99 +3,149 @@
 """Tests for `line_item_manager` package."""
 
 import copy
-from datetime import datetime
 from logging import INFO, WARNING
 import pytest
 import shlex
-from typing import Dict
 import yaml
+from yaml import safe_dump as dump
 
 from googleads import ad_manager
 from click.testing import CliRunner
 
 from line_item_manager import cli
 from line_item_manager.config import config, VERBOSE1, VERBOSE2
+from line_item_manager.exceptions import ResourceNotFound
 from line_item_manager.gam_config import GAMConfig
-from line_item_manager.operations import TargetingKey
-from line_item_manager.utils import num_hash
+
+from .client import MockAdClient, SINGLE_ORDER_SVC_IDS, SINGLE_ORDER_VIDEO_SVC_IDS, \
+     BIDDER_BANNER_SVC_IDS, BIDDER_VIDEO_SVC_IDS, rec_from_statement
 
 CONFIG_FILE = 'tests/resources/cfg.yml'
 KEY_FILE = 'tests/resources/gam_creds.json'
+CUSTOM_TARGETING = {7101: ['US']}
 
-def svc_id(svc_name, rec):
-    return num_hash([svc_name, rec])
-
-def rec_from_statement(statement):
-    return {i_['key']:i_['value']['value'] for i_ in statement['values']}
-
-def results_from_statement(svc_name, statement):
-    rec = rec_from_statement(statement)
-    rec.update({'id': svc_id(svc_name, rec)})
-    return dict(results=[rec])
-
-def byStatement(self, *args):
-    return results_from_statement(self.service, args[0])
-
-def create(self, *args):
-    recs = copy.deepcopy(args[0])
-    _ = [rec.update({'id': svc_id(self.service, rec)}) for rec in recs]
-    return recs
-
-class MockAdClient:
-    custom_targeting: Dict = {}
-
-    def GetService(self, service, version=None):
-        self.service = service
-        return self
-
-    def getCurrentUser(self, *args):
-        return dict(id=svc_id(self.service, 'CurrentUser'))
-
-    def getCreativesByStatement(self, *args):
-        return {}
-
-    def getCustomTargetingValuesByStatement(self, *args):
-        rec = rec_from_statement(args[0])
-        for key, vals in self.custom_targeting.items():
-            if rec['customTargetingKeyId'] == \
-              svc_id(self.service, TargetingKey(name=key).params):
-                recs = []
-                for val in vals:
-                    r_ = copy.deepcopy(rec)
-                    r_.update(dict(name=val))
-                    r_.update({'id': svc_id(self.service, rec)})
-                    recs.append(r_)
-                return dict(results=recs)
-        return []
-
-for i_ in ('AdUnits', 'Placements', 'Companies', 'Orders', 'CustomTargetingKeys'):
-    setattr(MockAdClient, f'get{i_}ByStatement', byStatement)
-
-for i_ in ('Creatives', 'LineItems', 'LineItemCreativeAssociations', 'CustomTargetingValues'):
-    setattr(MockAdClient, f'create{i_}', create)
-
+# init
+config._start_time = pytest.start_time
 with open(CONFIG_FILE) as fp:
     user = yaml.safe_load(fp)
 
-@pytest.mark.command(f'create {CONFIG_FILE} -k {KEY_FILE} -b interactiveOffers -b ix')
-def test_create(monkeypatch, cli_config):
-    # TODO:
-    # - missing ad unit
-    # - missing placement
-    # - archive
-    # - network name check
-    class TestAdClient(MockAdClient):
-        custom_targeting = {'country': ['US']}
+class Client(MockAdClient):
 
-        def createCustomTargetingValues(self, *args):
-            if args[0][0]['customTargetingKeyId'] == \
-              svc_id(self.service, TargetingKey(name='country').params):
-                assert [rec['name'] for rec in args[0]] == ['CAN']
-            return super().createCustomTargetingValues(*args)
+    def createCustomTargetingValues(self, *args):
+        if args[0][0]['customTargetingKeyId'] == 7101:
+            assert [rec['name'] for rec in args[0]] == ['CAN']
+        return super().createCustomTargetingValues(*args)
 
-    monkeypatch.setattr(ad_manager.AdManagerClient, "LoadFromString", lambda x: TestAdClient())
+    def performOrderAction(self, *args):
+        order_ids = [i_['value'] for i_ in args[1]['values'][0]['value']['values']]
+        assert order_ids == [6001]
+        return dict(numChanges=1)
+
+@pytest.mark.parametrize("command, err_str",
+ [
+  (f'tests/resources/cfg_bad_yaml.yml -k {KEY_FILE} -b interactiveOffers', 'Check your configfile.'),
+  (f'tests/resources/cfg_video.yml -k {KEY_FILE}', 'You must use --single-order or provide'),
+  (f'tests/resources/cfg_video.yml -k {KEY_FILE} -b ix --single-order', 'Use of --single-order and --bidder-code'),
+  (f'tests/resources/cfg_no_pub.yml -k {KEY_FILE} -b ix', 'Network code must be provided'),
+  (f'tests/resources/cfg_no_pub.yml -k {KEY_FILE} -b ix --network-code 1234', 'Network name must be provided'),
+  (f'tests/resources/cfg_video.yml -k {KEY_FILE} -b badcode', 'Bidder code \'badcode\''),
+  (f'tests/resources/cfg_video.yml -k {KEY_FILE} -b ix --network-name badname', 'Network name found \'Video Publisher\''),
+  (f'tests/resources/cfg_validation_error.yml -k {KEY_FILE} -b ix', 'the following validation errors'),
+ ]
+)
+def test_cli_create_bad(monkeypatch, command, err_str):
+    """Test the CLI."""
+    client = Client(CUSTOM_TARGETING, BIDDER_VIDEO_SVC_IDS)
+    monkeypatch.setattr(ad_manager.AdManagerClient, "LoadFromString", lambda x: client)
+
+    runner = CliRunner()
+    result = runner.invoke(cli.create, shlex.split(command))
+    assert result.exit_code == 2
+    assert err_str in result.output
+
+def test_cli_create_good(monkeypatch):
+    client = Client(CUSTOM_TARGETING, BIDDER_VIDEO_SVC_IDS)
+    monkeypatch.setattr(ad_manager.AdManagerClient, "LoadFromString", lambda x: client)
+
+    runner = CliRunner()
+    result = runner.invoke(
+        cli.create,
+        shlex.split(f'tests/resources/cfg_video.yml -k {KEY_FILE} -b interactiveOffers')
+    )
+    assert result.exit_code == 0
+
+@pytest.mark.parametrize("command",
+ [
+  ('config'),
+  ('bidders'),
+ ]
+)
+def test_cli_show_good(command):
+    runner = CliRunner()
+    result = runner.invoke(
+        cli.show,
+        shlex.split(command)
+    )
+    assert result.exit_code == 0
+
+@pytest.mark.command(f'create tests/resources/cfg_video.yml -k {KEY_FILE} --single-order')
+def test_video_single_order(monkeypatch, cli_config):
+    svc_ids = copy.deepcopy(SINGLE_ORDER_SVC_IDS)
+    svc_ids.update(SINGLE_ORDER_VIDEO_SVC_IDS)
+    client = Client(CUSTOM_TARGETING, svc_ids)
+    monkeypatch.setattr(ad_manager.AdManagerClient, "LoadFromString", lambda x: client)
     gam = GAMConfig()
     gam.create_line_items()
+
+    assert gam.network['displayName'] == "Video Publisher"
+    assert len(gam.li_objs) == 1
+    assert config.load_file('tests/resources/video_single_order_expected.yml') == \
+      gam.li_objs[0].line_items
+    gam.cleanup()
+
+@pytest.mark.command(f'create tests/resources/cfg_video.yml -k {KEY_FILE} -b interactiveOffers')
+def test_video_one_bidder(monkeypatch, cli_config):
+    client = Client(CUSTOM_TARGETING, BIDDER_VIDEO_SVC_IDS)
+    monkeypatch.setattr(ad_manager.AdManagerClient, "LoadFromString", lambda x: client)
+    gam = GAMConfig()
+    gam.create_line_items()
+
+    assert len(gam.li_objs) == 1
+    assert config.load_file('tests/resources/video_expected.yml') == gam.li_objs[0].line_items
+
+@pytest.mark.command(f'create tests/resources/cfg_banner.yml -k {KEY_FILE} -b interactiveOffers')
+def test_banner_one_bidder(monkeypatch, cli_config):
+    client = Client(CUSTOM_TARGETING, BIDDER_BANNER_SVC_IDS)
+    monkeypatch.setattr(ad_manager.AdManagerClient, "LoadFromString", lambda x: client)
+    gam = GAMConfig()
+    gam.create_line_items()
+
+    assert len(gam.li_objs) == 1
+    assert config.load_file('tests/resources/banner_expected.yml') == gam.li_objs[0].line_items
+
+@pytest.mark.command(f'create tests/resources/cfg_video.yml -k {KEY_FILE} -b interactiveOffers')
+def test_missing_ad_unit_resource(monkeypatch, cli_config):
+    svc_ids = copy.deepcopy(BIDDER_VIDEO_SVC_IDS)
+    svc_ids.update(dict(InventoryService={dump(dict(name="ad unit 1")): 2001}))
+    client = Client(CUSTOM_TARGETING, svc_ids)
+    monkeypatch.setattr(ad_manager.AdManagerClient, "LoadFromString", lambda x: client)
+    gam = GAMConfig()
+
+    with pytest.raises(ResourceNotFound) as e_:
+        gam.create_line_items()
+    assert "'ad unit 2' was not found" in str(e_)
+
+@pytest.mark.command(f'create tests/resources/cfg_video.yml -k {KEY_FILE} -b interactiveOffers')
+def test_missing_placement_resource(monkeypatch, cli_config):
+    svc_ids = copy.deepcopy(BIDDER_VIDEO_SVC_IDS)
+    svc_ids.update(dict(PlacementService={dump(dict(name="placement 2")): 3002}))
+    client = Client(CUSTOM_TARGETING, svc_ids)
+    monkeypatch.setattr(ad_manager.AdManagerClient, "LoadFromString", lambda x: client)
+    gam = GAMConfig()
+
+    with pytest.raises(ResourceNotFound) as e_:
+        gam.create_line_items()
+    assert "'placement 1' was not found" in str(e_)
 
 @pytest.mark.command(f'create {CONFIG_FILE} -b interactiveOffers -b ix')
 def test_bidders(cli_config):
@@ -142,17 +192,3 @@ def test_verbose2(cli_config):
 def test_quiet(cli_config):
     assert config.isLoggingEnabled(WARNING)
     assert not config.isLoggingEnabled(INFO)
-
-def test_command_line_interface():
-    """Test the CLI."""
-    runner = CliRunner()
-    # import pdb; pdb.set_trace()
-    # ctx = cli.create.make_context('create', shlex.split('{CONNFIG_FILE} -k {CONNFIG_FILE}'))
-    # result = runner.invoke(cli.create, ['--help'])
-    # result = runner.invoke(cli.show, ['bidders'])
-    result = runner.invoke(cli.create, shlex.split('--help'))
-    assert result.exit_code == 0
-    # assert 'line_item_manager.cli.main' in result.output
-    # help_result = runner.invoke(cli.main, ['--help'])
-    # assert help_result.exit_code == 0
-    # assert '--help  Show this message and exit.' in help_result.output

@@ -11,8 +11,6 @@ def pytest_configure():
 @pytest.fixture
 def cli_config(request):
     # patch
-    config._start_time = pytest.start_time
-
     cli_str = request.node.get_closest_marker('command').args[0]
     cli_args = shlex.split(cli_str)
     cmd = cli_args[0]

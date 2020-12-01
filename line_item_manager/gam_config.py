@@ -1,5 +1,4 @@
 from pprint import pformat
-from typing import Dict, List
 
 from .config import config, VERBOSE1, VERBOSE2
 from .exceptions import ResourceNotFound
@@ -33,15 +32,19 @@ def target(key, names, match_type='EXACT'):
 class GAMConfig:
 
     _ad_units = None
-    _network: Dict = {}
+    _network = None
     _placements = None
     _targeting_custom = None
-    _user: Dict = {}
-    _li_objs: List = []
-    _success = False
+    _user = None
 
     def __init__(self):
         _ = [log(i_) for i_ in ('targeting', 'rate')]
+        self._li_objs = []
+        self._success = False
+
+    @property
+    def li_objs(self):
+        return self._li_objs
 
     @property
     def ad_units(self):
@@ -97,7 +100,7 @@ class GAMConfig:
 
     @property
     def network(self):
-        if not self._network:
+        if self._network is None:
             self._network = CurrentNetwork().fetch()
         return self._network
 
@@ -128,13 +131,13 @@ class GAMConfig:
 
     @property
     def user(self):
-        if not self._user:
+        if self._user is None:
             self._user = CurrentUser().fetch()
         return self._user
 
 class GAMLineItems:
 
-    _advertiser: Dict = {}
+    _advertiser = None
     _creatives = None
     _order = None
     _targeting_key = None
@@ -152,7 +155,7 @@ class GAMLineItems:
 
     @property
     def advertiser(self):
-        if not self._advertiser:
+        if self._advertiser is None:
             cfg = render_cfg('advertiser', bidder_code=self.bidder_code)
             log('advertiser', obj=cfg)
             self._advertiser = \

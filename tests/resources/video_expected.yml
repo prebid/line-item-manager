@@ -1,0 +1,96 @@
+- companionDeliveryOption: OPTIONAL
+  costPerUnit:
+    currencyCode: USD
+    microAmount: 1250000
+  costType: CPM
+  creativePlaceholders:
+  - size:
+      height: 480
+      width: 640
+  - size:
+      height: 240
+      width: 320
+  creativeRotationType: EVEN
+  environmentType: VIDEO_PLAYER
+  id: 8001
+  lineItemType: PRICE_PRIORITY
+  name: Prebid-InteractiveOffers-video-01/02/2020-08:09:10 @ 1.25
+  orderId: 6001
+  primaryGoal:
+    goalType: NONE
+  startDateTime: IMMEDIATELY
+  startDateTimeType: IMMEDIATELY
+  targeting:
+    customTargeting:
+      children:
+      - keyId: 7101
+        operator: IS
+        valueIds:
+        - 7301
+        - 7302
+        xsi_type: CustomCriteria
+      - keyId: 7201
+        operator: IS
+        valueIds:
+        - 7401
+        xsi_type: CustomCriteria
+      logicalOperator: AND
+      xsi_type: CustomCriteriaSet
+    inventoryTargeting:
+      targetedAdUnits:
+      - 2001
+      - 2002
+      targetedPlacementIds:
+      - 3001
+      - 3002
+    requestPlatformTargeting:
+      targetedRequestPlatforms: VIDEO_PLAYER
+  unlimitedEndDateTime: true
+- companionDeliveryOption: OPTIONAL
+  costPerUnit:
+    currencyCode: USD
+    microAmount: 1500000
+  costType: CPM
+  creativePlaceholders:
+  - size:
+      height: 480
+      width: 640
+  - size:
+      height: 240
+      width: 320
+  creativeRotationType: EVEN
+  environmentType: VIDEO_PLAYER
+  id: 8002
+  lineItemType: PRICE_PRIORITY
+  name: Prebid-InteractiveOffers-video-01/02/2020-08:09:10 @ 1.50
+  orderId: 6001
+  primaryGoal:
+    goalType: NONE
+  startDateTime: IMMEDIATELY
+  startDateTimeType: IMMEDIATELY
+  targeting:
+    customTargeting:
+      children:
+      - keyId: 7101
+        operator: IS
+        valueIds:
+        - 7301
+        - 7302
+        xsi_type: CustomCriteria
+      - keyId: 7201
+        operator: IS
+        valueIds:
+        - 7402
+        xsi_type: CustomCriteria
+      logicalOperator: AND
+      xsi_type: CustomCriteriaSet
+    inventoryTargeting:
+      targetedAdUnits:
+      - 2001
+      - 2002
+      targetedPlacementIds:
+      - 3001
+      - 3002
+    requestPlatformTargeting:
+      targetedRequestPlatforms: VIDEO_PLAYER
+  unlimitedEndDateTime: true

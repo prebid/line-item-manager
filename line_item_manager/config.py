@@ -40,9 +40,9 @@ class Config:
         return self._logger.getChild(name.split('.')[-1])
 
     def set_log_level(self):
-        if config.cli['verbose']:
-            self._logger.setLevel(logging.INFO - len(config.cli['verbose']))
-        if config.cli['quiet']:
+        if self.cli['verbose']:
+            self._logger.setLevel(logging.INFO - len(self.cli['verbose']))
+        if self.cli['quiet']:
             self._logger.setLevel(logging.WARNING)
 
     @property
@@ -56,6 +56,7 @@ class Config:
     @cli.setter
     def cli(self, obj):
         self._cli = obj
+        self._client = None
         self.set_log_level()
 
     @property
@@ -64,6 +65,7 @@ class Config:
 
     def set_user_configfile(self, filename):
         self._user = self.load_file(filename)
+        self._cpm_names = None
 
     @property
     def start_time(self):

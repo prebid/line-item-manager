@@ -19,7 +19,7 @@ costPerUnit:
 costType: "{{ user_cfg.rate.cost_type }}"
 
 creativePlaceholders:
-  {% for creative in li.creatives %}
+  {% for creative in li.creatives|sort(attribute='id') %}
   - size: {{ creative.size }}
   {% endfor %}
 
@@ -35,11 +35,11 @@ primaryGoal: {{ user_cfg.line_item.goal }}
 targeting:
   inventoryTargeting:
     targetedAdUnits:
-      {% for ad_unit in li.gam.ad_units %}
+      {% for ad_unit in li.gam.ad_units|sort(attribute='id') %}
       - {{ ad_unit.id }}
       {% endfor %}
     targetedPlacementIds:
-      {% for placement in li.gam.placements %}
+      {% for placement in li.gam.placements|sort(attribute='id') %}
       - {{ placement.id }}
       {% endfor %}
   customTargeting:
@@ -51,7 +51,7 @@ targeting:
         operator: "IS"
         keyId: {{ rule.key.id }}
         valueIds:
-          {% for value in rule['values'] %}
+          {% for value in rule['values']|sort(attribute='id') %}
           - {{ value.id }}
           {% endfor %}
       {% endfor %}

@@ -40,7 +40,7 @@ def create(ctx, configfile, **kwargs):
 
     try:
         config.set_user_configfile(configfile)
-    except (yaml.reader.ReaderError, yaml.parser.ParserError) as e:
+    except yaml.YAMLError as e:
         raise click.UsageError(f'Check your configfile. {e}', ctx=ctx)
 
     gam = GAMConfig()
@@ -76,7 +76,7 @@ def create(ctx, configfile, **kwargs):
     try:
         if not gam.network['displayName'] == config.network_name:
             raise click.UsageError(f"Network name found \'{gam.network['displayName']}\' does not match provided \'{config.network_name}\'", ctx=ctx)
-    except GoogleAdsServerFault:
+    except GoogleAdsError as _e:
         raise click.UsageError('Check your network code and permissions. Not able to successfully access your service account', ctx=ctx)
 
     # validate user configuration

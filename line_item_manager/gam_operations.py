@@ -1,5 +1,4 @@
 from pprint import pformat
-from typing import Tuple
 
 from googleads import ad_manager
 
@@ -15,9 +14,9 @@ class GAMOperations:
     service = ''
     method = ''
     create_method = ''
-    query_fields: Tuple = ()
-    create_fields: Tuple = ()
-    log_fields: Tuple = ()
+    query_fields = None
+    create_fields = None
+    log_fields = None
 
     def __init__(self, **kwargs):
         self.params = kwargs
