@@ -1,30 +1,26 @@
-ARG ALPINE_VERSION=3.11
-
-FROM python:3.8-alpine${ALPINE_VERSION}
-ARG ALPINE_VERSION
+FROM python:3.8-slim
 
 ENV USER=app \
     APP_DIR=/home/app \
     PIP_NO_CACHE_DIR=0
 
-RUN addgroup -S ${USER} && \
-    adduser -S ${USER} -G ${USER}
+RUN useradd -ms /bin/bash ${USER}
 
-RUN apk add --no-cache \
-    bash \
-    curl \
-    gcc \
-    libffi-dev \
-    libxml2-dev \
-    libxslt-dev \
-    make \
-    musl-dev \
-    openssl-dev \
-    tini
+# System dependencies
+RUN apt-get -y update
+RUN apt-get install -y --no-install-recommends \
+  build-essential \
+  libffi-dev \
+  libpq-dev \
+  tini
 
 WORKDIR ${APP_DIR}
 
-# File upload
+# Update pip
+RUN pip3 install --upgrade pip setuptools
+RUN pip3 install wheel
+
+# App dependencies
 COPY setup.py ${APP_DIR}/
 COPY setup.cfg ${APP_DIR}/
 COPY MANIFEST.in ${APP_DIR}/
@@ -37,8 +33,8 @@ COPY tests/ ${APP_DIR}/tests/
 COPY Makefile ${APP_DIR}/
 COPY *.rst ${APP_DIR}/
 COPY tox.ini requirements_dev.txt ${APP_DIR}/
-RUN chown -R ${USER}: ${APP_DIR}
 
+RUN chown -R ${USER}: ${APP_DIR}
 USER ${USER}
 
 ENTRYPOINT ["tini", "--"]

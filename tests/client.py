@@ -210,6 +210,7 @@ class MockAdClient:
         return dict(
             id=svc_id(self.svc_ids[self.service], dict()),
             displayName="Video Publisher",
+            effectiveRootAdUnitId=1511,
         )
 
     def getCreativesByStatement(self, *args):

@@ -128,10 +128,16 @@ class Config:
     def media_types(self):
         return [m_ for m_ in ('video', 'banner') if self.user['creative'].get(m_)]
 
+    def cpm_buckets(self):
+        _type = self.user['rate']['granularity']['type']
+        if _type == "custom":
+            return self.user['rate']['granularity']['custom']
+        return self.app['prebid']['price_granularity'][_type]
+
     def cpm_names(self):
         if self._cpm_names is None:
             values = set()
-            for bucket in self.user['rate']['cpm_buckets']:
+            for bucket in self.cpm_buckets():
                 values.update(values_from_bucket(bucket))
             self._cpm_names = ['%.2f' % v_ for v_ in sorted(values)]
         if self.cli['test_run']:
@@ -142,7 +148,7 @@ class Config:
         return ichunk(self.cpm_names(), self.app['googleads']['line_items']['max_per_order'])
 
     def custom_targeting_key_values(self):
-        return [(_c['name'], set(_c['values'])) for _c in self.user['targeting'].get('custom', [])]
+        return [(_c['name'], set(_c['values'])) for _c in self.user.get('targeting', {}).get('custom', [])]
 
     def bidder_params(self, code):
         return {k:self.fmt_bidder_key(k, code) for k in self.app['prebid']['bidders']['keys']}
@@ -178,6 +184,10 @@ class Config:
             _ = pytz.timezone(tz_str)
         except pytz.exceptions.UnknownTimeZoneError as e:
             raise ValueError(f'Unknown Time Zone, {e}')
+
+        if self.user['rate']['granularity']['type'] == "custom" and \
+            not self.user['rate']['granularity'].get('custom'):
+            raise ValueError('Custom granularity is not defined.')
 
         if vcpm and not is_standard:
             raise ValueError("Specifying 'vcpm' requires using line item type 'standard'")

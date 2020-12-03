@@ -50,6 +50,7 @@ class Client(MockAdClient):
   (f'tests/resources/cfg_video.yml -k {KEY_FILE} -b badcode', 'Bidder code \'badcode\''),
   (f'tests/resources/cfg_video.yml -k {KEY_FILE} -b ix --network-name badname', 'Network name found \'Video Publisher\''),
   (f'tests/resources/cfg_validation_error.yml -k {KEY_FILE} -b ix', 'the following validation errors'),
+  (f'tests/resources/cfg_bad_granularity.yml -k {KEY_FILE} -b interactiveOffers', 'Custom granularity is not defined.'),
 ])
 def test_cli_create_bad(monkeypatch, command, err_str):
     """Test the CLI."""
@@ -67,9 +68,9 @@ def test_cli_create_bad(monkeypatch, command, err_str):
 def test_cli_create_good(monkeypatch, command):
     client = Client(CUSTOM_TARGETING, BIDDER_VIDEO_SVC_IDS)
     monkeypatch.setattr(ad_manager.AdManagerClient, "LoadFromString", lambda x: client)
-
     runner = CliRunner()
     result = runner.invoke(cli.create, shlex.split(command))
+
     assert result.exit_code == 0
 
 @pytest.mark.command(f'create tests/resources/cfg_video.yml -k {KEY_FILE} --single-order')
@@ -167,3 +168,13 @@ def test_missing_placement_resource(monkeypatch, cli_config):
     with pytest.raises(ResourceNotFound) as e_:
         gam.create_line_items()
     assert "'placement 1' was not found" in str(e_)
+
+@pytest.mark.command(f'create tests/resources/cfg_video_no_targeting.yml -k {KEY_FILE} -b interactiveOffers')
+def test_video_no_targeting_video(monkeypatch, cli_config):
+    client = Client(CUSTOM_TARGETING, BIDDER_VIDEO_SVC_IDS)
+    monkeypatch.setattr(ad_manager.AdManagerClient, "LoadFromString", lambda x: client)
+    gam = GAMConfig()
+    gam.create_line_items()
+
+    assert len(gam.li_objs) == 1
+    assert config.load_file('tests/resources/video_expected_no_targeting.yml') == gam.li_objs[0].line_items

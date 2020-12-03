@@ -20,7 +20,7 @@
 # names and codes.
 ###############################################################################
 # Publisher (optional)
-# This can be specified at run-time like this:
+# This can be specified on the command line like this:
 #   --network-code <code>
 #   --network-name <name>
 #
@@ -87,41 +87,49 @@ line_item:
 #   <bidder_code_1>: <bidder_targeting_key_1>
 #   <bidder_code_2>: <bidder_targeting_key_2>
 ###############################################################################
-# Targeting (required)
+# Targeting (optional)
 # Allowed Templating Key Words: None
+#
+# By default the Network Root Ad Unit is targeted if Placements or Ad Units
+# are not specified.
 #
 # Note: A Key-Value of 'bidder_targeting_key' with all CPM values is created
 # by default.
 ###############################################################################
-targeting:
-  # custom: # list (optional)
-  #   - name: "country"
-  #     values:
-  #       - "US"
-  #       - "CAN"
-  #   - name: "site"
-  #     values:
-  #       - "somesite"
-  # One of the below either placemane_names or ad_unit_names is required
-  placement_names: # list of names
-    - "placement name 1"
-    - "placement name 2"
-  ad_unit_names: # list of names
-    - "ad unit name 1"
-    - "ad unit name 2"
+# targeting:
+#   custom: # list (optional)
+#     - name: "country"
+#       values:
+#         - "US"
+#         - "CAN"
+#     - name: "site"
+#       values:
+#         - "somesite"
+#   placement_names: # list of names (optional)
+#     - "placement name 1"
+#     - "placement name 2"
+#   ad_unit_names: # list of names (optional)
+#     - "ad unit name 1"
+#     - "ad unit name 2"
 ###############################################################################
 # Rate (required)
-# NOTE: granularity in Prebid.js config must align with this granularity
 # Allowed Templating Key Words: None
+#
+# Granularity type definitions can be found here:
+#   https://docs.prebid.org/prebid-mobile/adops-price-granularity.html
+#
+# NOTE: granularity in Prebid.js config must align with this granularity
 ###############################################################################
 rate:
   currency: "USD" # required
-  cpm_buckets: # required
-    - min: 0.10
-      max: 30.00
-      interval: 0.10
-    - min: 30.50
-      max: 50.00
-      interval: 0.50
+  granularity:
+    type: "med" # required, choices: "low", "med", "high", "auto", "dense", "custom"
+    # custom: # optional, requires type "custom" above
+    #   - min: 0.10
+    #     max: 30.00
+    #     interval: 0.10
+    #   - min: 30.50
+    #     max: 50.00
+    #     interval: 0.50
   # optional properties
   # vcpm: 100000 # viewable impressions will be enabled

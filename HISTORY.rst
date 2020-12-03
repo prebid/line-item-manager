@@ -2,6 +2,13 @@
 History
 =======
 
+0.1.6 (2020-12-3)
+------------------
+
+* Added 'Run of network' default inventory targeting
+* Added predefined Prebid granularity types
+* Dockerfile python change to slim from alpine
+
 0.1.5 (2020-12-1)
 ------------------
 

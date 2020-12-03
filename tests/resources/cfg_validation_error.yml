@@ -113,10 +113,12 @@ targeting:
 ###############################################################################
 rate:
   currency: "USD" # required
-  cpm_buckets: # required
-    - min: 1.25
-      max: 1.50
-      interval: 0.25
+  granularity:
+    type: "custom"
+    custom:
+      - min: 1.25
+        max: 1.50
+        interval: 0.25
   # optional properties
   # vcpm: 100000 # viewable impressions will be enabled
 

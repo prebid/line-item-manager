@@ -37,3 +37,36 @@ prebid:
       - "hb_cache_path"
       - "hb_deal"
     targeting_key: "hb_pb"
+  price_granularity:
+    low:
+      - min: 0.50
+        max: 5.00
+        interval: 0.50
+    med:
+      - min: 0.10
+        max: 20.00
+        interval: 0.10
+    high:
+      - min: 0.01
+        max: 20.00
+        interval: 0.01
+    auto:
+      - min: 0.05
+        max: 5.00
+        interval: 0.05
+      - min: 5.10
+        max: 10.00
+        interval: 0.10
+      - min: 10.50
+        max: 20.00
+        interval: 0.50
+    dense:
+      - min: 0.01
+        max: 3.00
+        interval: 0.01
+      - min: 3.05
+        max: 8.00
+        interval: 0.05
+      - min: 8.50
+        max: 20.00
+        interval: 0.50

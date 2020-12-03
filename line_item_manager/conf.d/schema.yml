@@ -95,29 +95,23 @@ properties:
         $ref: "http://json-schema.org/draft-07/schema#/definitions/stringArray"
       ad_unit_names:
         $ref: "http://json-schema.org/draft-07/schema#/definitions/stringArray"
-    anyOf:
-      - required:
-        - "placement_names"
-      - required:
-        - "ad_unit_names"
   rate:
     type: "object"
     properties:
       currency:
         $ref: "#/definitions/rateCurrencyType"
-      cpm_buckets:
-        $ref: "#/definitions/cpmBucketArray"
+      granularity:
+        $ref: "#/definitions/granularityType"
       vcpm:
         $ref: "http://json-schema.org/draft-07/schema#/definitions/nonNegativeInteger"
     required:
       - "currency"
-      - "cpm_buckets"
+      - "granularity"
 required:
   - "advertiser"
   - "order"
   - "line_item"
   - "creative"
-  - "targeting"
   - "rate"
 definitions:
   cpmBucketArray:
@@ -142,6 +136,23 @@ definitions:
     type: "number"
     minimum: 0.01
     multipleOf: 0.01
+  granularityType:
+    type: "object"
+    properties:
+      type:
+        $ref: "#/definitions/granularityPredefinedType"
+      custom:
+        $ref: "#/definitions/cpmBucketArray"
+      required:
+        - "type"
+  granularityPredefinedType:
+    enum:
+      - 'low'
+      - 'med'
+      - 'high'
+      - 'auto'
+      - 'dense'
+      - 'custom'
   rateCurrencyType:
     enum:
       - 'AUD'

@@ -10,7 +10,7 @@ from .utils import format_long_list
 logger = config.getLogger(__name__)
 
 def log(objname, obj=None):
-    logger.log(VERBOSE1, '%s:\n%s', objname, pformat(obj if obj else config.user[objname]))
+    logger.log(VERBOSE1, '%s:\n%s', objname, pformat(obj if obj else config.user.get(objname, {})))
 
 def target(key, names, match_type='EXACT'):
     tgt_key = TargetingKey(name=key).fetchone(create=True)
@@ -50,7 +50,7 @@ class GAMConfig:
     def ad_units(self):
         if self._ad_units is None:
             self._ad_units = []
-            for name in config.user['targeting'].get('ad_unit_names', []):
+            for name in config.user.get('targeting', {}).get('ad_unit_names', []):
                 ad_unit = AdUnit(name=name).fetchone()
                 if not ad_unit:
                     raise ResourceNotFound(f'Ad Unit named \'{name}\' was not found')
@@ -108,7 +108,7 @@ class GAMConfig:
     def placements(self):
         if self._placements is None:
             self._placements = []
-            for name in config.user['targeting'].get('placement_names', []):
+            for name in config.user.get('targeting', {}).get('placement_names', []):
                 placement = Placement(name=name).fetchone()
                 if not placement:
                     raise ResourceNotFound(f'Placement named \'{name}\' was not found')

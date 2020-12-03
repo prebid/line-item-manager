@@ -55,3 +55,7 @@ def test_verbose2(cli_config):
 def test_quiet(cli_config):
     assert config.isLoggingEnabled(WARNING)
     assert not config.isLoggingEnabled(INFO)
+
+@pytest.mark.command('create tests/resources/cfg_granularity_high.yml -b ix -q')
+def test_granularity(cli_config):
+    assert config.cpm_names() == ['%.2f' % (v_ / 100) for v_ in range(1, 2001, 1)]

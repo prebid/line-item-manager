@@ -39,22 +39,22 @@ advertiser:
 ###############################################################################
 creative: # at least one of the following types is required {video, banner}
   name: "Prebid {{ bidder_name }}-{{ media_type }}"
-  # video:
+  video:
+    sizes: # list
+      - height: 480
+        width: 640
+      - height: 240
+        width: 320
+    vast_xml_url: "https://prebid.adnxs.com/pbc/v1/cache?uuid=%%PATTERN:{{ hb_cache_id }}%%"
+  # banner:
   #   sizes: # list
   #     - height: 480
   #       width: 640
-  #     - height: 240
-  #       width: 320
-  #   vast_xml_url: "https://prebid.adnxs.com/pbc/v1/cache?uuid=%%PATTERN:{{ hb_cache_id }}%%"
-  banner:
-    sizes: # list
-      - height: 20
-        width: 1000
-    snippet: |
-      <script src = "https://..."></script>
-        <script>
-          ...
-        </script>
+  #   snippet: |
+  #     <script src = "https://..."></script>
+  #       <script>
+  #         ...
+  #       </script>
     # safe_frame: False (optional: defaults to True)
 ###############################################################################
 # Orders (required)
@@ -93,19 +93,19 @@ line_item:
 # Note: A Key-Value of 'bidder_targeting_key' with all CPM values is created
 # by default.
 ###############################################################################
-targeting:
-  custom: # list (optional)
-    - name: "country"
-      values:
-        - "US"
-        - "CAN"
-  # One of the below either placemane_names or ad_unit_names is required
-  placement_names: # list of names
-    - "placement 1"
-    - "placement 2"
-  ad_unit_names: # list of names
-    - "ad unit 1"
-    - "ad unit 2"
+# targeting:
+#   custom: # list (optional)
+#     - name: "country"
+#       values:
+#         - "US"
+#         - "CAN"
+#   # One of the below either placemane_names or ad_unit_names is required
+#   placement_names: # list of names
+#     - "placement 1"
+#     - "placement 2"
+#   ad_unit_names: # list of names
+#     - "ad unit 1"
+#     - "ad unit 2"
 ###############################################################################
 # Rate (required)
 # NOTE: granularity in Prebid.js config must align with this granularity
