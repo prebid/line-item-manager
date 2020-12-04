@@ -49,6 +49,16 @@ SINGLE_ORDER_SVC_IDS = dict(
     },
 )
 
+MISSING_RESOURCE_SVC_IDS = dict(
+    CustomTargetingService={
+        dump(dict(name="country")): 7101,
+        dump(dict(customTargetingKeyId=7101, name="US")): 7301,
+        dump(dict(name="hb_pb")): 7501,
+        dump(dict(customTargetingKeyId=7501, name="1.25")): 7601,
+        dump(dict(customTargetingKeyId=7501, name="1.50")): 7602,
+    },
+)
+
 SINGLE_ORDER_VIDEO_SVC_IDS = dict(
     CreativeService={
         dump(dict(
@@ -189,8 +199,13 @@ def byStatement(self, *args):
 
 def create(self, *args):
     recs = copy.deepcopy(args[0])
-    _ = [rec.update({'id': svc_id(self.svc_ids[self.service], rec)}) for rec in recs]
-    return recs
+    out = []
+    for rec in recs:
+        id_ = svc_id(self.svc_ids[self.service], rec)
+        if id_:
+            rec.update({'id': id_})
+            out.append(rec)
+    return out
 
 class MockAdClient:
 

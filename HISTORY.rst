@@ -2,6 +2,12 @@
 History
 =======
 
+0.1.7 (2020-12-4)
+------------------
+
+* Testing: Additional coverage.
+* Conditional schema definitions.
+
 0.1.6 (2020-12-3)
 ------------------
 

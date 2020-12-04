@@ -10,19 +10,38 @@ import yaml
 from yaml import safe_dump as dump
 
 from googleads import ad_manager
+from googleads.errors import GoogleAdsError, GoogleAdsServerFault
 from click.testing import CliRunner
 
 from line_item_manager import cli
+from line_item_manager import gam_config
 from line_item_manager.config import config, VERBOSE1, VERBOSE2
 from line_item_manager.exceptions import ResourceNotFound
 from line_item_manager.gam_config import GAMConfig
 
 from .client import MockAdClient, SINGLE_ORDER_SVC_IDS, SINGLE_ORDER_VIDEO_SVC_IDS, \
-     BIDDER_BANNER_SVC_IDS, BIDDER_VIDEO_SVC_IDS, BIDDER_TEST_RUN_VIDEO_SVC_IDS
+     BIDDER_BANNER_SVC_IDS, BIDDER_VIDEO_SVC_IDS, BIDDER_TEST_RUN_VIDEO_SVC_IDS, \
+     MISSING_RESOURCE_SVC_IDS
 
 CONFIG_FILE = 'tests/resources/cfg.yml'
 KEY_FILE = 'tests/resources/gam_creds.json'
 CUSTOM_TARGETING = {7101: ['US']}
+
+EXPECTED_LICA = \
+  [[{'creativeId': 4001, 'id': 9001, 'lineItemId': 8001},
+    {'creativeId': 4002, 'id': 9002, 'lineItemId': 8001},
+    {'creativeId': 4001, 'id': 9001, 'lineItemId': 8002},
+    {'creativeId': 4002, 'id': 9002, 'lineItemId': 8002}]]
+
+DRY_RUN_EXPECTED_LICA = \
+  [[{'creativeId': 9999914421, 'id': 9999363998, 'lineItemId': 9999827713},
+    {'creativeId': 9999981001, 'id': 9999823727, 'lineItemId': 9999827713},
+    {'creativeId': 9999914421, 'id': 9999322197, 'lineItemId': 9999224642},
+    {'creativeId': 9999981001, 'id': 9999161583, 'lineItemId': 9999224642}]]
+
+BANNER_EXPECTED_LICA = \
+  [[{'creativeId': 4001, 'id': 9001, 'lineItemId': 8001},
+    {'creativeId': 4001, 'id': 9001, 'lineItemId': 8002}]]
 
 # init
 config._start_time = pytest.start_time
@@ -50,7 +69,11 @@ class Client(MockAdClient):
   (f'tests/resources/cfg_video.yml -k {KEY_FILE} -b badcode', 'Bidder code \'badcode\''),
   (f'tests/resources/cfg_video.yml -k {KEY_FILE} -b ix --network-name badname', 'Network name found \'Video Publisher\''),
   (f'tests/resources/cfg_validation_error.yml -k {KEY_FILE} -b ix', 'the following validation errors'),
-  (f'tests/resources/cfg_bad_granularity.yml -k {KEY_FILE} -b interactiveOffers', 'Custom granularity is not defined.'),
+  (f'tests/resources/cfg_bad_granularity.yml -k {KEY_FILE} -b interactiveOffers', '\'custom\' is a required property'),
+  (f'tests/resources/cfg_bad_granularity.yml -k {KEY_FILE} -b interactiveOffers', '\'custom\' is a required property'),
+  (f'tests/resources/cfg_bad_vcpm.yml -k {KEY_FILE} -b interactiveOffers', '\'vcpm\' requires using line item type \'standard\''),
+  (f'tests/resources/cfg_bad_standard_type.yml -k {KEY_FILE} -b interactiveOffers', '\'end_datetime\' is a required property'),
+  (f'tests/resources/cfg_bad_timezone.yml -k {KEY_FILE} -b interactiveOffers', 'Unknown Time Zone, \'BAD_TIME_ZONE\''),
 ])
 def test_cli_create_bad(monkeypatch, command, err_str):
     """Test the CLI."""
@@ -62,6 +85,39 @@ def test_cli_create_bad(monkeypatch, command, err_str):
     assert result.exit_code == 2
     assert err_str in result.output
 
+@pytest.mark.parametrize("command, err_str", [
+  ('tests/resources/cfg_video.yml -k tests/resources/gam_creds_bad_json.json -b ix', 'Check your private key file.'),
+  (f'tests/resources/cfg_video.yml -k {KEY_FILE} -b ix', 'Check your private key file.'),
+])
+def test_cli_no_mock_create_bad(command, err_str):
+    """Test the CLI."""
+    runner = CliRunner()
+    result = runner.invoke(cli.create, shlex.split(command))
+    assert result.exit_code == 2
+    assert err_str in result.output
+
+def test_cli_client_exception(monkeypatch):
+    command = f'tests/resources/cfg_video.yml -k {KEY_FILE} -b ix'
+    def raise_exception(self):
+        raise Exception
+    monkeypatch.setattr(ad_manager.AdManagerClient, "LoadFromString", raise_exception)
+    runner = CliRunner()
+    result = runner.invoke(cli.create, shlex.split(command))
+    assert result.exit_code == 2
+    assert "Check your private key file. Not able to successfully" in result.output
+
+def test_cli_network_exception(monkeypatch):
+    command = f'tests/resources/cfg_video.yml -k {KEY_FILE} -b ix'
+    def raise_exception(self):
+        raise GoogleAdsError('Test Network')
+    client = Client(CUSTOM_TARGETING, BIDDER_VIDEO_SVC_IDS)
+    monkeypatch.setattr(ad_manager.AdManagerClient, "LoadFromString", lambda x: client)
+    monkeypatch.setattr(gam_config.CurrentNetwork, "fetch", raise_exception)
+    runner = CliRunner()
+    result = runner.invoke(cli.create, shlex.split(command))
+    assert result.exit_code == 2
+    assert "Check your network code and permissions" in result.output
+
 @pytest.mark.parametrize("command", [
   (f'tests/resources/cfg_video.yml -k {KEY_FILE} -b interactiveOffers'),
 ])
@@ -72,6 +128,56 @@ def test_cli_create_good(monkeypatch, command):
     result = runner.invoke(cli.create, shlex.split(command))
 
     assert result.exit_code == 0
+
+@pytest.mark.parametrize("exc_type, err_str", [
+  ('GAE', 'Google Ads Error, Test GAM Error'),
+  ('RNF', 'Not able to find the following resource:\n  - Test'),
+  ('KI', 'User Interrupt'),
+])
+def test_cli_ads_error(caplog, monkeypatch, exc_type, err_str):
+    command = f'tests/resources/cfg_video.yml -k {KEY_FILE} -b interactiveOffers'
+    def raise_exception(self):
+        if exc_type == 'GAE':
+            raise GoogleAdsError('Test GAM Error')
+        if exc_type == 'RNF':
+            raise ResourceNotFound('Test')
+        if exc_type == 'KI':
+            raise KeyboardInterrupt()
+    client = Client(CUSTOM_TARGETING, BIDDER_VIDEO_SVC_IDS)
+    monkeypatch.setattr(ad_manager.AdManagerClient, "LoadFromString", lambda x: client)
+    monkeypatch.setattr(cli.GAMConfig, "create_line_items", raise_exception)
+    caplog.set_level(WARNING)
+    runner = CliRunner()
+    _ = runner.invoke(cli.create, shlex.split(command))
+
+    assert err_str in caplog.text
+
+def test_cli_cleanup_exception(caplog, monkeypatch):
+    command = f'tests/resources/cfg_video.yml -k {KEY_FILE} -b interactiveOffers'
+    def raise_exception(self):
+        raise GoogleAdsError('Test GAM Error')
+    client = Client(CUSTOM_TARGETING, BIDDER_VIDEO_SVC_IDS)
+    monkeypatch.setattr(ad_manager.AdManagerClient, "LoadFromString", lambda x: client)
+    monkeypatch.setattr(cli.GAMConfig, "create_line_items", raise_exception)
+    monkeypatch.setattr(cli.GAMConfig, "cleanup", raise_exception)
+    caplog.set_level(ERROR)
+    runner = CliRunner()
+    _ = runner.invoke(cli.create, shlex.split(command))
+
+    assert 'Google Ads Error, Test GAM Error' in caplog.text
+
+def test_cli_missing_resource(caplog, monkeypatch):
+    command = f'tests/resources/cfg_video.yml -k {KEY_FILE} -b interactiveOffers'
+    svc_ids = copy.deepcopy(BIDDER_VIDEO_SVC_IDS)
+    svc_ids.update(MISSING_RESOURCE_SVC_IDS)
+    client = Client(CUSTOM_TARGETING, svc_ids)
+    monkeypatch.setattr(ad_manager.AdManagerClient, "LoadFromString", lambda x: client)
+    caplog.set_level(ERROR)
+    runner = CliRunner()
+    _ = runner.invoke(cli.create, shlex.split(command))
+
+    assert 'Unexpected result' in caplog.text
+    assert 'not found after creation: \'[\'CAN\']\'' in caplog.text
 
 @pytest.mark.command(f'create tests/resources/cfg_video.yml -k {KEY_FILE} --single-order')
 def test_video_single_order(monkeypatch, cli_config):
@@ -86,6 +192,7 @@ def test_video_single_order(monkeypatch, cli_config):
     assert len(gam.li_objs) == 1
     assert config.load_file('tests/resources/video_single_order_expected.yml') == \
       gam.li_objs[0].line_items
+    assert EXPECTED_LICA == gam.lica_objs
     gam.cleanup()
 
 @pytest.mark.command(f'create tests/resources/cfg_video.yml -k {KEY_FILE} -b interactiveOffers')
@@ -109,9 +216,12 @@ def test_dry_run(monkeypatch, cli_config):
     monkeypatch.setattr(ad_manager.AdManagerClient, "LoadFromString", lambda x: client)
     gam = GAMConfig()
     gam.create_line_items()
+    gam.cleanup()
 
     assert len(gam.li_objs) == 1
-    assert config.load_file('tests/resources/video_expected_dry_run.yml') == gam.li_objs[0].line_items
+    assert config.load_file('tests/resources/video_expected_dry_run.yml') == \
+      gam.li_objs[0].line_items
+    assert DRY_RUN_EXPECTED_LICA == gam.lica_objs
 
 @pytest.mark.command(f'create tests/resources/cfg_video.yml -t -k {KEY_FILE} -b interactiveOffers')
 def test_test_run(monkeypatch, cli_config):
@@ -123,7 +233,9 @@ def test_test_run(monkeypatch, cli_config):
     gam.create_line_items()
 
     assert len(gam.li_objs) == 1
-    assert config.load_file('tests/resources/video_expected_test_run.yml') == gam.li_objs[0].line_items
+    assert config.load_file('tests/resources/video_expected_test_run.yml') == \
+      gam.li_objs[0].line_items
+    assert EXPECTED_LICA == gam.lica_objs
 
 @pytest.mark.command(f'create tests/resources/cfg_video.yml -k {KEY_FILE} -b interactiveOffers')
 def test_video_one_bidder(monkeypatch, cli_config):
@@ -134,6 +246,7 @@ def test_video_one_bidder(monkeypatch, cli_config):
 
     assert len(gam.li_objs) == 1
     assert config.load_file('tests/resources/video_expected.yml') == gam.li_objs[0].line_items
+    assert EXPECTED_LICA == gam.lica_objs
 
 @pytest.mark.command(f'create tests/resources/cfg_banner.yml -k {KEY_FILE} -b interactiveOffers')
 def test_banner_one_bidder(monkeypatch, cli_config):
@@ -144,6 +257,7 @@ def test_banner_one_bidder(monkeypatch, cli_config):
 
     assert len(gam.li_objs) == 1
     assert config.load_file('tests/resources/banner_expected.yml') == gam.li_objs[0].line_items
+    assert BANNER_EXPECTED_LICA == gam.lica_objs
 
 @pytest.mark.command(f'create tests/resources/cfg_video.yml -k {KEY_FILE} -b interactiveOffers')
 def test_missing_ad_unit_resource(monkeypatch, cli_config):
@@ -177,4 +291,17 @@ def test_video_no_targeting_video(monkeypatch, cli_config):
     gam.create_line_items()
 
     assert len(gam.li_objs) == 1
-    assert config.load_file('tests/resources/video_expected_no_targeting.yml') == gam.li_objs[0].line_items
+    assert config.load_file('tests/resources/video_expected_no_targeting.yml') == \
+      gam.li_objs[0].line_items
+    assert EXPECTED_LICA == gam.lica_objs
+
+@pytest.mark.command(f'create tests/resources/cfg_banner_vcpm.yml -k {KEY_FILE} -b interactiveOffers')
+def test_banner_safe_frame_vcpm(monkeypatch, cli_config):
+    client = Client(CUSTOM_TARGETING, BIDDER_BANNER_SVC_IDS)
+    monkeypatch.setattr(ad_manager.AdManagerClient, "LoadFromString", lambda x: client)
+    gam = GAMConfig()
+    gam.create_line_items()
+
+    assert len(gam.li_objs) == 1
+    assert config.load_file('tests/resources/banner_vcpm_expected.yml') == gam.li_objs[0].line_items
+    assert BANNER_EXPECTED_LICA == gam.lica_objs

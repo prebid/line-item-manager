@@ -40,11 +40,16 @@ class GAMConfig:
     def __init__(self):
         _ = [log(i_) for i_ in ('targeting', 'rate')]
         self._li_objs = []
+        self._lica_objs = []
         self._success = False
 
     @property
     def li_objs(self):
         return self._li_objs
+
+    @property
+    def lica_objs(self):
+        return self._lica_objs
 
     @property
     def ad_units(self):
@@ -96,7 +101,7 @@ class GAMConfig:
                     li_ = self.add_li_obj(media_type, bidder_code, cpms)
                     logger.info('Line Item Creative Associations: Creative Count=%d',
                                 len(li_.creatives))
-                    _ = li_.create()
+                    self._lica_objs.append(li_.create())
 
     @property
     def network(self):

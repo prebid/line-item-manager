@@ -176,8 +176,8 @@ class Config:
         fmt = self.app['mgr']['date_fmt']
         vcpm = self.user['rate'].get('vcpm')
 
-        for i_ in ('line_item', 'order'):
-            self.user[i_]['name'] = ''.join(['{{ run_mode }}', self.user[i_]['name']])
+        if vcpm and not is_standard:
+            raise ValueError("Specifying 'vcpm' requires using line item type 'standard'")
 
         try:
             tz_str = li_.get('timezone', self.app['mgr']['timezone'])
@@ -185,15 +185,8 @@ class Config:
         except pytz.exceptions.UnknownTimeZoneError as e:
             raise ValueError(f'Unknown Time Zone, {e}')
 
-        if self.user['rate']['granularity']['type'] == "custom" and \
-            not self.user['rate']['granularity'].get('custom'):
-            raise ValueError('Custom granularity is not defined.')
-
-        if vcpm and not is_standard:
-            raise ValueError("Specifying 'vcpm' requires using line item type 'standard'")
-
-        if is_standard and not end_str:
-            raise ValueError("No end date specified when using line item type 'standard'")
+        for i_ in ('line_item', 'order'):
+            self.user[i_]['name'] = ''.join(['{{ run_mode }}', self.user[i_]['name']])
 
         li_.update(dict(
             start_dt=date_from_string(start_str, fmt, tz_str) if start_str else "IMMEDIATELY",

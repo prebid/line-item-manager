@@ -99,6 +99,8 @@ def create(ctx, configfile, **kwargs):
         logger.error('Not able to find the following resource:\n  - %s', _e)
     except GoogleAdsError as _e:
         logger.error('Google Ads Error, %s', _e)
+    except ValueError as _e:
+        logger.error('Unexpected result, %s', _e)
     except KeyboardInterrupt:
         logger.warning('User Interrupt')
     finally:

@@ -75,9 +75,17 @@ properties:
         format: "date-time"
       timezone:
         type: "string"
-    required:
-      - "name"
-      - "item_type"
+    if:
+      properties:
+        item_type:
+          const:
+            "standard"
+      required:
+        - "name"
+        - "item_type"
+    then:
+      required:
+        - "end_datetime"
   targeting:
     type: "object"
     properties:
@@ -143,8 +151,16 @@ definitions:
         $ref: "#/definitions/granularityPredefinedType"
       custom:
         $ref: "#/definitions/cpmBucketArray"
+    if:
+      properties:
+        type:
+          const:
+            "custom"
       required:
         - "type"
+    then:
+      required:
+        - "custom"
   granularityPredefinedType:
     enum:
       - 'low'
