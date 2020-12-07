@@ -67,6 +67,8 @@ properties:
         enum:
           - "price_priority"
           - "standard"
+      priority:
+        $ref: "#/definitions/priorityType"
       start_datetime:
         type: "string"
         format: "date-time"
@@ -169,6 +171,10 @@ definitions:
       - 'auto'
       - 'dense'
       - 'custom'
+  priorityType:
+    type: "integer"
+    minimum: 1
+    maximum: 16
   rateCurrencyType:
     enum:
       - 'AUD'

@@ -2,6 +2,11 @@
 History
 =======
 
+0.1.8 (2020-12-7)
+------------------
+
+* Support for including a custom line item priority.
+
 0.1.7 (2020-12-4)
 ------------------
 

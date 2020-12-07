@@ -54,29 +54,30 @@ class Creative(AppOperations):
     service = "CreativeService"
     method = 'getCreativesByStatement'
     create_method = 'createCreatives'
-    query_fields = ('id', 'name', 'advertiserId', 'width', 'height')
 
     def __init__(self, *args, **kwargs):
+        self.query_fields = ('id', 'name', 'advertiserId', 'width', 'height')
         if 'size' in kwargs:
             kwargs['height'] = kwargs['size']['height']
             kwargs['width'] = kwargs['size']['width']
         super().__init__(*args, **kwargs)
 
 class CreativeVideo(Creative):
-    create_fields = ('xsi_type', 'name', 'advertiserId', 'size', 'vastXmlUrl',
-                     'vastRedirectType', 'duration')
 
     def __init__(self, *args, xsi_type='VastRedirectCreative', vastRedirectType='LINEAR',
                  duration=60, **kwargs):
+        self.create_fields = ('xsi_type', 'name', 'advertiserId', 'size', 'vastXmlUrl',
+                              'vastRedirectType', 'duration')
         kwargs['xsi_type'] = xsi_type
         kwargs['vastRedirectType'] = vastRedirectType
         kwargs['duration'] = duration
         super().__init__(*args, **kwargs)
 
 class CreativeBanner(Creative):
-    create_fields = ('xsi_type', 'name', 'advertiserId', 'size', 'isSafeFrameCompatible', 'snippet')
 
     def __init__(self, *args, xsi_type='ThirdPartyCreative', isSafeFrameCompatible=True, **kwargs):
+        self.create_fields = ('xsi_type', 'name', 'advertiserId', 'size', 'isSafeFrameCompatible',
+                              'snippet')
         kwargs['xsi_type'] = xsi_type
         kwargs['isSafeFrameCompatible'] = isSafeFrameCompatible
         super().__init__(*args, **kwargs)
@@ -122,6 +123,7 @@ class TargetingKey(AppOperations):
     create_method = 'createCustomTargetingKeys'
 
     def __init__(self, *args, name=None, _type='PREDEFINED', **kwargs):
+        self.query_fields = ('name', )
         kwargs['name'] = name
         kwargs['displayName'] = kwargs.get('displayName', name)
         kwargs['type'] = _type

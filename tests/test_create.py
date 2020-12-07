@@ -259,6 +259,17 @@ def test_banner_one_bidder(monkeypatch, cli_config):
     assert config.load_file('tests/resources/banner_expected.yml') == gam.li_objs[0].line_items
     assert BANNER_EXPECTED_LICA == gam.lica_objs
 
+@pytest.mark.command(f'create tests/resources/cfg_video_priority_8.yml -k {KEY_FILE} -b interactiveOffers')
+def test_video_priority_8(monkeypatch, cli_config):
+    client = Client(CUSTOM_TARGETING, BIDDER_VIDEO_SVC_IDS)
+    monkeypatch.setattr(ad_manager.AdManagerClient, "LoadFromString", lambda x: client)
+    gam = GAMConfig()
+    gam.create_line_items()
+
+    assert len(gam.li_objs) == 1
+    assert config.load_file('tests/resources/video_expected_priority_8.yml') == gam.li_objs[0].line_items
+    assert EXPECTED_LICA == gam.lica_objs
+
 @pytest.mark.command(f'create tests/resources/cfg_video.yml -k {KEY_FILE} -b interactiveOffers')
 def test_missing_ad_unit_resource(monkeypatch, cli_config):
     svc_ids = copy.deepcopy(BIDDER_VIDEO_SVC_IDS)

@@ -12,6 +12,9 @@ unlimitedEndDateTime: {{ user_cfg.line_item.unlimited_end_dt }}
 creativeRotationType: "EVEN"
 
 lineItemType: "{{ li_cfg.item_type.upper() }}"
+{% if li_cfg.priority %}
+priority: {{ li_cfg.priority }}
+{% endif %}
 
 costPerUnit:
   currencyCode: "{{ user_cfg.rate.currency }}"
