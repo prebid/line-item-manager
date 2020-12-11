@@ -267,7 +267,7 @@ def test_video_priority_8(monkeypatch, cli_config):
     gam.create_line_items()
 
     assert len(gam.li_objs) == 1
-    assert config.load_file('tests/resources/video_expected_priority_8.yml') == gam.li_objs[0].line_items
+    assert {8} == {i_['priority'] for i_ in gam.li_objs[0].line_items}
     assert EXPECTED_LICA == gam.lica_objs
 
 @pytest.mark.command(f'create tests/resources/cfg_video.yml -k {KEY_FILE} -b interactiveOffers')

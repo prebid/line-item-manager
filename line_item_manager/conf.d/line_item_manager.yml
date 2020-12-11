@@ -1,4 +1,5 @@
 # line_item_manager configuration
+# version: '0.1.9'
 ###############################################################################
 # Templating uses jinja2 rendering (see https://palletsprojects.com/p/jinja/)
 # The following key word types are supported:

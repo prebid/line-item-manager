@@ -1,12 +1,16 @@
 from jinja2 import Template as J2Template
+import re
 import yaml
 
 from .config import config
 
 logger = config.getLogger(__name__)
 
+JINJA_PATTERN = re.compile(r'{{\W*(\w*)\W*}}')
+
 def render_src(src, **kwargs):
-    return yaml.safe_load(J2Template(src).render(**kwargs))
+    clean_src = JINJA_PATTERN.sub(r'{{ \1 }}', src)
+    return yaml.safe_load(J2Template(clean_src).render(**kwargs))
 
 def render_cfg(objname, bidder_code=None, media_type=None, cpm=None,
                cpm_min=None, cpm_max=None):

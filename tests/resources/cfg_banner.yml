@@ -51,10 +51,26 @@ creative: # at least one of the following types is required {video, banner}
       - height: 20
         width: 1000
     snippet: |
-      <script src = "https://..."></script>
-        <script>
-          ...
-        </script>
+      <script src = "https://cdn.jsdelivr.net/npm/prebid-universal-creative@latest/dist/creative.js"></script>
+      <script>
+        var ucTagData = {};
+        ucTagData.adServerDomain = "";
+        ucTagData.pubUrl = "%%PATTERN:url%%";
+        ucTagData.adId = "%%PATTERN:{{ hb_adid }}%%";
+        ucTagData.cacheHost = "%%PATTERN:{{ hb_cache_host }}%%";
+        ucTagData.cachePath = "%%PATTERN:{{ hb_cache_path }}%%";
+        ucTagData.uuid = "%%PATTERN:{{ hb_cache_id }}%%";
+        ucTagData.mediaType = "%%PATTERN:{{ hb_format }}%%";
+        ucTagData.env = "%%PATTERN:hb_env%%";
+        ucTagData.size = "%%PATTERN:{{ hb_size }}%%";
+        ucTagData.hbPb = "%%PATTERN:{{ hb_pb }}%%";
+        ucTagData.mobileResize = "hb_size:%%PATTERN:{{ hb_size }}%%";
+        try {
+          ucTag.renderAd(document, ucTagData);
+        } catch (e) {
+          console.log(e);
+        }
+      </script>
     # safe_frame: False (optional: defaults to True)
 ###############################################################################
 # Orders (required)

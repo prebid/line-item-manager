@@ -2,6 +2,11 @@
 History
 =======
 
+0.1.9 (2020-12-11)
+------------------
+
+* BUG FIX: multi-line template assignments not parsed correctly
+
 0.1.8 (2020-12-7)
 ------------------
 
