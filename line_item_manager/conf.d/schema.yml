@@ -33,6 +33,8 @@ properties:
             type: "string"
           safe_frame:
             type: "boolean"
+          size_override:
+            type: "boolean"
         required:
           - "sizes"
           - "snippet"

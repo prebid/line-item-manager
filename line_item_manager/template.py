@@ -1,6 +1,7 @@
-from jinja2 import Template as J2Template
 import re
 import yaml
+
+from jinja2 import Template as J2Template
 
 from .config import config
 

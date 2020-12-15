@@ -71,6 +71,7 @@ creative: # at least one of the following types is required {video, banner}
           console.log(e);
         }
       </script>
+    size_override: False
     safe_frame: True
 ###############################################################################
 # Orders (required)

@@ -154,9 +154,9 @@ BIDDER_TEST_RUN_VIDEO_SVC_IDS = dict(
 BIDDER_BANNER_SVC_IDS = dict(
     CreativeService={
         dump(dict(
-            name="Prebid InteractiveOffers-banner",
+            name="Prebid InteractiveOffers-banner Copy:1",
             advertiserId=1001,
-            size={'height': 20, 'width': 1000},
+            size={'height': 1, 'width': 1},
         )): 4001,
     },
     OrderService={
@@ -175,6 +175,16 @@ BIDDER_BANNER_SVC_IDS = dict(
             name="Prebid-InteractiveOffers-banner-01/02/2020-08:09:10 @ 1.50",
             orderId=6001,
         )): 8002,
+    },
+)
+
+BIDDER_BANNER_SVC_IDS_NO_SIZE_OVERRIDE = dict(
+    CreativeService={
+        dump(dict(
+            name="Prebid InteractiveOffers-banner",
+            advertiserId=1001,
+            size={'height': 20, 'width': 1000},
+        )): 4001,
     },
 )
 

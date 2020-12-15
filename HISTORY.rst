@@ -2,6 +2,11 @@
 History
 =======
 
+0.1.10 (2020-12-15)
+-------------------
+
+* FEATURE: prebid recommended size override for banner creatives
+
 0.1.9 (2020-12-11)
 ------------------
 
