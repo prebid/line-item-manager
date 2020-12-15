@@ -1,5 +1,5 @@
 # line_item_manager configuration
-# version: '0.1.9'
+# version: '0.1.10'
 ###############################################################################
 # Templating uses jinja2 rendering (see https://palletsprojects.com/p/jinja/)
 # The following key word types are supported:
@@ -37,17 +37,16 @@ advertiser:
 ###############################################################################
 # Creatives (required)
 # Allowed Templating Key Words: Bidder, Media, Misc
+#
+# For additional explanations on settings see the following:
+#   banner: https://docs.prebid.org/adops/step-by-step.html
+#   video: https://docs.prebid.org/adops/setting-up-prebid-video-in-dfp.html
 ###############################################################################
 creative: # at least one of the following types is required {video, banner}
   name: "Prebid {{ bidder_name }}-{{ media_type }}"
-  video:
-    sizes: # list
-      - height: 480
-        width: 640
-      - height: 240
-        width: 320
-    vast_xml_url: "https://prebid.adnxs.com/pbc/v1/cache?uuid=%%PATTERN:{{ hb_cache_id }}%%"
   banner:
+    # safe_frame: False # optional: defaults to True
+    # size_override: False # optional: defaults to True with a 1x1 creative
     sizes: # list
       - height: 480
         width: 640
@@ -56,7 +55,13 @@ creative: # at least one of the following types is required {video, banner}
         <script>
           ...
         </script>
-    # safe_frame: False # optional: defaults to True
+  video:
+    sizes: # list
+      - height: 480
+        width: 640
+      - height: 240
+        width: 320
+    vast_xml_url: "https://prebid.adnxs.com/pbc/v1/cache?uuid=%%PATTERN:{{ hb_cache_id }}%%"
 ###############################################################################
 # Orders (required)
 # Allowed Templating Key Words: Bidder, Media, Order, Misc

@@ -22,8 +22,8 @@ costPerUnit:
 costType: "{{ user_cfg.rate.cost_type }}"
 
 creativePlaceholders:
-  {% for creative in li.creatives|sort(attribute='id') %}
-  - size: {{ creative.size }}
+  {% for size in user_cfg.creative[li.media_type].sizes %}
+  - size: {{ size }}
   {% endfor %}
 
 {% if li.media_type == 'video' %}

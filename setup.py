@@ -52,7 +52,6 @@ setup(
         'License :: OSI Approved :: Apache Software License',
         'Natural Language :: English',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
@@ -79,6 +78,6 @@ setup(
     setup_requires=setup_requirements,
     test_suite='tests',
     url='https://github.com/prebid/line-item-manager',
-    version='0.1.9',
+    version='0.1.10',
     zip_safe=False,
 )

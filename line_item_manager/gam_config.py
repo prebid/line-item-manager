@@ -1,5 +1,7 @@
 from pprint import pformat
 
+from jinja2 import Template as J2Template
+
 from .config import config, VERBOSE1, VERBOSE2
 from .exceptions import ResourceNotFound
 from .operations import Advertiser, AdUnit, Placement, TargetingKey, TargetingValues, \
@@ -8,6 +10,8 @@ from .template import render_cfg, render_src
 from .utils import format_long_list
 
 logger = config.getLogger(__name__)
+
+BANNER_SIZE = config.app['prebid']['creative']['banner']['size']
 
 def log(objname, obj=None):
     logger.log(VERBOSE1, '%s:\n%s', objname, pformat(obj if obj else config.user.get(objname, {})))
@@ -159,6 +163,11 @@ class GAMLineItems:
         )
 
     @property
+    def is_size_override(self):
+        return self.media_type == 'banner' and \
+          config.user['creative']['banner'].get('size_override', True)
+
+    @property
     def advertiser(self):
         if self._advertiser is None:
             cfg = render_cfg('advertiser', bidder_code=self.bidder_code)
@@ -171,7 +180,10 @@ class GAMLineItems:
         recs = []
         for line_item in self.line_items:
             for creative in self.creatives:
-                recs.append(dict(lineItemId=line_item['id'], creativeId=creative['id']))
+                rec = dict(lineItemId=line_item['id'], creativeId=creative['id'])
+                if self.is_size_override:
+                    rec.update(dict(sizes=config.user['creative'][self.media_type]['sizes']))
+                recs.append(rec)
         return LICA().create(recs, validate=True)
 
     @property
@@ -181,20 +193,27 @@ class GAMLineItems:
             _name = f'creative_{self.media_type}'
             _method = getattr(self, _name)
             log(_name, obj={k:cfg[k] for k in ('name', self.media_type)})
-            self._creatives = [_method(cfg, size) for size in cfg[self.media_type]['sizes']]
+            self._creatives = [_method(i_, cfg, size) \
+                               for i_, size in enumerate(cfg[self.media_type]['sizes'])]
         return self._creatives
 
-    def creative_banner(self, cfg, size):
+    def creative_name(self, cfg, index):
+        if self.is_size_override:
+            tmpl = config.app['mgr']['creative']['size_override']['name_template']
+            return J2Template(tmpl).render(name=cfg['name'], index=index + 1)
+        return cfg['name']
+
+    def creative_banner(self, index, cfg, size):
         params = dict(
-            name=cfg['name'],
+            name=self.creative_name(cfg, index),
             advertiserId=self.advertiser['id'],
-            size=size,
+            size=BANNER_SIZE if self.is_size_override else size,
             snippet=cfg['banner']['snippet'],
             isSafeFrameCompatible=cfg['banner'].get('safe_frame', True),
         )
         return CreativeBanner(**params).fetchone(create=True)
 
-    def creative_video(self, cfg, size):
+    def creative_video(self, index, cfg, size):
         params = dict(
             name=cfg['name'],
             advertiserId=self.advertiser['id'],

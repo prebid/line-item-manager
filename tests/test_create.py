@@ -21,7 +21,7 @@ from line_item_manager.gam_config import GAMConfig
 
 from .client import MockAdClient, SINGLE_ORDER_SVC_IDS, SINGLE_ORDER_VIDEO_SVC_IDS, \
      BIDDER_BANNER_SVC_IDS, BIDDER_VIDEO_SVC_IDS, BIDDER_TEST_RUN_VIDEO_SVC_IDS, \
-     MISSING_RESOURCE_SVC_IDS
+     MISSING_RESOURCE_SVC_IDS, BIDDER_BANNER_SVC_IDS_NO_SIZE_OVERRIDE
 
 CONFIG_FILE = 'tests/resources/cfg.yml'
 KEY_FILE = 'tests/resources/gam_creds.json'
@@ -40,6 +40,10 @@ DRY_RUN_EXPECTED_LICA = \
     {'creativeId': 9999981001, 'id': 9999161583, 'lineItemId': 9999224642}]]
 
 BANNER_EXPECTED_LICA = \
+  [[{'lineItemId': 8001, 'creativeId': 4001, 'sizes': [{'height': 20, 'width': 1000}], 'id': 9001},
+    {'lineItemId': 8002, 'creativeId': 4001, 'sizes': [{'height': 20, 'width': 1000}], 'id': 9001}]]
+
+BANNER_EXPECTED_LICA_NO_SIZE_OVERRIDE = \
   [[{'creativeId': 4001, 'id': 9001, 'lineItemId': 8001},
     {'creativeId': 4001, 'id': 9001, 'lineItemId': 8002}]]
 
@@ -308,11 +312,13 @@ def test_video_no_targeting_video(monkeypatch, cli_config):
 
 @pytest.mark.command(f'create tests/resources/cfg_banner_vcpm.yml -k {KEY_FILE} -b interactiveOffers')
 def test_banner_safe_frame_vcpm(monkeypatch, cli_config):
-    client = Client(CUSTOM_TARGETING, BIDDER_BANNER_SVC_IDS)
+    svc_ids = copy.deepcopy(BIDDER_BANNER_SVC_IDS)
+    svc_ids.update(BIDDER_BANNER_SVC_IDS_NO_SIZE_OVERRIDE)
+    client = Client(CUSTOM_TARGETING, svc_ids)
     monkeypatch.setattr(ad_manager.AdManagerClient, "LoadFromString", lambda x: client)
     gam = GAMConfig()
     gam.create_line_items()
 
     assert len(gam.li_objs) == 1
     assert config.load_file('tests/resources/banner_vcpm_expected.yml') == gam.li_objs[0].line_items
-    assert BANNER_EXPECTED_LICA == gam.lica_objs
+    assert BANNER_EXPECTED_LICA_NO_SIZE_OVERRIDE == gam.lica_objs
