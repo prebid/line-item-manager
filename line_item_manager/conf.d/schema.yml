@@ -1,9 +1,11 @@
 $schema: "http://json-schema.org/draft-07/schema#"
 title: "Prebid Line Item Manager Schema"
 type: "object"
+additionalProperties: False
 properties:
   publisher:
     type: "object"
+    additionalProperties: False
     properties:
       network_code:
         $ref: "http://json-schema.org/draft-07/schema#/definitions/nonNegativeInteger"
@@ -11,11 +13,13 @@ properties:
         type: "string"
   creative:
     type: "object"
+    additionalProperties: False
     properties:
       name:
         type: "string"
       video:
         type: "object"
+        additionalProperties: False
         properties:
           sizes:
             $ref: "#/definitions/sizeArray"
@@ -26,6 +30,7 @@ properties:
           - "vast_xml_url"
       banner:
         type: "object"
+        additionalProperties: False
         properties:
           sizes:
             $ref: "#/definitions/sizeArray"
@@ -48,6 +53,7 @@ properties:
           - "banner"
   advertiser:
     type: "object"
+    additionalProperties: False
     properties:
       name:
         type: "string"
@@ -55,6 +61,7 @@ properties:
       - "name"
   order:
     type: "object"
+    additionalProperties: False
     properties:
       name:
         type: "string"
@@ -62,6 +69,7 @@ properties:
       - "name"
   line_item:
     type: "object"
+    additionalProperties: False
     properties:
       name:
         type: "string"
@@ -92,12 +100,14 @@ properties:
         - "end_datetime"
   targeting:
     type: "object"
+    additionalProperties: False
     properties:
       custom:
         type: "array"
         minItems: 1
         items:
           type: "object"
+          additionalProperties: False
           properties:
             name:
               type: "string"
@@ -109,6 +119,7 @@ properties:
         $ref: "http://json-schema.org/draft-07/schema#/definitions/stringArray"
   rate:
     type: "object"
+    additionalProperties: False
     properties:
       currency:
         $ref: "#/definitions/rateCurrencyType"
@@ -133,6 +144,7 @@ definitions:
       $ref: "#/definitions/cpmBucketType"
   cpmBucketType:
     type: "object"
+    additionalProperties: False
     properties:
       min:
         $ref: "#/definitions/cpmType"
@@ -150,6 +162,7 @@ definitions:
     multipleOf: 0.01
   granularityType:
     type: "object"
+    additionalProperties: False
     properties:
       type:
         $ref: "#/definitions/granularityPredefinedType"
@@ -219,6 +232,7 @@ definitions:
       $ref: "#/definitions/sizeType"
   sizeType:
     type: "object"
+    additionalProperties: False
     properties:
       height:
         $ref: "http://json-schema.org/draft-07/schema#/definitions/nonNegativeInteger"
