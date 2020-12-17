@@ -8,6 +8,7 @@ import click
 from googleads.errors import GoogleAdsError, GoogleAdsServerFault
 import yaml
 
+from . import __version__ as VERSION
 from .config import config
 from .exceptions import ResourceNotFound
 from .gam_config import GAMConfig
@@ -17,9 +18,14 @@ click.option = partial(click.option, show_default=True)
 
 logger = config.getLogger(__name__)
 
-@click.group()
-def cli():
-    pass
+@click.group(invoke_without_command=True)
+@click.option('--version', is_flag=True, help='Print version information and exit.')
+@click.pass_context
+def cli(ctx, version):
+    if version:
+        print(f'line-item-manager version {VERSION}')
+        return
+    click.echo(cli.get_help(ctx))
 
 @cli.command()
 @click.argument('configfile', type=click.Path(exists=True))

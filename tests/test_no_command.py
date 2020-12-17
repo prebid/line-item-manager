@@ -5,16 +5,17 @@ import pytest
 
 from line_item_manager import cli
 
-@pytest.mark.parametrize("command",
+@pytest.mark.parametrize("command, echo_str",
  [
-  ('config'),
-  ('bidders'),
+  ('--version', 'line-item-manager version'),
+  ('', '[OPTIONS] COMMAND [ARGS]'),
  ]
 )
-def test_cli_show_good(command):
+def test_version(command, echo_str):
     runner = CliRunner()
     result = runner.invoke(
-        cli.show,
+        cli.cli,
         shlex.split(command)
     )
     assert result.exit_code == 0
+    assert echo_str in result.output
