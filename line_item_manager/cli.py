@@ -86,7 +86,6 @@ def create(ctx, configfile, **kwargs):
     except GoogleAdsError as _e:
         raise click.UsageError('Check your network code and permissions. Not able to successfully access your service account', ctx=ctx)
 
-
     # validate user configuration
     user_cfg = Validator(config.schema, config.user)
     if not user_cfg.is_valid():

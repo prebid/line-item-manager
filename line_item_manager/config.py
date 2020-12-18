@@ -150,9 +150,13 @@ class Config:
     def custom_targeting_key_values(self):
         return [(_c['name'], set(_c['values'])) for _c in self.user.get('targeting', {}).get('custom', [])]
 
+    def bidder_codestr(self, code):
+        return '' if self.cli['single_order'] else code
+
     def bidder_params(self, code):
         _map = self.user.get('bidder_key_map', {}).get(code, {})
-        return {k:_map.get(k, self.fmt_bidder_key(k, code))
+        codestr = self.bidder_codestr(code)
+        return {k:_map.get(k, self.fmt_bidder_key(k, codestr))
                 for k in self.app['prebid']['bidders']['keys']}
 
     def fmt_bidder_key(self, prefix, code):
@@ -161,11 +165,7 @@ class Config:
         return f'{prefix}_{code}'[:self.app['prebid']['bidders']['key_char_limit']]
 
     def targeting_key(self, code):
-        _map = self.user.get('bidder_key_map', {}).get(code, {})
-        prefix = self.app['prebid']['bidders']['targeting_key']
-        if self.cli['single_order']:
-            return _map.get(prefix, prefix)
-        return _map.get(prefix, self.fmt_bidder_key(prefix, code))
+        return self.bidder_params(code)[self.app['prebid']['bidders']['targeting_key']]
 
     def micro_amount(self, cpm):
         return int(float(cpm) * self.app['googleads']['line_items']['micro_cent_factor'])
