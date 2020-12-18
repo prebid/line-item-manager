@@ -78,6 +78,6 @@ setup(
     setup_requires=setup_requirements,
     test_suite='tests',
     url='https://github.com/prebid/line-item-manager',
-    version='0.1.10',
+    version='0.1.11',
     zip_safe=False,
 )

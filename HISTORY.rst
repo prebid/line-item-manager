@@ -2,15 +2,22 @@
 History
 =======
 
+0.1.11 (2020-12-17)
+-------------------
+
+* CLI option to display package version (#4)
+* Schema invalidation of unrecognized config properties (#5)
+* Support all bidder keys in config override map (#9)
+
 0.1.10 (2020-12-15)
 -------------------
 
-* FEATURE: prebid recommended size override for banner creatives
+* FEATURE: prebid recommended size override for banner creatives (#1)
 
 0.1.9 (2020-12-11)
 ------------------
 
-* BUG FIX: multi-line template assignments not parsed correctly
+* BUG FIX: multi-line template assignments not parsed correctly (#2)
 
 0.1.8 (2020-12-7)
 ------------------
