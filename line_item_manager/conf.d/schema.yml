@@ -11,6 +11,8 @@ properties:
         $ref: "http://json-schema.org/draft-07/schema#/definitions/nonNegativeInteger"
       network_name:
         type: "string"
+  bidder_key_map:
+    type: "object"
   creative:
     type: "object"
     additionalProperties: False

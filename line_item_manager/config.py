@@ -150,23 +150,38 @@ class Config:
     def custom_targeting_key_values(self):
         return [(_c['name'], set(_c['values'])) for _c in self.user.get('targeting', {}).get('custom', [])]
 
+    def bidder_codestr(self, code):
+        return '' if self.cli['single_order'] else code
+
     def bidder_params(self, code):
-        return {k:self.fmt_bidder_key(k, code) for k in self.app['prebid']['bidders']['keys']}
+        _map = self.user.get('bidder_key_map', {}).get(code, {})
+        codestr = self.bidder_codestr(code)
+        return {k:_map.get(k, self.fmt_bidder_key(k, codestr))
+                for k in self.app['prebid']['bidders']['keys']}
 
     def fmt_bidder_key(self, prefix, code):
         if not code:
             return prefix
         return f'{prefix}_{code}'[:self.app['prebid']['bidders']['key_char_limit']]
 
-    def targeting_key(self, bidder_code):
-        _map = self.user.get('bidder_key_map', {})
-        prefix = self.app['prebid']['bidders']['targeting_key']
-        if self.cli['single_order']:
-            return _map.get(bidder_code, prefix)
-        return _map.get(bidder_code, self.fmt_bidder_key(prefix, bidder_code))
+    def targeting_key(self, code):
+        return self.bidder_params(code)[self.app['prebid']['bidders']['targeting_key']]
 
     def micro_amount(self, cpm):
         return int(float(cpm) * self.app['googleads']['line_items']['micro_cent_factor'])
+
+    def validate_bidder_key_map(self):
+        key_map = self.user.get('bidder_key_map')
+        if not key_map:
+            return
+        valid_properties = set(self.bidder_data().keys())
+        valid_properties.add(self.app['prebid']['bidders']['targeting_key'])
+        if not set(key_map.keys()).issubset(valid_properties):
+            raise ValueError(f"'bidder_key_map' properties, {set(key_map.keys())} must be valid bidder codes")
+        valid_keys = set(self.app['prebid']['bidders']['keys'])
+        for k, v in key_map.items():
+            if not set(v.keys()).issubset(valid_keys):
+                raise ValueError(f"'bidder_key_map' properties, {set(v.keys())}, for '{k}' must be valid bidder keys")
 
     def pre_create(self):
         li_ = self.user['line_item']

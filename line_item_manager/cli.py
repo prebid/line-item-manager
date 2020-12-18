@@ -25,7 +25,8 @@ def cli(ctx, version):
     if version:
         print(f'line-item-manager version {VERSION}')
         return
-    click.echo(cli.get_help(ctx))
+    if not ctx.invoked_subcommand:
+        click.echo(cli.get_help(ctx))
 
 @cli.command()
 @click.argument('configfile', type=click.Path(exists=True))
@@ -90,6 +91,10 @@ def create(ctx, configfile, **kwargs):
     if not user_cfg.is_valid():
         err_str = '\n'.join([f'  - {user_cfg.fmt(_e)}' for _e in user_cfg.errors()])
         raise click.UsageError(f'Check your configfile for the following validation errors:\n{err_str}', ctx=ctx)
+    try:
+        config.validate_bidder_key_map()
+    except ValueError as e:
+        raise click.UsageError(f'{e}', ctx=ctx)
 
     # pre-create line items config
     try:

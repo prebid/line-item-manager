@@ -15,14 +15,13 @@ def render_src(src, **kwargs):
 
 def render_cfg(objname, bidder_code=None, media_type=None, cpm=None,
                cpm_min=None, cpm_max=None):
-    codestr = '' if config.cli['single_order'] else bidder_code
     params = dict(
         time=config.start_time.strftime("%m/%d/%Y-%H:%M:%S"),
         run_mode='Test: ' if config.cli['test_run'] else '',
-        bidder_code=codestr,
+        bidder_code=config.bidder_codestr(bidder_code),
         bidder_name=config.bidder_name(bidder_code),
     )
-    params.update(config.bidder_params(codestr))
+    params.update(config.bidder_params(bidder_code))
     if media_type:
         params['media_type'] = media_type
     if cpm:
