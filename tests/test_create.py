@@ -21,7 +21,8 @@ from line_item_manager.gam_config import GAMConfig
 
 from .client import MockAdClient, SINGLE_ORDER_SVC_IDS, SINGLE_ORDER_VIDEO_SVC_IDS, \
      BIDDER_BANNER_SVC_IDS, BIDDER_VIDEO_SVC_IDS, BIDDER_TEST_RUN_VIDEO_SVC_IDS, \
-     MISSING_RESOURCE_SVC_IDS, BIDDER_BANNER_SVC_IDS_NO_SIZE_OVERRIDE
+     MISSING_RESOURCE_SVC_IDS, BIDDER_BANNER_SVC_IDS_NO_SIZE_OVERRIDE, \
+     BIDDER_VIDEO_BIDDER_KEY_MAP_SVC_IDS
 
 CONFIG_FILE = 'tests/resources/cfg.yml'
 KEY_FILE = 'tests/resources/gam_creds.json'
@@ -91,6 +92,10 @@ class Client(MockAdClient):
    'Unknown Time Zone, \'BAD_TIME_ZONE\''),
   (f'tests/resources/cfg_bad_param.yml -k {KEY_FILE} -b interactiveOffers',
    'Additional properties are not allowed (\'ad_unit_names\' was unexpected)'),
+  (f'tests/resources/cfg_bad_key_properties.yml -k {KEY_FILE} -b interactiveOffers',
+   '{\'bad_code\'} must be valid bidder codes'),
+  (f'tests/resources/cfg_bad_bidder_keys.yml -k {KEY_FILE} -b interactiveOffers',
+   'for \'pubmatic\' must be valid bidder keys'),
 ])
 def test_cli_create_bad(monkeypatch, command, err_str):
     """Test the CLI."""
@@ -257,6 +262,19 @@ def test_test_run(monkeypatch, cli_config):
 @pytest.mark.command(f'create tests/resources/cfg_video.yml -k {KEY_FILE} -b interactiveOffers')
 def test_video_one_bidder(monkeypatch, cli_config):
     client = Client(CUSTOM_TARGETING, BIDDER_VIDEO_SVC_IDS)
+    monkeypatch.setattr(ad_manager.AdManagerClient, "LoadFromString", lambda x: client)
+    gam = GAMConfig()
+    gam.create_line_items()
+
+    assert len(gam.li_objs) == 1
+    assert config.load_file('tests/resources/video_expected.yml') == gam.li_objs[0].line_items
+    assert EXPECTED_LICA == gam.lica_objs
+
+@pytest.mark.command(f'create tests/resources/cfg_video_bidder_key_map.yml -k {KEY_FILE} -b interactiveOffers')
+def test_video_one_bidder_key_map(monkeypatch, cli_config):
+    svc_ids = copy.deepcopy(BIDDER_VIDEO_SVC_IDS)
+    svc_ids.update(BIDDER_VIDEO_BIDDER_KEY_MAP_SVC_IDS)
+    client = Client(CUSTOM_TARGETING, svc_ids)
     monkeypatch.setattr(ad_manager.AdManagerClient, "LoadFromString", lambda x: client)
     gam = GAMConfig()
     gam.create_line_items()

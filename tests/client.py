@@ -188,6 +188,33 @@ BIDDER_BANNER_SVC_IDS_NO_SIZE_OVERRIDE = dict(
     },
 )
 
+BIDDER_VIDEO_BIDDER_KEY_MAP_SVC_IDS = dict(
+    CustomTargetingService={
+        dump(dict(name="country")): 7101,
+        dump(dict(customTargetingKeyId=7101, name="US")): 7301,
+        dump(dict(customTargetingKeyId=7101, name="CAN")): 7302,
+        dump(dict(name="io_custom_key")): 7201,
+        dump(dict(customTargetingKeyId=7201, name="1.25")): 7401,
+        dump(dict(customTargetingKeyId=7201, name="1.50")): 7402,
+    },
+    CreativeService={
+        dump(dict(
+            name="Prebid InteractiveOffers-video",
+            advertiserId=1001,
+            size={'height': 480, 'width': 640},
+            vastXmlUrl= \
+            'https://prebid.adnxs.com/pbc/v1/cache?uuid=%%PATTERN:io_custom_cache_id%%',
+        )): 4001,
+        dump(dict(
+            name="Prebid InteractiveOffers-video",
+            advertiserId=1001,
+            size={'height': 240, 'width': 320},
+            vastXmlUrl= \
+            'https://prebid.adnxs.com/pbc/v1/cache?uuid=%%PATTERN:io_custom_cache_id%%',
+        )): 4002,
+    },
+)
+
 def rec_from_statement(statement):
     return {i_['key']:i_['value']['value'] for i_ in statement['values']}
 
