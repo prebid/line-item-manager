@@ -4,9 +4,12 @@ import pytest
 import yaml
 
 from line_item_manager.config import config, VERBOSE1, VERBOSE2
+from line_item_manager.prebid import PrebidBidder
 
 CONFIG_FILE = 'tests/resources/cfg.yml'
 KEY_FILE = 'tests/resources/gam_creds.json'
+
+config._start_time = pytest.start_time
 
 with open(CONFIG_FILE) as fp:
     user = yaml.safe_load(fp)
@@ -18,20 +21,21 @@ def test_bidders(cli_config):
     assert config.media_types() == ['video', 'banner']
     assert config.start_time == pytest.start_time
     assert not config.isLoggingEnabled(VERBOSE1)
-    assert [config.bidder_name(c_) for c_ in config.bidder_codes()] == \
+    assert [PrebidBidder(c_).name for c_ in config.bidder_codes()] == \
       ['InteractiveOffers', 'Index Exchange']
     assert config.cpm_names() == ['0.10', '0.20', '0.30', '0.80', '1.30']
-    assert [config.targeting_key(c_) for c_ in config.bidder_codes()] == \
+    assert [PrebidBidder(c_).targeting_key for c_ in config.bidder_codes()] == \
       ['hb_pb_interactiveOff', 'hb_pb_ix']
 
 @pytest.mark.command(f'create {CONFIG_FILE} -k {KEY_FILE} --single-order')
 def test_single_order(cli_config):
-    assert [config.targeting_key(c_) for c_ in config.bidder_codes()] == ['hb_pb']
+    assert [PrebidBidder(c_, single_order=config.cli['single_order']).targeting_key \
+            for c_ in config.bidder_codes()] == ['hb_pb']
 
-@pytest.mark.command(f'create {CONFIG_FILE} -k {KEY_FILE} -b oneVideo -b ix')
-def test_fmt_bidder_key(cli_config):
-    assert config.fmt_bidder_key('prefix', '') == 'prefix'
-    assert config.fmt_bidder_key('prefix', '01234567890123456789') == 'prefix_0123456789012'
+def test_fmt_bidder_key():
+    assert PrebidBidder('oneVideo').fmt_bidder_key('prefix') == "prefix_oneVideo"
+    assert PrebidBidder('oneVideo').fmt_bidder_key('012345678901234') == "012345678901234_oneV"
+    assert PrebidBidder('bad', single_order=True).fmt_bidder_key('prefix') == "prefix"
 
 @pytest.mark.command(f'create {CONFIG_FILE} -k {KEY_FILE} -b oneVideo -b ix -t')
 def test_test_run(cli_config):

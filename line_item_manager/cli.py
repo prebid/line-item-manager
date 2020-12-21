@@ -12,6 +12,8 @@ from . import __version__ as VERSION
 from .config import config
 from .exceptions import ResourceNotFound
 from .gam_config import GAMConfig
+from .gam_operations import client as gam_client
+from .prebid import prebid, PrebidBidder
 from .validate import Validator
 
 click.option = partial(click.option, show_default=True)
@@ -21,7 +23,7 @@ logger = config.getLogger(__name__)
 @click.group(invoke_without_command=True)
 @click.option('--version', is_flag=True, help='Print version information and exit.')
 @click.pass_context
-def cli(ctx, version):
+def cli(ctx: click.core.Context, version: bool) -> None:
     if version:
         print(f'line-item-manager version {VERSION}')
         return
@@ -41,7 +43,7 @@ def cli(ctx, version):
 @click.option('--verbose', '-v', multiple=True, is_flag=True, help='Verbose logging, use multiple times to increase verbosity.')
 @click.option('--skip-auto-archive', is_flag=True, help='Upon failure or interruption, do NOT auto-archive already created orders.')
 @click.pass_context
-def create(ctx, configfile, **kwargs):
+def create(ctx: click.core.Context, configfile: str, **kwargs):
     """Create line items"""
     config.cli = kwargs
 
@@ -66,10 +68,11 @@ def create(ctx, configfile, **kwargs):
         raise click.UsageError('Network name must be provided as an option or set in the config file', ctx=ctx)
 
     for bidder_code in kwargs['bidder_code']:
-        if not bidder_code in config.bidder_data():
+        if not bidder_code in prebid.bidders:
             raise click.UsageError(f'Bidder code \'{bidder_code}\' is not recognized', ctx=ctx)
 
     # validate GAM client
+    config.set_client_factory(gam_client)
     try:
         config.client
     except json.decoder.JSONDecodeError:
@@ -92,7 +95,7 @@ def create(ctx, configfile, **kwargs):
         err_str = '\n'.join([f'  - {user_cfg.fmt(_e)}' for _e in user_cfg.errors()])
         raise click.UsageError(f'Check your configfile for the following validation errors:\n{err_str}', ctx=ctx)
     try:
-        config.validate_bidder_key_map()
+        PrebidBidder.validate_override_map(config.user.get('bidder_key_map'))
     except ValueError as e:
         raise click.UsageError(f'{e}', ctx=ctx)
 
@@ -122,16 +125,17 @@ def create(ctx, configfile, **kwargs):
 
 @cli.command()
 @click.argument('resource', type=click.Choice(['config', 'bidders']))
-def show(resource):
+def show(resource: str) -> None:
     """Show resources"""
     if resource == 'config':
-        config_file = pkg_resources.resource_filename('line_item_manager', 'conf.d/line_item_manager.yml')
+        config_file = pkg_resources.resource_filename('line_item_manager',
+                                                      'conf.d/line_item_manager.yml')
         with open(config_file) as fp:
             print(fp.read())
     if resource == 'bidders':
         print("%-25s%s" % ('Code', 'Name'))
         print("%-25s%s" % ('----', '----'))
-        for row in sorted(config.bidder_data().values(), key=lambda x: x['bidder-code']):
+        for row in sorted(prebid.bidders.values(), key=lambda x: x['bidder-code']):
             print("%-25s%s" % (row['bidder-code'], row['bidder-name']))
 
 def main():

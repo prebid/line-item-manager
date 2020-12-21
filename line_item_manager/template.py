@@ -4,24 +4,25 @@ import yaml
 from jinja2 import Template as J2Template
 
 from .config import config
+from .prebid import PrebidBidder
 
 logger = config.getLogger(__name__)
 
 JINJA_PATTERN = re.compile(r'{{\W*(\w*)\W*}}')
 
-def render_src(src, **kwargs):
+def render_src(src: str, **kwargs) -> dict:
     clean_src = JINJA_PATTERN.sub(r'{{ \1 }}', src)
     return yaml.safe_load(J2Template(clean_src).render(**kwargs))
 
-def render_cfg(objname, bidder_code=None, media_type=None, cpm=None,
-               cpm_min=None, cpm_max=None):
+def render_cfg(objname: str, bidder: PrebidBidder, media_type: str=None,
+               cpm: str=None, cpm_min: str=None, cpm_max: str=None) -> dict:
     params = dict(
         time=config.start_time.strftime("%m/%d/%Y-%H:%M:%S"),
         run_mode='Test: ' if config.cli['test_run'] else '',
-        bidder_code=config.bidder_codestr(bidder_code),
-        bidder_name=config.bidder_name(bidder_code),
+        bidder_code=bidder.codestr,
+        bidder_name=bidder.name,
     )
-    params.update(config.bidder_params(bidder_code))
+    params.update(bidder.params)
     if media_type:
         params['media_type'] = media_type
     if cpm:

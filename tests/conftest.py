@@ -3,6 +3,7 @@ import shlex
 
 from line_item_manager import cli
 from line_item_manager.config import config
+from line_item_manager.gam_operations import client as gam_client
 import pytest
 
 def pytest_configure():
@@ -19,6 +20,7 @@ def cli_config(request):
         configfile = ctx.params.pop('configfile')
         config.cli = ctx.params
         config.set_user_configfile(configfile)
+        config.set_client_factory(gam_client)
         config.pre_create()
         return dict(
             ctx=ctx,

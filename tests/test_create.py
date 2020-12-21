@@ -18,6 +18,7 @@ from line_item_manager import gam_config
 from line_item_manager.config import config, VERBOSE1, VERBOSE2
 from line_item_manager.exceptions import ResourceNotFound
 from line_item_manager.gam_config import GAMConfig
+from line_item_manager.utils import load_file
 
 from .client import MockAdClient, SINGLE_ORDER_SVC_IDS, SINGLE_ORDER_VIDEO_SVC_IDS, \
      BIDDER_BANNER_SVC_IDS, BIDDER_VIDEO_SVC_IDS, BIDDER_TEST_RUN_VIDEO_SVC_IDS, \
@@ -134,7 +135,7 @@ def test_cli_network_exception(monkeypatch):
         raise GoogleAdsError('Test Network')
     client = Client(CUSTOM_TARGETING, BIDDER_VIDEO_SVC_IDS)
     monkeypatch.setattr(ad_manager.AdManagerClient, "LoadFromString", lambda x: client)
-    monkeypatch.setattr(gam_config.CurrentNetwork, "fetch", raise_exception)
+    monkeypatch.setattr(gam_config.CurrentNetwork, "fetchone", raise_exception)
     runner = CliRunner()
     result = runner.invoke(cli.create, shlex.split(command))
     assert result.exit_code == 2
@@ -212,7 +213,7 @@ def test_video_single_order(monkeypatch, cli_config):
 
     assert gam.network['displayName'] == "Video Publisher"
     assert len(gam.li_objs) == 1
-    assert config.load_file('tests/resources/video_single_order_expected.yml') == \
+    assert load_file('tests/resources/video_single_order_expected.yml') == \
       gam.li_objs[0].line_items
     assert EXPECTED_LICA == gam.lica_objs
     gam.cleanup()
@@ -241,7 +242,7 @@ def test_dry_run(monkeypatch, cli_config):
     gam.cleanup()
 
     assert len(gam.li_objs) == 1
-    assert config.load_file('tests/resources/video_expected_dry_run.yml') == \
+    assert load_file('tests/resources/video_expected_dry_run.yml') == \
       gam.li_objs[0].line_items
     assert DRY_RUN_EXPECTED_LICA == gam.lica_objs
 
@@ -255,7 +256,7 @@ def test_test_run(monkeypatch, cli_config):
     gam.create_line_items()
 
     assert len(gam.li_objs) == 1
-    assert config.load_file('tests/resources/video_expected_test_run.yml') == \
+    assert load_file('tests/resources/video_expected_test_run.yml') == \
       gam.li_objs[0].line_items
     assert EXPECTED_LICA == gam.lica_objs
 
@@ -267,7 +268,7 @@ def test_video_one_bidder(monkeypatch, cli_config):
     gam.create_line_items()
 
     assert len(gam.li_objs) == 1
-    assert config.load_file('tests/resources/video_expected.yml') == gam.li_objs[0].line_items
+    assert load_file('tests/resources/video_expected.yml') == gam.li_objs[0].line_items
     assert EXPECTED_LICA == gam.lica_objs
 
 @pytest.mark.command(f'create tests/resources/cfg_video_bidder_key_map.yml -k {KEY_FILE} -b interactiveOffers')
@@ -280,7 +281,7 @@ def test_video_one_bidder_key_map(monkeypatch, cli_config):
     gam.create_line_items()
 
     assert len(gam.li_objs) == 1
-    assert config.load_file('tests/resources/video_expected.yml') == gam.li_objs[0].line_items
+    assert load_file('tests/resources/video_expected.yml') == gam.li_objs[0].line_items
     assert EXPECTED_LICA == gam.lica_objs
 
 @pytest.mark.command(f'create tests/resources/cfg_banner.yml -k {KEY_FILE} -b interactiveOffers')
@@ -291,7 +292,7 @@ def test_banner_one_bidder(monkeypatch, cli_config):
     gam.create_line_items()
 
     assert len(gam.li_objs) == 1
-    assert config.load_file('tests/resources/banner_expected.yml') == gam.li_objs[0].line_items
+    assert load_file('tests/resources/banner_expected.yml') == gam.li_objs[0].line_items
     assert BANNER_EXPECTED_LICA == gam.lica_objs
 
 @pytest.mark.command(f'create tests/resources/cfg_video_priority_8.yml -k {KEY_FILE} -b interactiveOffers')
@@ -337,7 +338,7 @@ def test_video_no_targeting_video(monkeypatch, cli_config):
     gam.create_line_items()
 
     assert len(gam.li_objs) == 1
-    assert config.load_file('tests/resources/video_expected_no_targeting.yml') == \
+    assert load_file('tests/resources/video_expected_no_targeting.yml') == \
       gam.li_objs[0].line_items
     assert EXPECTED_LICA == gam.lica_objs
 
@@ -351,5 +352,5 @@ def test_banner_safe_frame_vcpm(monkeypatch, cli_config):
     gam.create_line_items()
 
     assert len(gam.li_objs) == 1
-    assert config.load_file('tests/resources/banner_vcpm_expected.yml') == gam.li_objs[0].line_items
+    assert load_file('tests/resources/banner_vcpm_expected.yml') == gam.li_objs[0].line_items
     assert BANNER_EXPECTED_LICA_NO_SIZE_OVERRIDE == gam.lica_objs
