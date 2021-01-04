@@ -1,7 +1,8 @@
 from pprint import pformat
-from typing import Any, List, Optional, Tuple, Union
+from typing import Any, List, Optional, Tuple
 
 from googleads import ad_manager
+from googleads.common import ZeepServiceProxy
 import yaml
 
 from .config import config, VERBOSE2
@@ -90,7 +91,7 @@ class GAMOperations:
         _ = [_stm.WithBindVariable(k, v) for k, v in self.query_params.items()]
         return _stm
 
-    def svc(self) -> dict:
+    def svc(self) -> ZeepServiceProxy:
         return self.client.GetService(self.service, version=self.version)
 
     def log_recs(self, recs: List[dict]) -> List[dict]:

@@ -140,7 +140,7 @@ class Config:
             tz_str = li_.get('timezone', self.app['mgr']['timezone'])
             _ = pytz.timezone(tz_str)
         except pytz.exceptions.UnknownTimeZoneError as e:
-            raise ValueError(f'Unknown Time Zone, {e}')
+            raise ValueError(f'Unknown Time Zone, {e}') from e
 
         for i_ in ('line_item', 'order'):
             self.user[i_]['name'] = ''.join(['{{ run_mode }}', self.user[i_]['name']])

@@ -75,11 +75,11 @@ def create(ctx: click.core.Context, configfile: str, **kwargs):
     config.set_client_factory(gam_client)
     try:
         config.client
-    except json.decoder.JSONDecodeError:
+    except json.decoder.JSONDecodeError as e:
         raise click.UsageError('Check your private key file. File is not formatted properly as json', ctx=ctx)
     except ValueError as e:
         raise click.UsageError(f'Check your private key file. {e.args[0]}', ctx=ctx)
-    except Exception:
+    except Exception as e:
         raise click.UsageError('Check your private key file. Not able to successfully access your service account', ctx=ctx)
 
     # validate GAM network access

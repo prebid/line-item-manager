@@ -155,7 +155,7 @@ class GAMConfig:
         _ = [log(i_) for i_ in ('targeting', 'rate')]
         self._ad_units: Optional[List[dict]] = None
         self._li_objs: List[GAMLineItems] = []
-        self._lica_objs: List[dict] = []
+        self._lica_objs: List[List[dict]] = []
         self._network: Optional[dict] = None
         self._placements: Optional[List[dict]] = None
         self._targeting_custom: Optional[List[dict]] = None
@@ -168,7 +168,7 @@ class GAMConfig:
         return self._li_objs
 
     @property
-    def lica_objs(self) -> List[dict]:
+    def lica_objs(self) -> List[List[dict]]:
         return self._lica_objs
 
     @property
