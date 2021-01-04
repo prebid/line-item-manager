@@ -39,7 +39,6 @@ test_requirements = [
     'pytest==6.1.2',
     'pytest-cov==2.10.1',
     'pytest-runner==5.2',
-    'tox==3.20.1',
  ]
 
 setup(

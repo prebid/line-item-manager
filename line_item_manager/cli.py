@@ -8,7 +8,7 @@ import click
 from googleads.errors import GoogleAdsError, GoogleAdsServerFault
 import yaml
 
-from . import __version__ as VERSION
+from . import version as VERSION
 from .config import config
 from .exceptions import ResourceNotFound
 from .gam_config import GAMConfig
