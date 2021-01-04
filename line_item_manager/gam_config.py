@@ -37,13 +37,13 @@ def target(key: str, names: Iterable[str], match_type: str='EXACT') -> dict:
 
 class GAMLineItems:
 
-    _advertiser = None
-    _creatives = None
-    _order = None
-    _targeting_key = None
-    _line_items = None
-
     def __init__(self, gam: Any, media_type: str, bidder: PrebidBidder, cpms: List[str]):
+        self._advertiser: Optional[dict] = None
+        self._creatives: Optional[List[dict]] = None
+        self._line_items: Optional[List[dict]] = None
+        self._order: Optional[dict] = None
+        self._targeting_key: Optional[dict] = None
+
         self.gam: GAMConfig = gam
         self.media_type = media_type
         self.bidder = bidder
@@ -151,16 +151,16 @@ class GAMLineItems:
 
 class GAMConfig:
 
-    _ad_units: Optional[List[dict]] = None
-    _network: Optional[dict] = None
-    _placements: Optional[List[dict]] = None
-    _targeting_custom: Optional[List[dict]] = None
-    _user: Optional[dict] = None
-
     def __init__(self):
         _ = [log(i_) for i_ in ('targeting', 'rate')]
-        self._li_objs = []
-        self._lica_objs = []
+        self._ad_units: Optional[List[dict]] = None
+        self._li_objs: List[GAMLineItems] = []
+        self._lica_objs: List[dict] = []
+        self._network: Optional[dict] = None
+        self._placements: Optional[List[dict]] = None
+        self._targeting_custom: Optional[List[dict]] = None
+        self._user: Optional[dict] = None
+
         self._success = False
 
     @property

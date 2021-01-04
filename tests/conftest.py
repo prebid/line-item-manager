@@ -1,10 +1,11 @@
 from datetime import datetime
 import shlex
 
+import pytest
+
 from line_item_manager import cli
 from line_item_manager.config import config
 from line_item_manager.gam_operations import client as gam_client
-import pytest
 
 def pytest_configure():
     pytest.start_time = datetime(2020, 1, 2, 8, 9, 10)
