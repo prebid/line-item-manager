@@ -1,12 +1,12 @@
 from datetime import datetime
 import logging
-from typing import Callable, Dict, List, Iterable, Tuple, Union
+from typing import Callable, Dict, List, Iterable, Optional, Tuple, Union
 import pytz
 
 from googleads import ad_manager
 
-from .utils import date_from_string, values_from_bucket, ichunk, \
-     load_file, load_package_file
+from .utils import date_from_string, values_from_bucket, ichunk, load_file, \
+     load_package_file
 
 logging.basicConfig()
 
@@ -55,7 +55,7 @@ class Config:
         self.set_log_level()
 
     @property
-    def client(self) -> Union[ad_manager.AdManagerClient]:
+    def client(self) -> Optional[ad_manager.AdManagerClient]:
         if self._client is None:
             self._client = self._client_factory(self.network_code, self.cli['private_key_file'])
         return self._client

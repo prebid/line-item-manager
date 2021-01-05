@@ -6,7 +6,7 @@ from googleads.common import ZeepServiceProxy
 import yaml
 
 from .config import config, VERBOSE2
-from .utils import load_package_file
+from line_item_manager.utils import load_package_file
 
 logger = config.getLogger('operations')
 
@@ -83,7 +83,7 @@ class GAMOperations:
             _stm.offset += _stm.limit
         return results
 
-    def statement(self) -> ad_manager.StatementBuilder:
+    def statement(self) -> Optional[ad_manager.StatementBuilder]:
         if not self.query_params:
             return None
         _stm = ad_manager.StatementBuilder(version=self.version)
@@ -111,7 +111,7 @@ class GAMOperations:
     def dry_run(self) -> bool:
         raise NotImplementedError
 
-    def dry_run_recs(self, recs: List[dict]):
+    def dry_run_recs(self, recs: List[dict]) -> List[dict]:
         raise NotImplementedError
 
     def check(self, rec: dict) -> Any:

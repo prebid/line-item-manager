@@ -104,7 +104,7 @@ class GAMLineItems:
         )
         return CreativeBanner(**params).fetchone(create=True)
 
-    def creative_video(self, index: int, cfg: dict, size: dict) -> dict:
+    def creative_video(self, _: int, cfg: dict, size: dict) -> dict:
         params = dict(
             name=cfg['name'],
             advertiserId=self.advertiser['id'],

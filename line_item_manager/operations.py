@@ -57,31 +57,30 @@ class Creative(AppOperations):
     service = "CreativeService"
     method = 'getCreativesByStatement'
     create_method = 'createCreatives'
+    query_fields = ('id', 'name', 'advertiserId', 'width', 'height')
 
     def __init__(self, *args, **kwargs):
-        self.query_fields = ('id', 'name', 'advertiserId', 'width', 'height')
         if 'size' in kwargs:
             kwargs['height'] = kwargs['size']['height']
             kwargs['width'] = kwargs['size']['width']
         super().__init__(*args, **kwargs)
 
 class CreativeVideo(Creative):
+    create_fields = ('xsi_type', 'name', 'advertiserId', 'size', 'vastXmlUrl',
+                     'vastRedirectType', 'duration')
 
     def __init__(self, *args, xsi_type: str='VastRedirectCreative', vastRedirectType: str='LINEAR',
                  duration: int=60, **kwargs):
-        self.create_fields = ('xsi_type', 'name', 'advertiserId', 'size', 'vastXmlUrl',
-                              'vastRedirectType', 'duration')
         kwargs['xsi_type'] = xsi_type
         kwargs['vastRedirectType'] = vastRedirectType
         kwargs['duration'] = duration
         super().__init__(*args, **kwargs)
 
 class CreativeBanner(Creative):
+    create_fields = ('xsi_type', 'name', 'advertiserId', 'size', 'isSafeFrameCompatible', 'snippet')
 
     def __init__(self, *args, xsi_type: str='ThirdPartyCreative',
                  isSafeFrameCompatible: bool=True, **kwargs):
-        self.create_fields = ('xsi_type', 'name', 'advertiserId', 'size', 'isSafeFrameCompatible',
-                              'snippet')
         kwargs['xsi_type'] = xsi_type
         kwargs['isSafeFrameCompatible'] = isSafeFrameCompatible
         super().__init__(*args, **kwargs)
@@ -115,7 +114,8 @@ class Order(AppOperations):
         if self.dry_run:
             return dict(numChanges=len(self.params['id']))
         return self.svc().performOrderAction(
-            {'xsi_type': 'ArchiveOrders'}, self.statement().ToStatement())
+            {'xsi_type': 'ArchiveOrders'},
+            self.statement().ToStatement()) # type: ignore[union-attr]
 
 class Placement(AppOperations):
     service = 'PlacementService'
@@ -125,9 +125,9 @@ class TargetingKey(AppOperations):
     service = 'CustomTargetingService'
     method = 'getCustomTargetingKeysByStatement'
     create_method = 'createCustomTargetingKeys'
+    query_fields = ('name', )
 
     def __init__(self, *args, name: str=None, _type: str='PREDEFINED', **kwargs):
-        self.query_fields = ('name', )
         kwargs['name'] = name
         kwargs['displayName'] = kwargs.get('displayName', name)
         kwargs['type'] = _type

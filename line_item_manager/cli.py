@@ -128,8 +128,8 @@ def create(ctx: click.core.Context, configfile: str, **kwargs):
 def show(resource: str) -> None:
     """Show resources"""
     if resource == 'config':
-        config_file = pkg_resources.resource_filename('line_item_manager',
-                                                      'conf.d/line_item_manager.yml')
+        config_file = pkg_resources.resource_filename(
+            'line_item_manager', 'conf.d/line_item_manager.yml') # type: ignore[misc]
         with open(config_file) as fp:
             print(fp.read())
     if resource == 'bidders':
@@ -139,7 +139,7 @@ def show(resource: str) -> None:
             print("%-25s%s" % (row['bidder-code'], row['bidder-name']))
 
 def main():
-    cli()
+    cli() # pylint: disable=no-value-for-parameter
 
 if __name__ == "__main__":
     sys.exit(main())  # pragma: no cover
