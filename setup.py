@@ -30,7 +30,7 @@ release_requirements = [
     'twine==3.2.0',
 ]
 
-setup_requirements = [ ]
+setup_requirements = []
 
 test_requirements = [
     'coverage==5.3',

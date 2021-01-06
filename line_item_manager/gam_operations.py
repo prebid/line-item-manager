@@ -92,7 +92,7 @@ class GAMOperations:
         return _stm
 
     def svc(self) -> ZeepServiceProxy:
-        return self.client.GetService(self.service, version=self.version)
+        return self.client.GetService(self.service, version=self.version) # type: ignore[union-attr]
 
     def log_recs(self, recs: List[dict]) -> List[dict]:
         if self.log_fields:
@@ -100,7 +100,7 @@ class GAMOperations:
         return recs
 
     @property
-    def client(self) -> ad_manager.AdManagerClient:
+    def client(self) -> Optional[ad_manager.AdManagerClient]:
         raise NotImplementedError
 
     @property

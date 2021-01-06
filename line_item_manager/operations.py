@@ -1,6 +1,5 @@
 import copy
-from typing import List, Tuple, Union
-import uuid
+from typing import List, Optional, Tuple, Union
 
 from googleads import ad_manager
 
@@ -9,32 +8,78 @@ from .gam_operations import GAMOperations
 from .utils import num_hash
 
 class AppOperations(GAMOperations):
+    """Operations using GAM abstract class."""
 
     @property
-    def client(self) -> Union[ad_manager.AdManagerClient]:
+    def client(self) -> Optional[ad_manager.AdManagerClient]:
+        """Get GAM client.
+
+        Returns:
+          GAM client
+        """
         return config.client
 
     @property
     def version(self) -> str:
+        """Get preferred GAM API version
+
+        Returns:
+           version string
+        """
         return config.app['googleads']['version']
 
     @property
     def dry_run(self) -> bool:
+        """Get dry run state.
+
+        Returns:
+          True if doing a dry run
+        """
         return config.cli['dry_run']
 
     def create_id(self, rec: dict) -> int:
+        """Create ID from reference rec.
+
+        Args:
+          rec: reference
+
+        Returns:
+          Integer hash as ID
+        """
         n_ = num_hash([type(self).__name__, str(rec)])
         return int(''.join([str(config.app['mgr']['dry_run']['id_prefix']), str(n_)]))
 
     def dry_run_recs(self, recs: List[dict]) -> List[dict]:
+        """Recs that are returned on create when doing a dry run.
+
+        Args:
+          recs: reference recs
+
+        Returns:
+          Reference recs with dummy IDs
+        """
         out = copy.deepcopy(recs)
         _ = [r_.update(dict(id=self.create_id(r_))) for r_ in out]
         return out
 
     def check(self, rec: dict) -> Union[str, Tuple[int, int]]:
+        """Record attribute used for existence checks.
+
+        Args:
+          rec: reference rec
+
+        Returns:
+          Record attribute
+        """
         return rec['name']
 
     def validate(self, recs: List[dict], results: List[dict]) -> None:
+        """Raise value error if records are missing.
+
+        Args:
+          recs: reference recs
+          results: operation results
+        """
         observed = {self.check(r_) for r_ in results}
         missing = [self.check(r_) for r_ in recs if self.check(r_) not in observed]
         if missing:

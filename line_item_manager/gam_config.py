@@ -1,5 +1,5 @@
 from pprint import pformat
-from typing import Any, List, Iterable, Optional, Set
+from typing import Any, List, Iterable, Optional
 
 from jinja2 import Template as J2Template
 
