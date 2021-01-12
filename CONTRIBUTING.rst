@@ -116,10 +116,13 @@ Deploying
 
 A reminder for the maintainers on how to deploy.
 Make sure all your changes are committed (including an entry in HISTORY.rst).
-Then run::
+To do a release of e.g. 0.1.11::
 
-$ bump2version patch # possible: major / minor / patch
-$ git push
-$ git push --tags
-
-Travis will then deploy to PyPI if tests pass.
+$ git co -b release/0.1.11 origin/master
+$ bumpversion --new-version 0.1.11 part
+# Edit line_item_manager/__init__.py clearing dev_version: dev_version = ''
+# Edit HISTORY.rst for 0.1.11
+# git: Commit and push above edits.
+# On github: Merge branch
+# On github: Create release 0.1.11
+# Github Action: Automatically publishes to pypi upon release creation
