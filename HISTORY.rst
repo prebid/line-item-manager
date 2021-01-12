@@ -2,6 +2,15 @@
 History
 =======
 
+0.1.12 (2021-01-12)
+-------------------
+
+* Support for Python 3.9
+* Prebid and PrebidBidder classes added
+* Type hints added
+* Docstrings added
+* Removed unused travis and tox support
+
 0.1.11 (2020-12-17)
 -------------------
 
