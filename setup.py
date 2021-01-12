@@ -30,7 +30,7 @@ release_requirements = [
     'twine==3.2.0',
 ]
 
-setup_requirements = [ ]
+setup_requirements = []
 
 test_requirements = [
     'coverage==5.3',
@@ -39,13 +39,12 @@ test_requirements = [
     'pytest==6.1.2',
     'pytest-cov==2.10.1',
     'pytest-runner==5.2',
-    'tox==3.20.1',
  ]
 
 setup(
     author="the prebid contributors",
     author_email='info@prebid.org',
-    python_requires='>=3.5',
+    python_requires='>=3.6',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',
@@ -55,6 +54,7 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
     ],
     description="Create and manage line items.",
     entry_points={

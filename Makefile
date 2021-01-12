@@ -55,7 +55,6 @@ clean-pyc: ## remove Python file artifacts
 	find . -name '__pycache__' -exec rm -fr {} +
 
 clean-test: ## remove test and coverage artifacts
-	rm -fr .tox/
 	rm -f .coverage
 	rm -fr htmlcov/
 	rm -fr .pytest_cache
@@ -67,9 +66,6 @@ test: ## run tests quickly with the default Python
 	pytest \
 	--cov=line_item_manager \
 	--cov-report term-missing
-
-test-all: ## run tests on every Python version with tox
-	tox
 
 coverage: ## check code coverage quickly with the default Python
 	coverage run --source line_item_manager -m pytest

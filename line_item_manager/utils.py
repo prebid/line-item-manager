@@ -1,31 +1,124 @@
 from datetime import datetime
 from hashlib import sha1
+import pkg_resources
 from pprint import pformat
 import pytz
+from typing import Any, Dict, Iterable, List, Optional
 
+import yaml
 
-def num_hash(obj, digits=6):
+def load_file(filename: str) -> dict:
+    """Load a yaml file returning the represented dict.
+
+    Args:
+      filename: full path of file
+
+    Returns:
+      A dict based on specified yaml file
+    """
+    with open(filename) as fp:
+        return yaml.safe_load(fp)
+
+def load_package_file(name: str) -> dict:
+    """Load a yaml package file returning the represented dict.
+
+    Args:
+      name: base name of the package file
+
+    Returns:
+      A dict based on specified yaml packaged file
+    """
+    return load_file(package_filename(name))
+
+def package_filename(name: str) -> str:
+    """Get fullpath of a package filename specified by the base filename.
+
+    Args:
+      name: base name of the package file
+
+    Returns:
+      Fullpath of the package file
+    """
+    return pkg_resources.resource_filename('line_item_manager',
+                                           f'conf.d/{name}') # type: ignore[misc]
+
+def read_package_file(name: str) -> str:
+    """Get contents of a package file specified by name.
+
+    Args:
+      name: base name of the package file
+
+    Returns:
+      Contents of the package file as a string
+    """
+    with open(package_filename(name)) as fp:
+        return fp.read()
+
+def num_hash(obj: Any, digits: int=6) -> int:
+    """Get an integer hash with specified number of digits.
+
+    Args:
+      obj: object to hash
+      digits: number of digits in returned hash
+
+    Returns:
+      A hashed integer with specified number of digits
+    """
     return int(sha1(str(obj).encode('utf-8')).hexdigest(), 16) % 10**digits
 
-def values_from_bucket(bucket):
+def values_from_bucket(bucket: Dict[str, float]) -> set:
+    """Get set of price formatted values specified by min, max and interval.
+
+    Args:
+      bucket: dict containing min, max and interval values
+
+    Returns:
+      Formatted set of values from min to max by interval
+    """
     rng = [int(100 * bucket[_k]) for _k in ('min', 'max', 'interval')]
     rng[1] += rng[2] # make stop inclusive
     return {_x / 100 for _x in range(*rng)}
 
-def date_from_string(dtstr, fmt, timezone):
+def date_from_string(dtstr: str, fmt: str, timezone: str) -> Optional[datetime]:
+    """Get datetime object from a date string.
+
+    Args:
+      dtstr: input date string
+      fmt: datetime format string
+      timezone: time zone string
+
+    Returns:
+      A datetime object if date string is provide else None
+    """
     if not dtstr:
         return None
     return datetime.strptime(dtstr, fmt).replace(tzinfo=pytz.timezone(timezone))
 
-def format_long_list(vals, cnt=3):
+def format_long_list(vals: list, cnt: int=3) -> str:
+    """Pretty format with head, tail, and ellipsis to indicate omissions.
+
+    Args:
+      vals: sequence of values to be formatted
+      cnt: size of the head and tail
+
+    Returns:
+      A pretty formatted string with omissions
+    """
     fmt = pformat(vals)
     out = fmt.split('\n')
     if len(out) <= (2 * cnt):
         return fmt
-    return ''.join(out[:3]) + ' ...,' + ''.join(out[-3:])
+    return ''.join(out[:cnt]) + ' ...,' + ''.join(out[-cnt:])
 
-def ichunk(iterable, n):
+def ichunk(iterable: Iterable[Any], n: int) -> Iterable[List[Any]]:
     """Yield n sized chunks, with tail chunk truncated.
+
+    Args:
+      iterable: sequence of values to be chunked
+      n: size of chunks
+
+    Returns:
+      Yield an iterable of n sized chunks as lists
 
     >>> list(ichunk([], 3))
     []

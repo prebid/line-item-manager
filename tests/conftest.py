@@ -1,9 +1,11 @@
 from datetime import datetime
 import shlex
 
+import pytest
+
 from line_item_manager import cli
 from line_item_manager.config import config
-import pytest
+from line_item_manager.gam_operations import client as gam_client
 
 def pytest_configure():
     pytest.start_time = datetime(2020, 1, 2, 8, 9, 10)
@@ -19,6 +21,7 @@ def cli_config(request):
         configfile = ctx.params.pop('configfile')
         config.cli = ctx.params
         config.set_user_configfile(configfile)
+        config.set_client_factory(gam_client)
         config.pre_create()
         return dict(
             ctx=ctx,

@@ -32,7 +32,6 @@ COPY line_item_manager/ ${APP_DIR}/line_item_manager
 COPY tests/ ${APP_DIR}/tests/
 COPY Makefile ${APP_DIR}/
 COPY *.rst ${APP_DIR}/
-COPY tox.ini requirements_dev.txt ${APP_DIR}/
 
 RUN chown -R ${USER}: ${APP_DIR}
 USER ${USER}

@@ -6,13 +6,6 @@ line-item-manager
 .. image:: https://img.shields.io/pypi/v/line_item_manager.svg
         :target: https://test.pypi.org/project/line-item-manager
 
-.. image:: https://img.shields.io/travis/prebid/line_item_manager.svg
-        :target: https://travis-ci.com/prebid/line_item_manager
-
-.. image:: https://readthedocs.org/projects/line-item-manager/badge/?version=latest
-        :target: https://line-item-manager.readthedocs.io/en/latest/?badge=latest
-        :alt: Documentation Status
-
 
 
 
