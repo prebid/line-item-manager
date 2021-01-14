@@ -108,21 +108,20 @@ Tips
 
 To run a subset of tests::
 
-
     $ python -m unittest tests.test_line_item_manager
 
-Deploying
----------
+Publishing
+----------
 
-A reminder for the maintainers on how to deploy.
-Make sure all your changes are committed (including an entry in HISTORY.rst).
-To do a release of e.g. 0.1.11::
+To do a release and publish to PyPI, using version 0.1.11 as an example::
 
-$ git co -b release/0.1.11 origin/master
-$ bumpversion --new-version 0.1.11 part
-# Edit line_item_manager/__init__.py clearing dev_version: dev_version = ''
-# Edit HISTORY.rst for 0.1.11
-# git: Commit and push above edits.
-# On github: Merge branch
-# On github: Create release 0.1.11
-# Github Action: Automatically publishes to pypi upon release creation
+    $ git checkout -b release/0.1.11 origin/master
+    $ bumpversion --new-version 0.1.11 part
+
+Then:
+
+1. Edit line_item_manager/__init__.py clearing the dev_version: dev_version = ''
+2. Edit HISTORY.rst for 0.1.11
+3. git: Commit and push above edits.
+4. On github: Merge branch
+5. On github: Create release 0.1.11 (Github Action: Automatically publishes to pypi upon release creation)
