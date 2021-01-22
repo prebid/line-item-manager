@@ -115,11 +115,11 @@ To do a release and publish to PyPI, using version 0.1.11 as an example::
 
     $ git checkout -b release/0.1.11 origin/master
     $ bumpversion --new-version 0.1.11 part
+    $ make pre_release
 
 Then:
 
-1. Edit line_item_manager/__init__.py clearing the dev_version: dev_version = ''
-2. Edit HISTORY.rst for 0.1.11
-3. git: Commit and push above edits.
-4. On github: Merge branch
-5. On github: Create release 0.1.11 (Github Action: Automatically publishes to pypi upon release creation)
+1. Edit HISTORY.rst for 0.1.11
+2. git: Commit and push above edits.
+3. On github: Merge branch
+4. On github: Create release 0.1.11 (Github Action: Automatically publishes to pypi upon release creation)
