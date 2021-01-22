@@ -24,7 +24,7 @@ jobs:
         python -m pip install twine==3.2.0 wheel
     - name: Build and publish
       env:
-        TWINE_USERNAME: dshore
-        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+        TWINE_USERNAME: 'Prebid'
+        TWINE_PASSWORD: '${{ secrets.PYPI_PASSWORD }}'
       run: |
-        make release_test
+        make release

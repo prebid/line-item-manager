@@ -4,7 +4,7 @@ line-item-manager
 
 
 .. image:: https://img.shields.io/pypi/v/line_item_manager.svg
-        :target: https://test.pypi.org/project/line-item-manager
+        :target: https://pypi.python.org/pypi/line_item_manager
 
 
 
