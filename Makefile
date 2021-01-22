@@ -84,6 +84,9 @@ docs: ## generate Sphinx HTML documentation, including API docs
 servedocs: docs ## compile the docs watching for changes
 	watchmedo shell-command -p '*.rst' -c '$(MAKE) -C docs html' -R -D .
 
+pre_release:
+	sed -i "s/^dev_version =.*/dev_version = ''/" line_item_manager/__init__.py
+
 release_test: dist ## package and upload a release
 	twine check dist/*
 	twine upload -r testpypi dist/*
