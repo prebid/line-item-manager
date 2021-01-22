@@ -2,6 +2,12 @@
 History
 =======
 
+0.1.13 (2021-01-22)
+-------------------
+
+* First release to production PyPI
+* Github action for publishing
+
 0.1.12 (2021-01-12)
 -------------------
 
