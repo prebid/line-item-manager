@@ -42,8 +42,8 @@ def cli(ctx: click.core.Context, version: bool) -> None:
 @click.option('--bidder-code', '-b', multiple=True,
               help='Bidder code, may be used multiple times.')
 @click.option('--test-run', '-t', is_flag=True,
-              help='Execute a limited number of line_items for testing and manual ' \
-              'review which will be auto-archived.')
+              help='Create a limited number of line_items for testing and review in GAM. ' \
+              'Order and line item names are prepended with \'Test: \'.')
 @click.option('--dry-run', '-n', is_flag=True,
               help='Print commands that would be executed, but do not execute them.')
 @click.option('--quiet', '-q', is_flag=True, help='Logging is limited to warnings and errors.')
