@@ -2,6 +2,11 @@
 History
 =======
 
+0.1.14 (2021-01-25)
+-------------------
+
+* CLI Help: noted that tests are not auto-archived
+
 0.1.13 (2021-01-22)
 -------------------
 
