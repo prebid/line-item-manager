@@ -1,7 +1,10 @@
 from pprint import pformat
 from typing import Any, List, Iterable, Optional
 
+from googleads.errors import GoogleAdsServerFault
 from jinja2 import Template as J2Template
+from retrying import retry
+from tqdm import tqdm
 
 from .config import config, VERBOSE1, VERBOSE2
 from .exceptions import ResourceNotFound
@@ -9,11 +12,17 @@ from .operations import Advertiser, AdUnit, Placement, TargetingKey, TargetingVa
      CreativeBanner, CreativeVideo, Order, CurrentNetwork, CurrentUser, LineItem, LICA
 from .prebid import PrebidBidder
 from .template import render_cfg, render_src
-from .utils import format_long_list, read_package_file
+from .utils import format_long_list, ichunk, read_package_file
 
 logger = config.getLogger(__name__)
 
 BANNER_SIZE = config.app['prebid']['creative']['banner']['size']
+
+def is_create_retryable_error(exc: Exception) -> bool:
+    is_error = isinstance(exc, GoogleAdsServerFault)
+    if is_error:
+        logger.info('Retrying...')
+    return is_error
 
 def log(objname: str, obj: dict=None) -> None:
     logger.log(VERBOSE1, '%s:\n%s', objname, pformat(obj if obj else config.user.get(objname, {})))
@@ -67,6 +76,19 @@ class GAMLineItems:
               Advertiser(name=cfg['name']).fetchone(create=True)
         return self._advertiser
 
+    @retry(retry_on_exception=is_create_retryable_error, stop_max_attempt_number=5, wait_fixed=2000)
+    def create_licas(self, recs: List[dict]) -> List[dict]:
+        return LICA().create(recs, validate=True)
+
+    def create_licas_batched(self, recs: List[dict]) -> List[dict]:
+        out = []
+        logger.info(f'Line Item Creative Associations: Writing {len(recs)} records...')
+        with tqdm(total=len(recs)) as pbar:
+            for subset in ichunk(recs, config.app['mgr']['max_lica_records']):
+                out += self.create_licas(subset)
+                pbar.update(len(subset))
+        return out
+
     def create(self) -> List[dict]:
         recs = []
         for line_item in self.line_items:
@@ -75,7 +97,7 @@ class GAMLineItems:
                 if self.is_size_override:
                     rec.update(dict(sizes=config.user['creative'][self.media_type]['sizes']))
                 recs.append(rec)
-        return LICA().create(recs, validate=True)
+        return self.create_licas_batched(recs)
 
     @property
     def creatives(self) -> List[dict]:
@@ -220,7 +242,7 @@ class GAMConfig:
                 logger.info('#' * 60)
                 logger.info('Media Type: "%s"', media_type)
                 for cpms in config.cpm_names_batched():
-                    logger.info('Line Items: CPMs(min=%s, max=%s, cnt=%d)',
+                    logger.info('Line Items: CPMs(min=%s, max=%s, count=%d)',
                                 cpms[0], cpms[-1], len(cpms))
                     li_ = self.add_li_obj(media_type, bidder, cpms)
                     logger.info('Line Item Creative Associations: Creative Count=%d',

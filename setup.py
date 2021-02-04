@@ -18,6 +18,8 @@ requirements = [
     'jinja2==2.11.2',
     'jsonschema==3.2.0',
     'pyyaml==5.3.1',
+    'retrying==1.3.3',
+    'tqdm==4.56.0',
 ]
 
 package_data = [
