@@ -232,8 +232,8 @@ class GAMConfig:
                     )
                 tgt_key = serialize_object(TargetingKey(name=bidder.targeting_key).fetchone())
                 if tgt_key and not tgt_key.get('status', 'ACTIVE') == 'ACTIVE':
-                    raise ResourceNotActive(f"Bidder Targeting Key name \'{tgt_key['name']}\' is not active.  "
-                                            "You must activate before re-running.")
+                    raise ResourceNotActive(f"Bidder Targeting Key name \'{tgt_key['name']}\' "
+                                            "is not active.  You must activate before re-running.")
                 self._bidders.append(bidder)
         return self._bidders
 

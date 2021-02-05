@@ -128,7 +128,7 @@ def create(ctx: click.core.Context, configfile: str, **kwargs):
         gam.create_line_items()
         gam.success = True
     except ResourceNotActive as _e:
-        logger.error('A resource is not active:\n  - %s', _e)
+        logger.error('Resource is not active:\n  - %s', _e)
     except ResourceNotFound as _e:
         logger.error('Not able to find the following resource:\n  - %s', _e)
     except GoogleAdsError as _e:
