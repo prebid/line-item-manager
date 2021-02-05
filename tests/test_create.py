@@ -16,7 +16,7 @@ from click.testing import CliRunner
 from line_item_manager import cli
 from line_item_manager import gam_config
 from line_item_manager.config import config, VERBOSE1, VERBOSE2
-from line_item_manager.exceptions import ResourceNotFound
+from line_item_manager.exceptions import ResourceNotActive, ResourceNotFound
 from line_item_manager.gam_config import GAMConfig
 from line_item_manager.utils import load_file
 
@@ -55,6 +55,16 @@ with open(CONFIG_FILE) as fp:
     user = yaml.safe_load(fp)
 
 class Client(MockAdClient):
+
+    def __init__(self, custom_targeting, service_ids, **kwargs):
+        self.kwargs = kwargs
+        super().__init__(custom_targeting, service_ids)
+
+    def getCustomTargetingKeysByStatement(self, *args):
+        r_ = super().getCustomTargetingKeysByStatement(*args)
+        if r_ and self.kwargs.get('invalid_targeting_key'):
+            r_['results'][0].update(dict(status='INACTIVE'))
+        return r_
 
     def createCustomTargetingValues(self, *args):
         if args[0][0]['customTargetingKeyId'] == 7101:
@@ -155,6 +165,7 @@ def test_cli_create_good(monkeypatch, command):
 @pytest.mark.parametrize("exc_type, err_str", [
   ('GAE', 'Google Ads Error, Test GAM Error'),
   ('RNF', 'Not able to find the following resource:\n  - Test'),
+  ('RNA', 'A resource is not active:\n  - Test'),
   ('KI', 'User Interrupt'),
 ])
 def test_cli_ads_error(caplog, monkeypatch, exc_type, err_str):
@@ -162,6 +173,8 @@ def test_cli_ads_error(caplog, monkeypatch, exc_type, err_str):
     def raise_exception(self):
         if exc_type == 'GAE':
             raise GoogleAdsError('Test GAM Error')
+        if exc_type == 'RNA':
+            raise ResourceNotActive('Test')
         if exc_type == 'RNF':
             raise ResourceNotFound('Test')
         if exc_type == 'KI':
@@ -270,6 +283,16 @@ def test_video_one_bidder(monkeypatch, cli_config):
     assert len(gam.li_objs) == 1
     assert load_file('tests/resources/video_expected.yml') == gam.li_objs[0].line_items
     assert EXPECTED_LICA == gam.lica_objs
+
+@pytest.mark.command(f'create tests/resources/cfg_video.yml -k {KEY_FILE} -b interactiveOffers')
+def test_video_one_bidder_invalid_targeting_key(monkeypatch, cli_config):
+    client = Client(CUSTOM_TARGETING, BIDDER_VIDEO_SVC_IDS, invalid_targeting_key=True)
+    monkeypatch.setattr(ad_manager.AdManagerClient, "LoadFromString", lambda x: client)
+    gam = GAMConfig()
+
+    with pytest.raises(ResourceNotActive) as e_:
+        gam.create_line_items()
+    assert "'hb_pb_interactiveOff' is not active" in str(e_)
 
 @pytest.mark.command(f'create tests/resources/cfg_video_bidder_key_map.yml -k {KEY_FILE} -b interactiveOffers')
 def test_video_one_bidder_key_map(monkeypatch, cli_config):
