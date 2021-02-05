@@ -165,7 +165,7 @@ def test_cli_create_good(monkeypatch, command):
 @pytest.mark.parametrize("exc_type, err_str", [
   ('GAE', 'Google Ads Error, Test GAM Error'),
   ('RNF', 'Not able to find the following resource:\n  - Test'),
-  ('RNA', 'A resource is not active:\n  - Test'),
+  ('RNA', 'Resource is not active:\n  - Test'),
   ('KI', 'User Interrupt'),
 ])
 def test_cli_ads_error(caplog, monkeypatch, exc_type, err_str):
