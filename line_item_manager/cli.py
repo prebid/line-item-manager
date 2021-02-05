@@ -10,7 +10,7 @@ import yaml
 
 from . import version as VERSION
 from .config import config
-from .exceptions import ResourceNotFound
+from .exceptions import ResourceNotActive, ResourceNotFound
 from .gam_config import GAMConfig
 from .gam_operations import client as gam_client
 from .prebid import prebid, PrebidBidder
@@ -127,6 +127,8 @@ def create(ctx: click.core.Context, configfile: str, **kwargs):
     try:
         gam.create_line_items()
         gam.success = True
+    except ResourceNotActive as _e:
+        logger.error('Resource is not active:\n  - %s', _e)
     except ResourceNotFound as _e:
         logger.error('Not able to find the following resource:\n  - %s', _e)
     except GoogleAdsError as _e:

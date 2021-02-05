@@ -5,9 +5,10 @@ from googleads.errors import GoogleAdsServerFault
 from jinja2 import Template as J2Template
 from retrying import retry
 from tqdm import tqdm
+from zeep.helpers import serialize_object
 
 from .config import config, VERBOSE1, VERBOSE2
-from .exceptions import ResourceNotFound
+from .exceptions import ResourceNotActive, ResourceNotFound
 from .operations import Advertiser, AdUnit, Placement, TargetingKey, TargetingValues, \
      CreativeBanner, CreativeVideo, Order, CurrentNetwork, CurrentUser, LineItem, LICA
 from .prebid import PrebidBidder
@@ -176,6 +177,7 @@ class GAMConfig:
     def __init__(self):
         _ = [log(i_) for i_ in ('targeting', 'rate')]
         self._ad_units: Optional[List[dict]] = None
+        self._bidders: Optional[List[PrebidBidder]] = None
         self._li_objs: List[GAMLineItems] = []
         self._lica_objs: List[List[dict]] = []
         self._network: Optional[dict] = None
@@ -218,6 +220,23 @@ class GAMConfig:
                 logger.error('Order archive, %s, of %d changes, reported %s changes',
                              order_ids, len(order_ids), changes)
 
+    @property
+    def bidders(self) -> List[PrebidBidder]:
+        if self._bidders is None:
+            self._bidders = []
+            for code in config.bidder_codes():
+                bidder = PrebidBidder(
+                    code,
+                    override_map=config.user.get('bidder_key_map', {}).get(code, {}),
+                    single_order=config.cli['single_order']
+                    )
+                tgt_key = serialize_object(TargetingKey(name=bidder.targeting_key).fetchone())
+                if tgt_key and not tgt_key.get('status', 'ACTIVE') == 'ACTIVE':
+                    raise ResourceNotActive(f"Bidder Targeting Key name \'{tgt_key['name']}\' "
+                                            "is not active.  You must activate before re-running.")
+                self._bidders.append(bidder)
+        return self._bidders
+
     def cleanup(self) -> None:
         if not self.success and not config.cli['skip_auto_archive']:
             self.archive()
@@ -225,17 +244,13 @@ class GAMConfig:
     def check_resources(self) -> None:
         _ = self.ad_units
         _ = self.placements
+        _ = self.bidders
 
     def create_line_items(self) -> None:
         self.check_resources()
-        for code in config.bidder_codes():
-            bidder = PrebidBidder(
-                code,
-                override_map=config.user.get('bidder_key_map', {}).get(code, {}),
-                single_order=config.cli['single_order']
-                )
+        for bidder in self.bidders:
             logger.info('#' * 80)
-            logger.info('Bidder: name="%s", code="%s"', bidder.name, code)
+            logger.info('Bidder: name="%s", code="%s"', bidder.name, bidder.code)
             logger.info('Key: "%s", Values: %s', bidder.targeting_key,
                         format_long_list(config.cpm_names()))
             for media_type in config.media_types():
