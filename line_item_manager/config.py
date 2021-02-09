@@ -35,9 +35,9 @@ class Config:
         return self._logger.getChild(name.split('.')[-1])
 
     def set_log_level(self) -> None:
-        if self.cli['verbose']:
+        if self.cli.get('verbose'):
             self._logger.setLevel(logging.INFO - len(self.cli['verbose']))
-        if self.cli['quiet']:
+        if self.cli.get('quiet'):
             self._logger.setLevel(logging.WARNING)
 
     @property

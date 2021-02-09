@@ -35,7 +35,7 @@ class AppOperations(GAMOperations):
         Returns:
           True if doing a dry run
         """
-        return config.cli['dry_run']
+        return config.cli.get('dry_run', False)
 
     def create_id(self, rec: dict) -> int:
         """Create ID from reference rec.
@@ -131,10 +131,12 @@ class CreativeBanner(Creative):
         super().__init__(*args, **kwargs)
 
 class CurrentNetwork(AppOperations):
+    use_statement = False
     service = 'NetworkService'
     method = 'getCurrentNetwork'
 
 class CurrentUser(AppOperations):
+    use_statement = False
     service = 'UserService'
     method = 'getCurrentUser'
 
@@ -173,7 +175,8 @@ class TargetingKey(AppOperations):
     query_fields = ('name', )
 
     def __init__(self, *args, name: str=None, _type: str='PREDEFINED', **kwargs):
-        kwargs['name'] = name
+        if not name is None:
+            kwargs['name'] = name
         kwargs['displayName'] = kwargs.get('displayName', name)
         kwargs['type'] = _type
         super().__init__(*args, **kwargs)

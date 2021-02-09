@@ -27,6 +27,7 @@ class GAMOperations:
     query_fields: Optional[Tuple[str, ...]] = None
     create_fields: Optional[Tuple[str, ...]] = None
     log_fields: Optional[Tuple[str, ...]] = None
+    use_statement = True
 
     def __init__(self, **kwargs):
         self.params = kwargs
@@ -66,9 +67,9 @@ class GAMOperations:
         return recs[0] if recs else {}
 
     def _results(self, one: bool=False) -> List[dict]:
-        _stm = self.statement()
-        if not _stm:
+        if not self.use_statement:
             return [getattr(self.svc(), self.method)()]
+        _stm = self.statement()
         results = []
         while True:
             response = getattr(self.svc(), self.method)(_stm.ToStatement())
@@ -83,12 +84,11 @@ class GAMOperations:
             _stm.offset += _stm.limit
         return results
 
-    def statement(self) -> Optional[ad_manager.StatementBuilder]:
-        if not self.query_params:
-            return None
+    def statement(self) -> ad_manager.StatementBuilder:
         _stm = ad_manager.StatementBuilder(version=self.version)
-        _stm.Where(' AND '.join([f"{k} = :{k}" for k in self.query_params]))
-        _ = [_stm.WithBindVariable(k, v) for k, v in self.query_params.items()]
+        if self.query_params:
+            _stm.Where(' AND '.join([f"{k} = :{k}" for k in self.query_params]))
+            _ = [_stm.WithBindVariable(k, v) for k, v in self.query_params.items()]
         return _stm
 
     def svc(self) -> ZeepServiceProxy:
