@@ -2,7 +2,7 @@
 History
 =======
 
-0.1.14 (2021-02-09)
+0.1.15 (2021-02-09)
 -------------------
 
 * BUG FIX: Error during line item creative associaiton (#25)
