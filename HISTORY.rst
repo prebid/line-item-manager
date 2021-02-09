@@ -2,6 +2,14 @@
 History
 =======
 
+0.1.14 (2021-02-09)
+-------------------
+
+* BUG FIX: Error during line item creative associaiton (#25)
+* BIG FIX: Bidder Targeting Key status is 'INACTIVE' (#23)
+* Added directory of helpful bin scripts (examples/bin) (#22)
+* Added bin script (examples/bin/archive_order.py) for archiving orders (#21)
+
 0.1.14 (2021-01-25)
 -------------------
 
