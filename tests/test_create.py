@@ -18,7 +18,7 @@ from line_item_manager import gam_config
 from line_item_manager.config import config, VERBOSE1, VERBOSE2
 from line_item_manager.exceptions import ResourceNotActive, ResourceNotFound
 from line_item_manager.gam_config import GAMConfig
-from line_item_manager.utils import load_file
+from line_item_manager.utils import load_file, num_hash
 
 from .client import MockAdClient, SINGLE_ORDER_SVC_IDS, SINGLE_ORDER_VIDEO_SVC_IDS, \
      BIDDER_BANNER_SVC_IDS, BIDDER_VIDEO_SVC_IDS, BIDDER_TEST_RUN_VIDEO_SVC_IDS, \
@@ -35,11 +35,25 @@ EXPECTED_LICA = \
     {'creativeId': 4001, 'id': 9001, 'lineItemId': 8002},
     {'creativeId': 4002, 'id': 9002, 'lineItemId': 8002}]]
 
+VIDEO_CREATIVE = {
+    'xsi_type': 'VastRedirectCreative',
+    'name': 'Prebid InteractiveOffers-video',
+    'advertiserId': 1001,
+    'size': {'height': 480, 'width': 640},
+    'vastXmlUrl': 'https://prebid.adnxs.com/pbc/v1/cache?uuid=%%PATTERN:hb_cache_id_interact%%',
+    'vastRedirectType': 'LINEAR',
+    'duration': 1000
+    }
+
+CREATIVE_0 = int('9999' + str(num_hash(['CreativeVideo', str(VIDEO_CREATIVE)])))
+VIDEO_CREATIVE.update({'size': {'height': 240, 'width': 320}})
+CREATIVE_1 = int('9999' + str(num_hash(['CreativeVideo', str(VIDEO_CREATIVE)])))
+
 DRY_RUN_EXPECTED_LICA = \
-  [[{'creativeId': 9999914421, 'id': 9999363998, 'lineItemId': 9999827713},
-    {'creativeId': 9999981001, 'id': 9999823727, 'lineItemId': 9999827713},
-    {'creativeId': 9999914421, 'id': 9999322197, 'lineItemId': 9999224642},
-    {'creativeId': 9999981001, 'id': 9999161583, 'lineItemId': 9999224642}]]
+  [[{'lineItemId': 9999827713, 'creativeId': CREATIVE_0, 'id': 9999534789},
+    {'lineItemId': 9999827713, 'creativeId': CREATIVE_1, 'id': 9999840404},
+    {'lineItemId': 9999224642, 'creativeId': CREATIVE_0, 'id': 9999813993},
+    {'lineItemId': 9999224642, 'creativeId': CREATIVE_1, 'id': 9999825404}]]
 
 BANNER_EXPECTED_LICA = \
   [[{'lineItemId': 8001, 'creativeId': 4001, 'sizes': [{'height': 20, 'width': 1000}], 'id': 9001},

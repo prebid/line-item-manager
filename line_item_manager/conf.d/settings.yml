@@ -41,6 +41,8 @@ prebid:
       size:
         height: 1
         width: 1
+    video:
+      duration: 1000 # milliseconds
   price_granularity:
     low:
       - min: 0.50
