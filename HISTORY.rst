@@ -2,6 +2,13 @@
 History
 =======
 
+0.1.16 (2021-02-11)
+-------------------
+
+* BUG FIX: VAST URL should reference the 'uuid' targeting key in default template config (#32)
+* Video creative duration set to 1 second to be consistent with Prebid documentation (#31)
+* Custom targeting support for using 'IS_NOT' operator (#35)
+
 0.1.15 (2021-02-09)
 -------------------
 
