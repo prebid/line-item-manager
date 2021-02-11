@@ -28,7 +28,7 @@ def is_create_retryable_error(exc: Exception) -> bool:
 def log(objname: str, obj: dict=None) -> None:
     logger.log(VERBOSE1, '%s:\n%s', objname, pformat(obj if obj else config.user.get(objname, {})))
 
-def target(key: str, names: Iterable[str], match_type: str='EXACT') -> dict:
+def target(key: str, names: Iterable[str], operator='IS', match_type: str='EXACT') -> dict:
     tgt_key = TargetingKey(name=key).fetchone(create=True)
     recs = []
     for name in names:
@@ -41,6 +41,7 @@ def target(key: str, names: Iterable[str], match_type: str='EXACT') -> dict:
     tgt_values = TargetingValues(key_id=tgt_key['id']).fetch(create=True, recs=recs, validate=True)
     return dict(
         key=tgt_key,
+        operator=operator,
         values=tgt_values,
         names={v['name']:v for v in tgt_values}
     )
@@ -292,7 +293,8 @@ class GAMConfig:
     @property
     def targeting_custom(self) -> List[dict]:
         if self._targeting_custom is None:
-            self._targeting_custom = [target(k, v) for k, v in config.custom_targeting_key_values()]
+            self._targeting_custom = [target(k, v, operator=op)
+                                      for k, v, op in config.custom_targeting_key_values()]
         return self._targeting_custom
 
     @property

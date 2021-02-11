@@ -100,7 +100,7 @@ class Config:
         return [m_ for m_ in ('video', 'banner') if self.user['creative'].get(m_)]
 
     def custom_targeting_key_values(self) -> List[Tuple[str, set]]:
-        return [(_c['name'], set(_c['values'])) \
+        return [(_c['name'], set(_c['values']), _c.get('operator', 'IS')) \
                 for _c in self.user.get('targeting', {}).get('custom', [])]
 
     def cpm_buckets(self) -> List[Dict[str, float]]:

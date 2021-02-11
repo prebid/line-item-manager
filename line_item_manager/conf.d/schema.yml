@@ -113,8 +113,13 @@ properties:
           properties:
             name:
               type: "string"
+            operator:
+              $ref: "#/definitions/targetingOperatorType"
             values:
               $ref: "http://json-schema.org/draft-07/schema#/definitions/stringArray"
+          required:
+            - name
+            - values
       placement_names:
         $ref: "http://json-schema.org/draft-07/schema#/definitions/stringArray"
       ad_unit_names:
@@ -192,6 +197,10 @@ definitions:
     type: "integer"
     minimum: 1
     maximum: 16
+  targetingOperatorType:
+    enum:
+      - 'IS'
+      - 'IS_NOT'
   rateCurrencyType:
     enum:
       - 'AUD'
