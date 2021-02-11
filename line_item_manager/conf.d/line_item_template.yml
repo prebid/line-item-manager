@@ -54,7 +54,7 @@ targeting:
     children:
       {% for rule in li.gam.targeting_custom %}
       - xsi_type: "CustomCriteria"
-        operator: "IS"
+        operator: {{ rule.operator }}
         keyId: {{ rule.key.id }}
         valueIds:
           {% for value in rule['values']|sort(attribute='id') %}

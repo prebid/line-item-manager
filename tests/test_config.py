@@ -26,6 +26,7 @@ def test_bidders(cli_config):
     assert config.cpm_names() == ['0.10', '0.20', '0.30', '0.80', '1.30']
     assert [PrebidBidder(c_).targeting_key for c_ in config.bidder_codes()] == \
       ['hb_pb_interactiveOff', 'hb_pb_ix']
+    assert config.custom_targeting_key_values() == [('country', {'CAN', 'US'}, 'IS')]
 
 @pytest.mark.command(f'create {CONFIG_FILE} -k {KEY_FILE} --single-order')
 def test_single_order(cli_config):
@@ -64,3 +65,7 @@ def test_quiet(cli_config):
 @pytest.mark.command(f'create tests/resources/cfg_granularity_high.yml -k {KEY_FILE} -b ix -q')
 def test_granularity(cli_config):
     assert config.cpm_names() == ['%.2f' % (v_ / 100) for v_ in range(1, 2001, 1)]
+
+@pytest.mark.command(f'create tests/resources/cfg_is_not_operator.yml -k {KEY_FILE} -b ix -q')
+def test_custom_targeting_is_not(cli_config):
+    assert config.custom_targeting_key_values() == [('country', {'CAN', 'US'}, 'IS_NOT')]
