@@ -48,7 +48,7 @@ setup(
     author_email='info@prebid.org',
     python_requires='>=3.6',
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: Apache Software License',
         'Natural Language :: English',
@@ -80,6 +80,6 @@ setup(
     setup_requires=setup_requirements,
     test_suite='tests',
     url='https://github.com/prebid/line-item-manager',
-    version='0.1.16',
+    version='0.2.0',
     zip_safe=False,
 )

@@ -2,7 +2,7 @@
 
 __author__ = """the prebid contributors"""
 __email__ = 'info@prebid.org'
-__version__ = '0.1.16'
+__version__ = '0.2.0'
 
 # For an official release, use dev_version = ''
 dev_version = ''
