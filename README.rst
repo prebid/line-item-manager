@@ -89,7 +89,7 @@ In order to use line-item-manager, you need to provide JSON private key file and
 1. In Google API Console generate private key file for service account
 2. In Google Ad Manager enable API access and create new services user with Administrator role.
 
-See _`detailed instructions <https://developers.google.com/ad-manager/api/authentication#oauth>`_ in documentation of GAM authentication.
+See `detailed instructions <https://developers.google.com/ad-manager/api/authentication#oauth>`_ in documentation of GAM authentication.
 
 Credits
 -------
