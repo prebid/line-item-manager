@@ -13,7 +13,7 @@ Create and manage line items.
 
 
 * Free software: Apache Software License 2.0
-* Documentation: https://line-item-manager.readthedocs.io.
+* Documentation: https://docs.prebid.org/tools/line-item-manager.html
 
 
 Example Workflow
