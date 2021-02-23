@@ -2,6 +2,12 @@
 History
 =======
 
+0.2.1 (2021-02-23)
+-------------------
+
+* README includes steps to configure access to Google Ad Manager (#39)
+* README includes link to prebid documentation (#40)
+
 0.2.0 (2021-02-16)
 -------------------
 
