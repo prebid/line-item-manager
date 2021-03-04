@@ -106,7 +106,7 @@ Tips
 
 To run a subset of tests::
 
-    $ python -m unittest tests.test_line_item_manager
+    $ python -m pytest tests/test_create.py
 
 Publishing
 ----------
