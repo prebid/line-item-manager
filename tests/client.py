@@ -216,7 +216,15 @@ BIDDER_VIDEO_BIDDER_KEY_MAP_SVC_IDS = dict(
 )
 
 def rec_from_statement(statement):
-    return {i_['key']:i_['value']['value'] for i_ in statement['values']}
+    rec = {}
+    for i_ in statement['values']:
+        key = i_['key']
+        if i_['value']['xsi_type'] == 'SetValue':
+            value = [v['value'] for v in i_['value']['values']]
+        else:
+            value = i_['value']['value']
+        rec[key] = value
+    return rec
 
 def svc_id(svc_recs, rec):
     _id = None

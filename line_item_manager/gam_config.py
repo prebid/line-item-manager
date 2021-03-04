@@ -38,7 +38,7 @@ def target(key: str, names: Iterable[str], operator='IS', match_type: str='EXACT
             displayName=name,
             matchType=match_type,
         ))
-    tgt_values = TargetingValues(key_id=tgt_key['id']).fetch(create=True, recs=recs, validate=True)
+    tgt_values = TargetingValues(key_id=tgt_key['id'], name=list(names)).fetch(create=True, recs=recs, validate=True)
     return dict(
         key=tgt_key,
         operator=operator,
