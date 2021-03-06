@@ -298,6 +298,17 @@ def test_video_one_bidder(monkeypatch, cli_config):
     assert load_file('tests/resources/video_expected.yml') == gam.li_objs[0].line_items
     assert EXPECTED_LICA == gam.lica_objs
 
+@pytest.mark.command(f'create tests/resources/cfg_video_one_custom_value.yml -k {KEY_FILE} -b interactiveOffers')
+def test_video_one_bidder_custom_criteria(monkeypatch, cli_config):
+    client = Client(CUSTOM_TARGETING, BIDDER_VIDEO_SVC_IDS)
+    monkeypatch.setattr(ad_manager.AdManagerClient, "LoadFromString", lambda x: client)
+    gam = GAMConfig()
+    gam.create_line_items()
+
+    assert len(gam.li_objs) == 1
+    assert load_file('tests/resources/video_expected_one_custom_value.yml') == gam.li_objs[0].line_items
+    assert EXPECTED_LICA == gam.lica_objs
+
 @pytest.mark.command(f'create tests/resources/cfg_video.yml -k {KEY_FILE} -b interactiveOffers')
 def test_video_one_bidder_invalid_targeting_key(monkeypatch, cli_config):
     client = Client(CUSTOM_TARGETING, BIDDER_VIDEO_SVC_IDS, invalid_targeting_key=True)
