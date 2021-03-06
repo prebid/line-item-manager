@@ -73,7 +73,6 @@
       - keyId: 7101
         operator: IS
         valueIds:
-        - 7301
         - 7302
         xsi_type: CustomCriteria
       - keyId: 7201
