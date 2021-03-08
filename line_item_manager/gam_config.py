@@ -38,8 +38,7 @@ def target_fetch(key: str, names: Iterable[str], operator='IS', match_type: str=
             displayName=name,
             matchType=match_type,
         ))
-    all_values = TargetingValues(key_id=tgt_key['id']).fetch(create=True, recs=recs, validate=True)
-    tgt_values = [v_ for v_ in all_values if v_['name'] in set(names)]
+    tgt_values = TargetingValues(key_id=tgt_key['id'], name=list(names)).fetch(create=True, recs=recs, validate=True)
     return dict(
         key=tgt_key,
         operator=operator,
