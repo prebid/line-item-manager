@@ -82,7 +82,7 @@ class GAMLineItems:
             else:
                 self._advertiser = \
                   Advertiser(name=cfg['name'],
-                             type=cfg.get('type', 'ADVERTISER')).fetchone(create=True)
+                             type=cfg.get('type', config.app['mgr']['advertiser']['type'])).fetchone(create=True)
         return self._advertiser
 
     @retry(retry_on_exception=is_create_retryable_error, stop_max_attempt_number=5, wait_fixed=2000)
