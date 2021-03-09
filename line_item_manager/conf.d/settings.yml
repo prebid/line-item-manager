@@ -1,4 +1,6 @@
 mgr:
+  advertiser:
+    type: "ADVERTISER"
   creative:
     size_override:
       name_template: '{{ name }} Copy:{{ index }}'

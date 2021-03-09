@@ -57,10 +57,17 @@ properties:
     type: "object"
     additionalProperties: False
     properties:
+      id:
+        type: "number"
       name:
         type: "string"
-    required:
-      - "name"
+      type:
+        $ref: "#/definitions/companyType"
+    anyOf:
+      - required:
+        - "id"
+      - required:
+        - "name"
   order:
     type: "object"
     additionalProperties: False
@@ -201,6 +208,10 @@ definitions:
     enum:
       - 'IS'
       - 'IS_NOT'
+  companyType:
+    enum:
+      - 'AD_NETWORK'
+      - 'ADVERTISER'
   rateCurrencyType:
     enum:
       - 'AUD'
