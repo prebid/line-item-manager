@@ -63,6 +63,7 @@ class GAMLineItems:
             bidder=bidder,
             media_type=media_type,
         )
+        _ = self.advertiser
 
     @property
     def is_size_override(self) -> bool:
@@ -74,8 +75,14 @@ class GAMLineItems:
         if self._advertiser is None:
             cfg = render_cfg('advertiser', self.bidder)
             log('advertiser', obj=cfg)
-            self._advertiser = \
-              Advertiser(name=cfg['name']).fetchone(create=True)
+            if cfg.get('id'):
+                self._advertiser = Advertiser(id=cfg['id']).fetchone()
+                if not 'id' in self._advertiser:
+                    raise ResourceNotFound(f"Advertiser id: {cfg['id']} was not found")
+            else:
+                self._advertiser = \
+                  Advertiser(name=cfg['name'],
+                             type=cfg.get('type', 'ADVERTISER')).fetchone(create=True)
         return self._advertiser
 
     @retry(retry_on_exception=is_create_retryable_error, stop_max_attempt_number=5, wait_fixed=2000)

@@ -6,6 +6,7 @@ SVC_IDS = dict(
         dump(dict()): 1501,
     },
     CompanyService={
+        dump(dict(id=1001)): 1001,
         dump(dict(name="Prebid-InteractiveOffers")): 1001,
     },
     InventoryService={

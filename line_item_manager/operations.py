@@ -94,8 +94,9 @@ class Advertiser(AppOperations):
     method = 'getCompaniesByStatement'
     create_method = 'createCompanies'
 
-    def __init__(self, *args, _type: str='ADVERTISER', **kwargs):
-        kwargs['type'] = _type
+    def __init__(self, *args, **kwargs):
+        if 'type' in kwargs:
+            kwargs['type'] = kwargs['type']
         super().__init__(*args, **kwargs)
 
 class Creative(AppOperations):
