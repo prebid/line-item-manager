@@ -216,7 +216,14 @@ BIDDER_VIDEO_BIDDER_KEY_MAP_SVC_IDS = dict(
 )
 
 def rec_from_statement(statement):
-    return {i_['key']:i_['value']['value'] for i_ in statement['values']}
+    rec = {}
+    for i_ in statement['values']:
+        if i_['value']['xsi_type'] == 'SetValue':
+            value = [v['value'] for v in i_['value']['values']]
+        else:
+            value = i_['value']['value']
+        rec[i_['key']] = value
+    return rec
 
 def svc_id(svc_recs, rec):
     _id = None
@@ -272,10 +279,11 @@ class MockAdClient:
         rec = rec_from_statement(args[0])
         recs = []
         for val in self.custom_targeting.get(rec['customTargetingKeyId'], []):
-            r_ = copy.deepcopy(rec)
-            r_.update(dict(name=val))
-            r_.update({'id': svc_id(self.svc_ids[self.service], r_)})
-            recs.append(r_)
+            if val in set(rec['name']):
+                r_ = copy.deepcopy(rec)
+                r_.update(dict(name=val))
+                r_.update({'id': svc_id(self.svc_ids[self.service], r_)})
+                recs.append(r_)
         return dict(results=recs)
 
 for i_ in ('AdUnits', 'Placements', 'Companies', 'Orders', 'CustomTargetingKeys'):

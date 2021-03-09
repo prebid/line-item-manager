@@ -28,7 +28,7 @@ def is_create_retryable_error(exc: Exception) -> bool:
 def log(objname: str, obj: dict=None) -> None:
     logger.log(VERBOSE1, '%s:\n%s', objname, pformat(obj if obj else config.user.get(objname, {})))
 
-def target(key: str, names: Iterable[str], operator='IS', match_type: str='EXACT') -> dict:
+def target_fetch(key: str, names: Iterable[str], operator='IS', match_type: str='EXACT') -> dict:
     tgt_key = TargetingKey(name=key).fetchone(create=True)
     recs = []
     for name in names:
@@ -38,7 +38,7 @@ def target(key: str, names: Iterable[str], operator='IS', match_type: str='EXACT
             displayName=name,
             matchType=match_type,
         ))
-    tgt_values = TargetingValues(key_id=tgt_key['id']).fetch(create=True, recs=recs, validate=True)
+    tgt_values = TargetingValues(key_id=tgt_key['id'], name=list(names)).fetch(create=True, recs=recs, validate=True)
     return dict(
         key=tgt_key,
         operator=operator,
@@ -170,7 +170,7 @@ class GAMLineItems:
     @property
     def targeting_key(self) -> dict:
         if self._targeting_key is None:
-            self._targeting_key = target(self.bidder.targeting_key, config.cpm_names())
+            self._targeting_key = target_fetch(self.bidder.targeting_key, config.cpm_names())
         return self._targeting_key
 
 class GAMConfig:
@@ -293,7 +293,7 @@ class GAMConfig:
     @property
     def targeting_custom(self) -> List[dict]:
         if self._targeting_custom is None:
-            self._targeting_custom = [target(k, v, operator=op)
+            self._targeting_custom = [target_fetch(k, v, operator=op)
                                       for k, v, op in config.custom_targeting_key_values()]
         return self._targeting_custom
 
