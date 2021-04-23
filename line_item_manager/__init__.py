@@ -5,7 +5,7 @@ __email__ = 'info@prebid.org'
 __version__ = '0.2.1'
 
 # For an official release, use dev_version = ''
-dev_version = '4'
+dev_version = '5'
 
 version = __version__
 if dev_version:
