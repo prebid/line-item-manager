@@ -94,12 +94,15 @@ line_item:
 # by default.
 ###############################################################################
 targeting:
+  bidder:
+    reportableType: "ON"
   custom: # list (optional)
     - name: "country"
       operator: "IS_NOT"
       values:
         - "US"
         - "CAN"
+      reportableType: "ON"
   # One of the below either placemane_names or ad_unit_names is required
   placement_names: # list of names
     - "placement name 1"
