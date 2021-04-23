@@ -99,9 +99,19 @@ class Config:
     def media_types(self) -> List[str]:
         return [m_ for m_ in ('video', 'banner') if self.user['creative'].get(m_)]
 
-    def custom_targeting_key_values(self) -> List[Tuple[str, set]]:
-        return [(_c['name'], set(_c['values']), _c.get('operator', 'IS')) \
-                for _c in self.user.get('targeting', {}).get('custom', [])]
+    def targeting_bidder_key_config(self) -> Dict:
+        return self.user.get('targeting', {}).get('bidder', {})
+
+    def custom_targeting_key_values(self) -> List[Dict]:
+        return [
+            dict(
+                name=_c['name'],
+                values=set(_c['values']),
+                operator=_c.get('operator', 'IS'),
+                reportableType=_c.get('reportableType', 'OFF'),
+            ) \
+            for _c in self.user.get('targeting', {}).get('custom', [])
+        ]
 
     def cpm_buckets(self) -> List[Dict[str, float]]:
         _type = self.user['rate']['granularity']['type']

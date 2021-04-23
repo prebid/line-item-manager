@@ -110,16 +110,20 @@ line_item:
 # by default.
 ###############################################################################
 targeting:
+  # bidder: # object (optional)
+    # reportableType: "ON" # optional, defaults to "OFF", choices: "ON", "OFF", "CUSTOM_DIMENSION"
   custom: # list (optional)
     - name: "country"
       # operator: "IS_NOT" # optional: defaults to "IS"
       values:
         - "US"
         - "CAN"
+      # reportableType: "ON" # optional, defaults to "OFF", choices: "ON", "OFF", "CUSTOM_DIMENSION"
     - name: "site"
       # operator: "IS_NOT" # optional: defaults to "IS"
       values:
         - "somesite"
+      # reportableType: "ON" # optional, defaults to "OFF", choices: "ON", "OFF", "CUSTOM_DIMENSION"
 #   placement_names: # list of names (optional)
 #     - "placement name 1"
 #     - "placement name 2"
