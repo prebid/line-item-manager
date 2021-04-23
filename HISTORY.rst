@@ -2,6 +2,16 @@
 History
 =======
 
+0.2.2 (2021-04-23)
+-------------------
+
+* Support reportableType settings for CustomTargetingKey (#55)
+* Support for advertisers of different types (#48)
+* BUG FIX: Custom targeting hb_bidder contains all key-values (#43)
+* Upgrade jinja2 to 2.11.3 due to security vulnerabilities (#51)
+* Upgrade PyYAML due to security vulnerabilities (#56)
+* Remove requirements_dev.txt; not needed and introducing CVEs (#58)
+
 0.2.1 (2021-02-23)
 -------------------
 
