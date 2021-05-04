@@ -13,7 +13,7 @@ from .operations import Advertiser, AdUnit, Placement, TargetingKey, TargetingVa
      CreativeBanner, CreativeVideo, Order, CurrentNetwork, CurrentUser, LineItem, LICA
 from .prebid import PrebidBidder
 from .template import render_cfg, render_src
-from .utils import format_long_list, ichunk, read_package_file
+from .utils import format_long_list, ichunk
 
 logger = config.getLogger(__name__)
 
@@ -149,7 +149,7 @@ class GAMLineItems:
     def line_items(self) -> List[dict]:
         if self._line_items is None:
             recs = []
-            src = read_package_file('line_item_template.yml')
+            src = config.template_src()
             for i_, cpm in enumerate(self.cpms):
                 li_cfg = render_cfg('line_item', self.bidder, cpm=cpm, media_type=self.media_type)
                 if (i_ == 0) or (i_ == len(self.cpms) - 1) or config.isLoggingEnabled(VERBOSE2):

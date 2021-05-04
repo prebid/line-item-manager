@@ -37,6 +37,9 @@ def cli(ctx: click.core.Context, version: bool) -> None:
 @click.option('--network-name', help='GAM network name, must reconcile with the network code.')
 @click.option('--private-key-file', '-k', required=True, default='gam_creds.json',
               type=click.Path(exists=True), help='Path to json GAM crendials file.')
+@click.option('--template',
+              type=click.Path(exists=True), help='Advanced users: path to custom line item template. ' \
+              'Use "line_item_manager show template" to see the package default')
 @click.option('--single-order', '-s', is_flag=True,
               help='Create a single set of orders instead of orders per bidder.')
 @click.option('--bidder-code', '-b', multiple=True,
@@ -143,15 +146,19 @@ def create(ctx: click.core.Context, configfile: str, **kwargs):
         except GoogleAdsError as _e:
             logger.error('Cleanup: Google Ads Error, %s', _e)
 
+def show_resource(filename: str) -> None:
+    rsrc_name = pkg_resources.resource_filename('line_item_manager', filename) # type: ignore[misc]
+    with open(rsrc_name) as fp:
+        print(fp.read())
+
 @cli.command()
-@click.argument('resource', type=click.Choice(['config', 'bidders']))
+@click.argument('resource', type=click.Choice(['config', 'bidders', 'template']))
 def show(resource: str) -> None:
     """Show resources"""
     if resource == 'config':
-        config_file = pkg_resources.resource_filename(
-            'line_item_manager', 'conf.d/line_item_manager.yml') # type: ignore[misc]
-        with open(config_file) as fp:
-            print(fp.read())
+        show_resource('conf.d/line_item_manager.yml')
+    if resource == 'template':
+        show_resource('conf.d/line_item_template.yml')
     if resource == 'bidders':
         print("%-25s%s" % ('Code', 'Name'))
         print("%-25s%s" % ('----', '----'))

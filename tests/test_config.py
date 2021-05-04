@@ -5,9 +5,11 @@ import yaml
 
 from line_item_manager.config import config, VERBOSE1, VERBOSE2
 from line_item_manager.prebid import PrebidBidder
+from line_item_manager.utils import package_filename
 
 CONFIG_FILE = 'tests/resources/cfg.yml'
 KEY_FILE = 'tests/resources/gam_creds.json'
+TMPL_FILE = 'tests/resources/li_template.yml'
 
 config._start_time = pytest.start_time
 
@@ -28,6 +30,7 @@ def test_bidders(cli_config):
       ['hb_pb_interactiveOff', 'hb_pb_ix']
     assert config.custom_targeting_key_values() == \
       [{'name': 'country', 'values': {'CAN', 'US'}, 'operator': 'IS', 'reportableType': 'OFF'}]
+    assert config.template_src() == open(package_filename('line_item_template.yml')).read()
 
 @pytest.mark.command(f'create {CONFIG_FILE} -k {KEY_FILE} --single-order')
 def test_single_order(cli_config):
@@ -42,6 +45,10 @@ def test_fmt_bidder_key():
 @pytest.mark.command(f'create {CONFIG_FILE} -k {KEY_FILE} -b oneVideo -b ix -t')
 def test_test_run(cli_config):
     assert config.cpm_names() == ['0.10', '0.20']
+
+@pytest.mark.command(f'create {CONFIG_FILE} -k {KEY_FILE} -b oneVideo -b ix --template {TMPL_FILE}')
+def test_template(cli_config):
+    assert config.template_src() == open(TMPL_FILE).read()
 
 @pytest.mark.command(f'create {CONFIG_FILE} -k {KEY_FILE} --network-code 9876 --network-name abcd -b oneVideo -b ix')
 def test_network_meta(cli_config):

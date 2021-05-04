@@ -1,0 +1,76 @@
+orderId: {{ li.order.id }}
+name: "{{ li_cfg.name }}"
+
+startDateTime: {{ user_cfg.line_item.start_dt }}
+startDateTimeType: "{{ user_cfg.line_item.start_dt_type }}"
+{% if user_cfg.line_item.end_dt %}
+endDateTime: {{ user_cfg.line_item.end_dt }}
+{% else %}
+unlimitedEndDateTime: {{ user_cfg.line_item.unlimited_end_dt }}
+{% endif %}
+
+creativeRotationType: "EVEN"
+
+lineItemType: "{{ li_cfg.item_type.upper() }}"
+{% if li_cfg.priority %}
+priority: {{ li_cfg.priority }}
+{% endif %}
+
+costPerUnit:
+  currencyCode: "{{ user_cfg.rate.currency }}"
+  microAmount: {{ micro_amount }}
+costType: "{{ user_cfg.rate.cost_type }}"
+
+creativePlaceholders:
+  {% for size in user_cfg.creative[li.media_type].sizes %}
+  - size: {{ size }}
+  {% endfor %}
+
+{% if li.media_type == 'video' %}
+environmentType: "VIDEO_PLAYER"
+companionDeliveryOption: "OPTIONAL"
+{% endif %}
+
+{% if user_cfg.line_item.goal %}
+primaryGoal: {{ user_cfg.line_item.goal }}
+{% endif %}
+
+targeting:
+  geoTargeting:
+    excludedLocations:
+      - id: 2840
+        displayName: "United States"
+  inventoryTargeting:
+    targetedAdUnits:
+      {% if not li.gam.ad_units and not li.gam.placements %}
+      - {{ li.gam.network.effectiveRootAdUnitId }}
+      {% endif %}
+      {% for ad_unit in li.gam.ad_units|sort(attribute='id') %}
+      - {{ ad_unit.id }}
+      {% endfor %}
+    targetedPlacementIds:
+      {% for placement in li.gam.placements|sort(attribute='id') %}
+      - {{ placement.id }}
+      {% endfor %}
+  customTargeting:
+    xsi_type: "CustomCriteriaSet"
+    logicalOperator: "AND"
+    children:
+      {% for rule in li.gam.targeting_custom %}
+      - xsi_type: "CustomCriteria"
+        operator: {{ rule.operator }}
+        keyId: {{ rule.key.id }}
+        valueIds:
+          {% for value in rule['values']|sort(attribute='id') %}
+          - {{ value.id }}
+          {% endfor %}
+      {% endfor %}
+      - xsi_type: "CustomCriteria"
+        operator: "IS"
+        keyId: {{ li.targeting_key.key.id }}
+        valueIds:
+          - {{ li.targeting_key.names[cpm].id }}
+  {% if li.media_type == 'video' %}
+  requestPlatformTargeting:
+    targetedRequestPlatforms: "VIDEO_PLAYER"
+  {% endif %}
