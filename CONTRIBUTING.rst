@@ -111,10 +111,10 @@ To run a subset of tests::
 Publishing
 ----------
 
-To do a release and publish to PyPI, using version 0.1.11 as an example::
+To do a patch release and publish to PyPI; e.g. going from version 0.1.10 to 0.1.11:
 
     $ git checkout -b release/0.1.11 origin/master
-    $ bumpversion --new-version 0.1.11 part
+    $ bump2version patch
     $ make pre_release
 
 Then:

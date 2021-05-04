@@ -28,7 +28,7 @@ package_data = [
 ]
 
 release_requirements = [
-    'bumpversion==0.6.0',
+    'bump2version>=1',
     'twine==3.2.0',
 ]
 
@@ -40,7 +40,7 @@ test_requirements = [
     'mock==4.0.2',
     'pytest==6.1.2',
     'pytest-cov==2.10.1',
-    'pytest-runner==5.2',
+    'pytest-runner==5.3.0',
  ]
 
 setup(
