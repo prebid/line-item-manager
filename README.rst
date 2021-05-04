@@ -61,10 +61,21 @@ Example Workflow
    --bidder-code rubicon \
    --bidder-code ix
 
-Features
---------
+Advanced Features
+-----------------
 
-* TODO
+1. Use a custom line item template
+::
+
+   # 1. save and edit a copy of the default line item template
+   $ line_item_manager show template > my_template.yml
+
+   # 2. edit my_template.yml; e.g. add geoTargeting to exclude locations
+
+   # 3. create line items referencing your custom template
+   $ line_item_manager create my_config.yml \
+   --single-order \
+   --template my_template.yml
 
 Local Development
 -----------------

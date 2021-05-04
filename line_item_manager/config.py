@@ -1,12 +1,12 @@
 from datetime import datetime
 import logging
-from typing import Callable, Dict, List, Iterable, Optional, Tuple, Union
+from typing import Callable, Dict, List, Iterable, Optional, Union
 import pytz
 
 from googleads import ad_manager
 
 from .utils import date_from_string, values_from_bucket, ichunk, load_file, \
-     load_package_file
+     load_package_file, read_package_file
 
 logging.basicConfig()
 
@@ -134,6 +134,12 @@ class Config:
 
     def micro_amount(self, cpm: Union[str, float]) -> int:
         return int(float(cpm) * self.app['googleads']['line_items']['micro_cent_factor'])
+
+    def template_src(self) -> str:
+        if self.cli['template']:
+            with open(self.cli['template']) as fp:
+                return fp.read()
+        return read_package_file('line_item_template.yml')
 
     def pre_create(self) -> None:
         li_ = self.user['line_item']
