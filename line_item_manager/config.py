@@ -5,8 +5,8 @@ import pytz
 
 from googleads import ad_manager
 
-from .utils import date_from_string, values_from_bucket, ichunk, load_file, \
-     load_package_file, read_package_file
+from .yaml_date import date_from_string
+from .utils import values_from_bucket, ichunk, load_file, load_package_file, read_package_file
 
 logging.basicConfig()
 
