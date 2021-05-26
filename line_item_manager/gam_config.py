@@ -147,11 +147,6 @@ class GAMLineItems:
         )
         return CreativeVideo(**params).fetchone(create=True)
 
-    def li_update_timezone(self, tz_str: str, rec: dict) -> None:
-        for dt in ('startDateTime', 'endDateTime'):
-            if isinstance(rec.get(dt), datetime):
-                rec[dt] = rec[dt].replace(tzinfo=pytz.timezone(tz_str))
-
     @property
     def line_items(self) -> List[dict]:
         if self._line_items is None:
@@ -168,9 +163,7 @@ class GAMLineItems:
                     li_cfg=li_cfg,
                     user_cfg=config.user,
                 )
-                rec = render_src(src, **params)
-                self.li_update_timezone(li_cfg.get('timezone', config.app['mgr']['timezone']), rec)
-                recs.append(rec)
+                recs.append(render_src(src, **params))
             self._line_items = LineItem().create(recs, validate=True)
         return self._line_items
 

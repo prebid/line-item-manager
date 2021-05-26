@@ -5,7 +5,9 @@
 from datetime import datetime, timezone
 import pytest
 
-from line_item_manager.utils import ichunk, format_long_list, date_from_string
+from line_item_manager.utils import ichunk, format_long_list
+from line_item_manager.yaml_date import date_from_string
+
 
 def test_ichunk():
     assert list(ichunk(range(10), 3)) == [[0, 1, 2], [3, 4, 5], [6, 7, 8], [9]]

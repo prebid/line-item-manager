@@ -1,9 +1,7 @@
-from datetime import datetime
 from hashlib import sha1
 import pkg_resources
 from pprint import pformat
-import pytz
-from typing import Any, Dict, Iterable, List, Optional
+from typing import Any, Dict, Iterable, List
 
 import yaml
 
@@ -78,21 +76,6 @@ def values_from_bucket(bucket: Dict[str, float]) -> set:
     rng = [int(100 * bucket[_k]) for _k in ('min', 'max', 'interval')]
     rng[1] += rng[2] # make stop inclusive
     return {_x / 100 for _x in range(*rng)}
-
-def date_from_string(dtstr: str, fmt: str, timezone: str) -> Optional[datetime]:
-    """Get datetime object from a date string.
-
-    Args:
-      dtstr: input date string
-      fmt: datetime format string
-      timezone: time zone string
-
-    Returns:
-      A datetime object if date string is provide else None
-    """
-    if not dtstr:
-        return None
-    return datetime.strptime(dtstr, fmt).replace(tzinfo=pytz.timezone(timezone))
 
 def format_long_list(vals: list, cnt: int=3) -> str:
     """Pretty format with head, tail, and ellipsis to indicate omissions.
