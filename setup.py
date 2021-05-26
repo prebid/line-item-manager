@@ -13,6 +13,7 @@ readme = get_txt('README.rst') if os.path.isfile('README.rst') else ''
 history = get_txt('HISTORY.rst') if os.path.isfile('HISTORY.rst') else ''
 
 requirements = [
+    'backports-datetime-fromisoformat==1.0.0',
     'Click==7.1.2',
     'googleads==25.0.0',
     'jinja2==2.11.3',
