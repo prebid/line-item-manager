@@ -2,6 +2,13 @@
 History
 =======
 
+0.2.3 (2021-05-26)
+-------------------
+
+* BUG FIX: datetime.timezone objects did not include zone name (#68)
+* Support use of a custom line-item template (#65)
+* Update bumpversion (depracated) and pytest-runner (out-of-date) (#62)
+
 0.2.2 (2021-04-23)
 -------------------
 
