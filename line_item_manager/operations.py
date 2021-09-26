@@ -157,6 +157,12 @@ class Order(AppOperations):
     service = "OrderService"
     method = 'getOrdersByStatement'
     create_method = 'createOrders'
+    query_fields = ('id', 'name', 'advertiserId', 'traffickerId')
+
+    def __init__(self, *args, **kwargs):
+        if 'appliedTeamIds' in kwargs and kwargs['appliedTeamIds'] is None:
+            del kwargs['appliedTeamIds']
+        super().__init__(*args, **kwargs)
 
     def archive(self) -> dict:
         if self.dry_run:

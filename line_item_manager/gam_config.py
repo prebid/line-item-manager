@@ -173,8 +173,12 @@ class GAMLineItems:
             cfg = render_cfg('order', self.bidder, media_type=self.media_type,
                              cpm_min=self.cpms[0], cpm_max=self.cpms[-1])
             log('order', obj=cfg)
-            self._order = Order(name=cfg['name'], advertiserId=self.advertiser['id'],
-                                traffickerId=self.gam.user['id']).fetchone(create=True)
+            self._order = Order(
+                name=cfg['name'],
+                advertiserId=self.advertiser['id'],
+                traffickerId=self.gam.user['id'],
+                appliedTeamIds=config.user['order'].get('appliedTeamIds'),
+            ).fetchone(create=True)
         return self._order
 
     @property

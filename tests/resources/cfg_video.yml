@@ -62,6 +62,9 @@ creative: # at least one of the following types is required {video, banner}
 ###############################################################################
 order:
   name: "Prebid-{{ bidder_name }}-{{ media_type }}-{{ time }} {{ cpm_min }}-{{ cpm_max }}"
+  appliedTeamIds: # list (optional)
+    - 12345678
+    - 23456789
 ###############################################################################
 # Line Items (required)
 # Allowed Templating Key Words: Bidder, Media, CPM, Misc

@@ -74,6 +74,11 @@ properties:
     properties:
       name:
         type: "string"
+      appliedTeamIds:
+        type: "array"
+        minItems: 1
+        items:
+          type: "number"
     required:
       - "name"
   line_item:

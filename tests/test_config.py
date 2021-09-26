@@ -36,6 +36,7 @@ def test_bidders(cli_config):
 def test_single_order(cli_config):
     assert [PrebidBidder(c_, single_order=config.cli['single_order']).targeting_key \
             for c_ in config.bidder_codes()] == ['hb_pb']
+    assert config.user['order']['appliedTeamIds'] == [12345678, 23456789]
 
 def test_fmt_bidder_key():
     assert PrebidBidder('oneVideo').fmt_bidder_key('prefix') == "prefix_oneVideo"
