@@ -80,3 +80,7 @@ def test_custom_targeting_is_not_reportableType(cli_config):
     assert config.custom_targeting_key_values() == \
       [{'name': 'country', 'values': {'CAN', 'US'}, 'operator': 'IS_NOT', 'reportableType': 'ON'}]
     assert config.targeting_bidder_key_config() == {'reportableType': 'ON'}
+
+@pytest.mark.command(f'create tests/resources/cfg_video_max_duration.yml -k {KEY_FILE} -b ix -q')
+def test_video_max_duration(cli_config):
+    assert config.user['creative']['video']['max_duration'] == 60000

@@ -44,6 +44,7 @@ prebid:
         height: 1
         width: 1
     video:
+      max_duration: 30000 # milliseconds
       duration: 1000 # milliseconds
   price_granularity:
     low:

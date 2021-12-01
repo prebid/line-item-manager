@@ -27,6 +27,8 @@ properties:
             $ref: "#/definitions/sizeArray"
           vast_xml_url:
             type: "string"
+          max_duration:
+            type: "#/definitions/positiveIntegerType"
         required:
           - "sizes"
           - "vast_xml_url"
@@ -213,6 +215,9 @@ definitions:
       - 'auto'
       - 'dense'
       - 'custom'
+  positiveIntegerType:
+    type: "integer"
+    minimum: 1
   priorityType:
     type: "integer"
     minimum: 1

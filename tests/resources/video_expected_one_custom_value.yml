@@ -1,4 +1,5 @@
 - companionDeliveryOption: OPTIONAL
+  videoMaxDuration: 30000
   costPerUnit:
     currencyCode: USD
     microAmount: 1250000
@@ -46,6 +47,7 @@
       targetedRequestPlatforms: VIDEO_PLAYER
   unlimitedEndDateTime: true
 - companionDeliveryOption: OPTIONAL
+  videoMaxDuration: 30000
   costPerUnit:
     currencyCode: USD
     microAmount: 1500000
