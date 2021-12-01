@@ -29,6 +29,7 @@ creativePlaceholders:
 {% if li.media_type == 'video' %}
 environmentType: "VIDEO_PLAYER"
 companionDeliveryOption: "OPTIONAL"
+videoMaxDuration: {{ user_cfg.creative[li.media_type].max_duration }}
 {% endif %}
 
 {% if user_cfg.line_item.goal %}

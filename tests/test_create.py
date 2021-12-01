@@ -50,10 +50,10 @@ VIDEO_CREATIVE.update({'size': {'height': 240, 'width': 320}})
 CREATIVE_1 = int('9999' + str(num_hash(['CreativeVideo', str(VIDEO_CREATIVE)])))
 
 DRY_RUN_EXPECTED_LICA = \
-  [[{'lineItemId': 9999827713, 'creativeId': CREATIVE_0, 'id': 9999534789},
-    {'lineItemId': 9999827713, 'creativeId': CREATIVE_1, 'id': 9999840404},
-    {'lineItemId': 9999224642, 'creativeId': CREATIVE_0, 'id': 9999813993},
-    {'lineItemId': 9999224642, 'creativeId': CREATIVE_1, 'id': 9999825404}]]
+  [[{'lineItemId': 9999899367, 'creativeId': CREATIVE_0, 'id': 9999164843},
+    {'lineItemId': 9999899367, 'creativeId': CREATIVE_1, 'id': 9999863541},
+    {'lineItemId': 9999960551, 'creativeId': CREATIVE_0, 'id': 9999333772},
+    {'lineItemId': 9999960551, 'creativeId': CREATIVE_1, 'id': 9999408383}]]
 
 BANNER_EXPECTED_LICA = \
   [[{'lineItemId': 8001, 'creativeId': 4001, 'sizes': [{'height': 20, 'width': 1000}], 'id': 9001},

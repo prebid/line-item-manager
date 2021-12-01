@@ -149,6 +149,12 @@ class Config:
         fmt = self.app['mgr']['date_fmt']
         vcpm = self.user['rate'].get('vcpm')
 
+        if self.user['creative'].get('video'):
+            _ = self.user['creative']['video'].setdefault(
+                'max_duration',
+                self.app['prebid']['creative']['video']['max_duration']
+            )
+
         if vcpm and not is_standard:
             raise ValueError("Specifying 'vcpm' requires using line item type 'standard'")
 
