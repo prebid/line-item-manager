@@ -2,6 +2,12 @@
 History
 =======
 
+0.2.4 (2021-12-01)
+-------------------
+* Update Google Ad Manager to v202102 (#63)
+* Support Team ID (#77)
+* Support LineItem.videoMaxDuration required in v202102 (#80)
+
 0.2.3 (2021-05-26)
 -------------------
 
