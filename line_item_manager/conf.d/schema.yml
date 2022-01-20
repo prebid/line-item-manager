@@ -110,6 +110,10 @@ properties:
           properties:
               units:
                   type: "number"
+              goalType:
+                  type: "string"
+              unitType:
+                  type: "string"
           required:
               - "units"
     if:
