@@ -413,3 +413,14 @@ def test_banner_safe_frame_vcpm(monkeypatch, cli_config):
     assert len(gam.li_objs) == 1
     assert load_file('tests/resources/banner_vcpm_expected.yml') == gam.li_objs[0].line_items
     assert BANNER_EXPECTED_LICA_NO_SIZE_OVERRIDE == gam.lica_objs
+
+@pytest.mark.command(f'create tests/resources/cfg_sponsorship.yml -k {KEY_FILE} -b interactiveOffers')
+def test_sponsorship_priority(monkeypatch, cli_config):
+    client = Client(CUSTOM_TARGETING, BIDDER_BANNER_SVC_IDS)
+    monkeypatch.setattr(ad_manager.AdManagerClient, "LoadFromString", lambda x: client)
+    gam = GAMConfig()
+    gam.create_line_items()
+
+    assert len(gam.li_objs) == 1
+    assert load_file('tests/resources/sponsorship_expected.yml') == gam.li_objs[0].line_items
+    assert BANNER_EXPECTED_LICA == gam.lica_objs

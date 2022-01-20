@@ -36,7 +36,7 @@ def cli(ctx: click.core.Context, version: bool) -> None:
               help='GAM network code, must reconcile with the network name.')
 @click.option('--network-name', help='GAM network name, must reconcile with the network code.')
 @click.option('--private-key-file', '-k', required=True, default='gam_creds.json',
-              type=click.Path(exists=True), help='Path to json GAM crendials file.')
+              type=click.Path(exists=True), help='Path to json GAM credentials file.')
 @click.option('--template',
               type=click.Path(exists=True), help='Advanced users: path to custom line item template. ' \
               'Use "line_item_manager show template" to see the package default')
