@@ -90,7 +90,7 @@ order:
 # Line Items (required)
 # Allowed Templating Key Words: Bidder, Media, CPM, Misc
 #
-# Supported Types: price_priority, standard
+# Supported Types: price_priority, standard, sponsorship
 # datetimes use: "%m/%d/%y %H:%M" (ex. 11/17/20 21:28)
 #   - default timezone is UTC
 # timezones: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
@@ -100,6 +100,10 @@ line_item:
   item_type: "price_priority"
   # Optional
   # priority: 12
+  # goal: # required if sponsorship item_type
+    # units: 5
+    # unitType: "VIEWABLE_IMPRESSIONS"
+    # goalType: "LIFETIME"
   # start_datetime: "11/17/20 21:28"
   # end_datetime: "12/17/20 21:28"
   # timezone: "UTC"
