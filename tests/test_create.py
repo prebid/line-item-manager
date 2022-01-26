@@ -121,6 +121,8 @@ class Client(MockAdClient):
    '{\'bad_code\'} must be valid bidder codes'),
   (f'tests/resources/cfg_bad_bidder_keys.yml -k {KEY_FILE} -b interactiveOffers',
    'for \'pubmatic\' must be valid bidder keys'),
+  (f'tests/resources/cfg_bad_custom_bucket.yml -k {KEY_FILE} -b interactiveOffers',
+   'Bucket min, 0.105, is not a multiple of 0.01'),
 ])
 def test_cli_create_bad(monkeypatch, command, err_str):
     """Test the CLI."""

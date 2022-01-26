@@ -141,6 +141,11 @@ class Config:
                 return fp.read()
         return read_package_file('line_item_template.yml')
 
+    def validate_bucket(self, bucket: Dict[str, float]) -> None:
+        for _k in ('min', 'max', 'interval'):
+            if not (100 * bucket[_k]) % 1 == 0:
+                raise ValueError(f"Bucket {_k}, {bucket[_k]}, is not a multiple of 0.01")
+
     def pre_create(self) -> None:
         li_ = self.user['line_item']
         is_standard = li_['item_type'].upper() == "STANDARD"
@@ -155,6 +160,8 @@ class Config:
                 'max_duration',
                 self.app['prebid']['creative']['video']['max_duration']
             )
+
+        _ = [self.validate_bucket(bucket) for bucket in self.cpm_buckets()]
 
         if vcpm and not is_standard:
             raise ValueError("Specifying 'vcpm' requires using line item type 'standard'")
