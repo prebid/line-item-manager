@@ -201,7 +201,6 @@ definitions:
   cpmType:
     type: "number"
     minimum: 0.01
-    multipleOf: 0.01
   granularityType:
     type: "object"
     additionalProperties: False
