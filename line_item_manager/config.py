@@ -144,6 +144,7 @@ class Config:
     def pre_create(self) -> None:
         li_ = self.user['line_item']
         is_standard = li_['item_type'].upper() == "STANDARD"
+        is_sponsorship = li_['item_type'].upper() == "SPONSORSHIP"
         end_str = li_.get('end_datetime')
         start_str = li_.get('start_datetime')
         fmt = self.app['mgr']['date_fmt']
@@ -174,9 +175,10 @@ class Config:
             unlimited_end_dt=not end_str,
         ))
 
-        li_.update({'goal': dict(
-            goalType="NONE",
-        )})
+        if not is_sponsorship:
+            li_.update({'goal': dict(
+                goalType="NONE",
+            )})
 
         if vcpm:
             li_.update({'goal': dict(

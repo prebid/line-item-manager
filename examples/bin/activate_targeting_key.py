@@ -55,7 +55,7 @@ def cli_args():
     parser.add_argument('network_code', type=int, help='GAM network code.')
     parser.add_argument('name', help='Targeting key name')
     parser.add_argument('-k', '--private_key_file', default='gam_creds.json', type=file_exists,
-                        help='Path to json GAM crendials file.')
+                        help='Path to json GAM credentials file.')
     parser.add_argument('-y', '--yes', action='store_true', help='Archive without prompting.')
     parser.add_argument('-v', '--verbose', action='store_true', help='Show full object')
     return parser.parse_args()
