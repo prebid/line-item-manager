@@ -73,7 +73,7 @@ def values_from_bucket(bucket: Dict[str, float]) -> set:
     Returns:
       Formatted set of values from min to max by interval
     """
-    rng = [int(100 * bucket[_k]) for _k in ('min', 'max', 'interval')]
+    rng = [round(100 * bucket[_k]) for _k in ('min', 'max', 'interval')]
     rng[1] += rng[2] # make stop inclusive
     return {_x / 100 for _x in range(*rng)}
 
