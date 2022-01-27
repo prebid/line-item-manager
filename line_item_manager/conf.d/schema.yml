@@ -188,12 +188,17 @@ definitions:
     type: "object"
     additionalProperties: False
     properties:
+      precision:
+        type: "integer"
+        minimum: 1
+        maximum: 6
       min:
         $ref: "#/definitions/cpmType"
       max:
         $ref: "#/definitions/cpmType"
       interval:
-        $ref: "#/definitions/cpmType"
+        type: "number"
+        minimum: 0.000001
     required:
       - "min"
       - "max"

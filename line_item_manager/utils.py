@@ -64,7 +64,7 @@ def num_hash(obj: Any, digits: int=6) -> int:
     """
     return int(sha1(str(obj).encode('utf-8')).hexdigest(), 16) % 10**digits
 
-def values_from_bucket(bucket: Dict[str, float]) -> set:
+def values_from_bucket(bucket: Dict[str, float], precision: int) -> set:
     """Get set of price formatted values specified by min, max and interval.
 
     Args:
@@ -73,9 +73,10 @@ def values_from_bucket(bucket: Dict[str, float]) -> set:
     Returns:
       Formatted set of values from min to max by interval
     """
-    rng = [round(100 * bucket[_k]) for _k in ('min', 'max', 'interval')]
+    multiplier = 10 ** precision
+    rng = [round(multiplier * bucket[_k]) for _k in ('min', 'max', 'interval')]
     rng[1] += rng[2] # make stop inclusive
-    return {_x / 100 for _x in range(*rng)}
+    return {_x / multiplier for _x in range(*rng)}
 
 def format_long_list(vals: list, cnt: int=3) -> str:
     """Pretty format with head, tail, and ellipsis to indicate omissions.

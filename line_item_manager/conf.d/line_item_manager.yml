@@ -157,6 +157,7 @@ rate:
     #   - min: 0.10
     #     max: 30.00
     #     interval: 0.10
+    #     precision: 2 # defaults to 2 (optional)
     #   - min: 30.50
     #     max: 50.00
     #     interval: 0.50

@@ -21,6 +21,7 @@ class Config:
         self._app = load_package_file('settings.yml')
         self._start_time = datetime.now()
         self.set_logger()
+        self.max_precision = 0
 
     def isLoggingEnabled(self, level: int) -> bool:
         return self._logger.getEffectiveLevel() <= level
@@ -123,8 +124,10 @@ class Config:
         if self._cpm_names is None:
             values = set()
             for bucket in self.cpm_buckets():
-                values.update(values_from_bucket(bucket))
-            self._cpm_names = ['%.2f' % v_ for v_ in sorted(values)]
+                precision = bucket.get('precision', 2)
+                self.max_precision = max(self.max_precision, precision)
+                values.update(values_from_bucket(bucket, precision))
+            self._cpm_names = [f'%.{self.max_precision}f' % v_ for v_ in sorted(values)]
         if self.cli['test_run']:
             return self._cpm_names[:self.app['mgr']['test_run']['line_item_limit']]
         return self._cpm_names
