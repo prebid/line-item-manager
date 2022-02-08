@@ -2,6 +2,13 @@
 History
 =======
 
+0.2.5 (2022-02-08)
+-------------------
+* Update Google Ad Manager to v202105 (#93)
+* Remove Python 3.6 and add 3.10 support (#91)
+* Support for more line item types (sponsorship line item creation) (#86)
+* BUG FIX: Certain currency values are invalid (#73)
+
 0.2.4 (2021-12-01)
 -------------------
 * Update Google Ad Manager to v202102 (#63)
