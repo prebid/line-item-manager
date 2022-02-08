@@ -13,7 +13,7 @@ mgr:
   max_lica_records: 100
 
 googleads:
-  version: 'v202102'
+  version: 'v202105'
   line_items:
     micro_cent_factor: 1000000
     max_per_order: 450
