@@ -3,10 +3,6 @@ from typing import Optional
 import pytz
 import yaml
 
-# Python 3.6 (EOL 23 Dec 2021) does not support datetime.fromisoformat.
-from backports.datetime_fromisoformat import MonkeyPatch
-MonkeyPatch.patch_fromisoformat()
-
 YAML_TAG = u'!datetime_tz'
 
 class DateTimeTZ(datetime):
