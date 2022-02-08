@@ -46,17 +46,17 @@ test_requirements = [
 setup(
     author="the prebid contributors",
     author_email='info@prebid.org',
-    python_requires='>=3.6',
+    python_requires='>=3.7',
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: Apache Software License',
         'Natural Language :: English',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
     ],
     description="Create and manage line items.",
     entry_points={
@@ -80,6 +80,6 @@ setup(
     setup_requires=setup_requirements,
     test_suite='tests',
     url='https://github.com/prebid/line-item-manager',
-    version='0.2.5',
+    version='0.2.6',
     zip_safe=False,
 )
