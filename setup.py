@@ -35,7 +35,6 @@ release_requirements = [
 setup_requirements = []
 
 test_requirements = [
-    'coverage==5.3',
     'flake8==3.8.4',
     'mock==4.0.2',
     'pytest==7.0.0',
