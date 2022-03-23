@@ -42,18 +42,29 @@ VIDEO_CREATIVE = {
     'size': {'height': 480, 'width': 640},
     'vastXmlUrl': 'https://prebid.adnxs.com/pbc/v1/cache?uuid=%%PATTERN:hb_cache_id_interact%%',
     'vastRedirectType': 'LINEAR',
-    'duration': 1000
+    'duration': 30000
     }
 
-CREATIVE_0 = int('9999' + str(num_hash(['CreativeVideo', str(VIDEO_CREATIVE)])))
+LI_0 = 9999899367
+LI_1 = 9999960551
+
+def mock_id(name: str, rec: object):
+    return int('9999' + str(num_hash([name, str(rec)])))
+
+CREATIVE_0 = mock_id('CreativeVideo', VIDEO_CREATIVE)
 VIDEO_CREATIVE.update({'size': {'height': 240, 'width': 320}})
-CREATIVE_1 = int('9999' + str(num_hash(['CreativeVideo', str(VIDEO_CREATIVE)])))
+CREATIVE_1 = mock_id('CreativeVideo', VIDEO_CREATIVE)
+
+LICA_0_0 = mock_id('LICA', {'lineItemId': LI_0, 'creativeId': CREATIVE_0})
+LICA_0_1 = mock_id('LICA', {'lineItemId': LI_0, 'creativeId': CREATIVE_1})
+LICA_1_0 = mock_id('LICA', {'lineItemId': LI_1, 'creativeId': CREATIVE_0})
+LICA_1_1 = mock_id('LICA', {'lineItemId': LI_1, 'creativeId': CREATIVE_1})
 
 DRY_RUN_EXPECTED_LICA = \
-  [[{'lineItemId': 9999899367, 'creativeId': CREATIVE_0, 'id': 9999164843},
-    {'lineItemId': 9999899367, 'creativeId': CREATIVE_1, 'id': 9999863541},
-    {'lineItemId': 9999960551, 'creativeId': CREATIVE_0, 'id': 9999333772},
-    {'lineItemId': 9999960551, 'creativeId': CREATIVE_1, 'id': 9999408383}]]
+  [[{'lineItemId': LI_0, 'creativeId': CREATIVE_0, 'id': LICA_0_0},
+    {'lineItemId': LI_0, 'creativeId': CREATIVE_1, 'id': LICA_0_1},
+    {'lineItemId': LI_1, 'creativeId': CREATIVE_0, 'id': LICA_1_0},
+    {'lineItemId': LI_1, 'creativeId': CREATIVE_1, 'id': LICA_1_1}]]
 
 BANNER_EXPECTED_LICA = \
   [[{'lineItemId': 8001, 'creativeId': 4001, 'sizes': [{'height': 20, 'width': 1000}], 'id': 9001},

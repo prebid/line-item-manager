@@ -46,6 +46,8 @@ def test_fmt_bidder_key():
 @pytest.mark.command(f'create {CONFIG_FILE} -k {KEY_FILE} -b oneVideo -b ix -t')
 def test_test_run(cli_config):
     assert config.cpm_names() == ['0.10', '0.20']
+    assert config.user['creative']['video']['duration'] == 30000
+    assert config.user['creative']['video']['max_duration'] == 30000
 
 @pytest.mark.command(f'create {CONFIG_FILE} -k {KEY_FILE} -b oneVideo -b ix --template {TMPL_FILE}')
 def test_template(cli_config):
@@ -83,4 +85,5 @@ def test_custom_targeting_is_not_reportableType(cli_config):
 
 @pytest.mark.command(f'create tests/resources/cfg_video_max_duration.yml -k {KEY_FILE} -b ix -q')
 def test_video_max_duration(cli_config):
+    assert config.user['creative']['video']['duration'] == 60000
     assert config.user['creative']['video']['max_duration'] == 60000
