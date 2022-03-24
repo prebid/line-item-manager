@@ -87,3 +87,8 @@ def test_custom_targeting_is_not_reportableType(cli_config):
 def test_video_max_duration(cli_config):
     assert config.user['creative']['video']['duration'] == 60000
     assert config.user['creative']['video']['max_duration'] == 60000
+
+@pytest.mark.command(f'create tests/resources/cfg_video_duration.yml -k {KEY_FILE} -b ix -q')
+def test_video_duration(cli_config):
+    assert config.user['creative']['video']['duration'] == 15000
+    assert config.user['creative']['video']['max_duration'] == 30000
