@@ -116,7 +116,7 @@ class CreativeVideo(Creative):
                      'vastRedirectType', 'duration')
 
     def __init__(self, *args, xsi_type: str='VastRedirectCreative', vastRedirectType: str='LINEAR',
-                 duration: int=config.app['prebid']['creative']['video']['duration'], **kwargs):
+                 duration: int=config.app['prebid']['creative']['video']['max_duration'], **kwargs):
         kwargs['xsi_type'] = xsi_type
         kwargs['vastRedirectType'] = vastRedirectType
         kwargs['duration'] = duration
