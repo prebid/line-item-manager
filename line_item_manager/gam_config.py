@@ -144,6 +144,7 @@ class GAMLineItems:
             advertiserId=self.advertiser['id'],
             size=size,
             vastXmlUrl=cfg['video']['vast_xml_url'],
+            duration=config.user['creative']['video']['duration'],
         )
         return CreativeVideo(**params).fetchone(create=True)
 
