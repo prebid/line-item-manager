@@ -2,6 +2,11 @@
 History
 =======
 
+0.2.7 (2022-05-17)
+-------------------
+* default creative duration to match max duration (that is currently 30000 milliseconds)
+* support config duration in creative block
+
 0.2.6 (2022-02-08)
 -------------------
 * Require Python >=3.7 (3.6 EOL DEC 23 2021)
