@@ -1,6 +1,8 @@
+import certifi
 import csv
 from typing import  Any, Dict, Optional
 from urllib import request
+import ssl
 
 from .utils import load_package_file
 
@@ -22,8 +24,9 @@ class Prebid:
           A dict keyed by bidder code
         """
         if self._bidders is None:
-            reader = csv.DictReader([l.decode('utf-8') for l in \
-                                     request.urlopen(BIDDERS['data']).readlines()])
+            context = ssl.create_default_context(cafile=certifi.where())
+            reader = csv.DictReader([l.decode('utf-8') for l in request.urlopen(
+                BIDDERS['data'], context=context).readlines()])
             self._bidders = {row['bidder-code']:row for row in reader}
         return self._bidders
 prebid = Prebid()
