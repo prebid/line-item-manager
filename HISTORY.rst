@@ -2,6 +2,11 @@
 History
 =======
 
+0.2.8 (2022-05-24)
+-------------------
+* BUG FIX: Specify CA certificates file when reading bidders data file (#104)
+* Update Google Ad Manager to v202108 (#95)
+
 0.2.7 (2022-05-17)
 -------------------
 * default creative duration to match max duration (that is currently 30000 milliseconds)
