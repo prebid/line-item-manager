@@ -144,6 +144,7 @@ class CurrentUser(AppOperations):
 class LICA(AppOperations):
     service = 'LineItemCreativeAssociationService'
     create_method = 'createLineItemCreativeAssociations'
+    method = 'getLineItemCreativeAssociationsByStatement'
 
     def check(self, rec: dict) -> Tuple[int, int]:
         return (rec['lineItemId'], rec['creativeId'])
