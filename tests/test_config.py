@@ -4,12 +4,13 @@ import pytest
 import yaml
 
 from line_item_manager.config import config, VERBOSE1, VERBOSE2
-from line_item_manager.prebid import PrebidBidder
+from line_item_manager.prebid import PrebidBidder, prebid
 from line_item_manager.utils import package_filename
 
 CONFIG_FILE = 'tests/resources/cfg.yml'
 KEY_FILE = 'tests/resources/gam_creds.json'
 TMPL_FILE = 'tests/resources/li_template.yml'
+CONFIG_BIDDER = list(prebid.bidders.keys())[0]
 
 config._start_time = pytest.start_time
 
@@ -39,21 +40,21 @@ def test_single_order(cli_config):
     assert config.user['order']['appliedTeamIds'] == [12345678, 23456789]
 
 def test_fmt_bidder_key():
-    assert PrebidBidder('oneVideo').fmt_bidder_key('prefix') == "prefix_oneVideo"
-    assert PrebidBidder('oneVideo').fmt_bidder_key('012345678901234') == "012345678901234_oneV"
+    assert PrebidBidder(CONFIG_BIDDER).fmt_bidder_key('prefix') == f"prefix_{CONFIG_BIDDER}"
+    assert PrebidBidder(CONFIG_BIDDER).fmt_bidder_key('012345678901234') == f"012345678901234_{CONFIG_BIDDER[:4]}"
     assert PrebidBidder('bad', single_order=True).fmt_bidder_key('prefix') == "prefix"
 
-@pytest.mark.command(f'create {CONFIG_FILE} -k {KEY_FILE} -b oneVideo -b ix -t')
+@pytest.mark.command(f'create {CONFIG_FILE} -k {KEY_FILE} -b {CONFIG_BIDDER} -b ix -t')
 def test_test_run(cli_config):
     assert config.cpm_names() == ['0.10', '0.20']
     assert config.user['creative']['video']['duration'] == 30000
     assert config.user['creative']['video']['max_duration'] == 30000
 
-@pytest.mark.command(f'create {CONFIG_FILE} -k {KEY_FILE} -b oneVideo -b ix --template {TMPL_FILE}')
+@pytest.mark.command(f'create {CONFIG_FILE} -k {KEY_FILE} -b {CONFIG_BIDDER} -b ix --template {TMPL_FILE}')
 def test_template(cli_config):
     assert config.template_src() == open(TMPL_FILE).read()
 
-@pytest.mark.command(f'create {CONFIG_FILE} -k {KEY_FILE} --network-code 9876 --network-name abcd -b oneVideo -b ix')
+@pytest.mark.command(f'create {CONFIG_FILE} -k {KEY_FILE} --network-code 9876 --network-name abcd -b {CONFIG_BIDDER} -b ix')
 def test_network_meta(cli_config):
     assert config.network_code == 9876
     assert config.network_name == 'abcd'
