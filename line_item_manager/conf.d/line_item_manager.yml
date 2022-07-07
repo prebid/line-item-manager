@@ -70,6 +70,7 @@ creative: # at least one of the following types is required {video, banner}
           ...
         </script>
   video:
+    # size_override: True with a 1x1 creative # optional: defaults to False
     sizes: # list
       - height: 480
         width: 640

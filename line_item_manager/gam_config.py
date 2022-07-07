@@ -19,8 +19,6 @@ from .utils import format_long_list, ichunk
 
 logger = config.getLogger(__name__)
 
-BANNER_SIZE = config.app['prebid']['creative']['banner']['size']
-
 def is_create_retryable_error(exc: Exception) -> bool:
     is_error = isinstance(exc, GoogleAdsServerFault)
     if is_error:
@@ -70,8 +68,8 @@ class GAMLineItems:
 
     @property
     def is_size_override(self) -> bool:
-        return self.media_type == 'banner' and \
-          config.user['creative']['banner'].get('size_override', True)
+        default = config.app['mgr']['creative'][self.media_type]['size_override']
+        return config.user['creative'][self.media_type].get('size_override', default)
 
     @property
     def advertiser(self) -> dict:
@@ -132,17 +130,17 @@ class GAMLineItems:
         params = dict(
             name=self.creative_name(cfg, index),
             advertiserId=self.advertiser['id'],
-            size=BANNER_SIZE if self.is_size_override else size,
+            size=config.app['prebid']['creative']['size_override'] if self.is_size_override else size,
             snippet=cfg['banner']['snippet'],
             isSafeFrameCompatible=cfg['banner'].get('safe_frame', True),
         )
         return CreativeBanner(**params).fetchone(create=True)
 
-    def creative_video(self, _: int, cfg: dict, size: dict) -> dict:
+    def creative_video(self, index: int, cfg: dict, size: dict) -> dict:
         params = dict(
-            name=cfg['name'],
+            name=self.creative_name(cfg, index),
             advertiserId=self.advertiser['id'],
-            size=size,
+            size=config.app['prebid']['creative']['size_override'] if self.is_size_override else size,
             vastXmlUrl=cfg['video']['vast_xml_url'],
             duration=config.user['creative']['video']['duration'],
         )

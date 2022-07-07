@@ -31,6 +31,8 @@ properties:
             $ref: "#/definitions/positiveIntegerType"
           max_duration:
             $ref: "#/definitions/positiveIntegerType"
+          size_override:
+            type: "boolean"
         required:
           - "sizes"
           - "vast_xml_url"
