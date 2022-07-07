@@ -132,6 +132,25 @@ BIDDER_VIDEO_SVC_IDS = dict(
     },
 )
 
+BIDDER_VIDEO_SVC_IDS_SIZE_OVERRIDE = dict(
+    CreativeService={
+        dump(dict(
+            name="Prebid InteractiveOffers-video Copy:1",
+            advertiserId=1001,
+            size={'height': 1, 'width': 1},
+            vastXmlUrl= \
+            'https://prebid.adnxs.com/pbc/v1/cache?uuid=%%PATTERN:hb_cache_id_interact%%',
+        )): 4001,
+        dump(dict(
+            name="Prebid InteractiveOffers-video Copy:2",
+            advertiserId=1001,
+            size={'height': 1, 'width': 1},
+            vastXmlUrl= \
+            'https://prebid.adnxs.com/pbc/v1/cache?uuid=%%PATTERN:hb_cache_id_interact%%',
+        )): 4002,
+    },
+)
+
 BIDDER_TEST_RUN_VIDEO_SVC_IDS = dict(
     OrderService={
         dump(dict(

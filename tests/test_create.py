@@ -24,7 +24,7 @@ from line_item_manager.utils import load_file, num_hash
 from .client import MockAdClient, SINGLE_ORDER_SVC_IDS, SINGLE_ORDER_VIDEO_SVC_IDS, \
      BIDDER_BANNER_SVC_IDS, BIDDER_VIDEO_SVC_IDS, BIDDER_TEST_RUN_VIDEO_SVC_IDS, \
      MISSING_RESOURCE_SVC_IDS, BIDDER_BANNER_SVC_IDS_NO_SIZE_OVERRIDE, \
-     BIDDER_VIDEO_BIDDER_KEY_MAP_SVC_IDS
+     BIDDER_VIDEO_BIDDER_KEY_MAP_SVC_IDS, BIDDER_VIDEO_SVC_IDS_SIZE_OVERRIDE
 
 CONFIG_FILE = 'tests/resources/cfg.yml'
 KEY_FILE = 'tests/resources/gam_creds.json'
@@ -77,6 +77,24 @@ BANNER_EXPECTED_LICA = \
 BANNER_EXPECTED_LICA_NO_SIZE_OVERRIDE = \
   [[{'creativeId': 4001, 'id': 9001, 'lineItemId': 8001},
     {'creativeId': 4001, 'id': 9001, 'lineItemId': 8002}]]
+
+VIDEO_EXPECTED_LICA_SIZE_OVERRIDE = \
+  [[{'creativeId': 4001,
+     'id': 9001,
+     'lineItemId': 8001,
+     'sizes': [{'height': 480, 'width': 640}, {'height': 240, 'width': 320}]},
+    {'creativeId': 4002,
+     'id': 9002,
+     'lineItemId': 8001,
+     'sizes': [{'height': 480, 'width': 640}, {'height': 240, 'width': 320}]},
+    {'creativeId': 4001,
+     'id': 9001,
+     'lineItemId': 8002,
+     'sizes': [{'height': 480, 'width': 640}, {'height': 240, 'width': 320}]},
+    {'creativeId': 4002,
+     'id': 9002,
+     'lineItemId': 8002,
+     'sizes': [{'height': 480, 'width': 640}, {'height': 240, 'width': 320}]}]]
 
 # init
 config._start_time = pytest.start_time
@@ -428,6 +446,19 @@ def test_banner_safe_frame_vcpm(monkeypatch, cli_config):
     assert len(gam.li_objs) == 1
     assert load_file('tests/resources/banner_vcpm_expected.yml') == gam.li_objs[0].line_items
     assert BANNER_EXPECTED_LICA_NO_SIZE_OVERRIDE == gam.lica_objs
+
+@pytest.mark.command(f'create tests/resources/cfg_video_size_override.yml -k {KEY_FILE} -b {CONFIG_BIDDER}')
+def test_video_size_override(monkeypatch, cli_config):
+    svc_ids = copy.deepcopy(BIDDER_VIDEO_SVC_IDS)
+    svc_ids.update(BIDDER_VIDEO_SVC_IDS_SIZE_OVERRIDE)
+    client = Client(CUSTOM_TARGETING, svc_ids)
+    monkeypatch.setattr(ad_manager.AdManagerClient, "LoadFromString", lambda x: client)
+    gam = GAMConfig()
+    gam.create_line_items()
+
+    assert len(gam.li_objs) == 1
+    assert load_file('tests/resources/video_expected.yml') == gam.li_objs[0].line_items
+    assert VIDEO_EXPECTED_LICA_SIZE_OVERRIDE == gam.lica_objs
 
 @pytest.mark.command(f'create tests/resources/cfg_sponsorship.yml -k {KEY_FILE} -b {CONFIG_BIDDER}')
 def test_sponsorship_priority(monkeypatch, cli_config):

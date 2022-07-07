@@ -1,0 +1,128 @@
+# line_item_manager configuration
+###############################################################################
+# Templating uses jinja2 rendering (see https://palletsprojects.com/p/jinja/)
+# The following key word types are supported:
+# Bidder:
+#   bidder_code = bidder-code
+#   bidder_name = bidder-name
+#   hb_<keystr> = hb_<keystr>_<bidder-code> (20 char limit)
+# CPM:
+#   cpm = line item rate as cost-per-thousand impressions
+# Media:
+#   media_type = video or banner based on creative configuration below
+# Misc:
+#   time = current UTC time represented as "%m/%d/%Y %H:%M:%S"
+# Order:
+#   cpm_max = order maximum cpm
+#   cpm_min = order minimum cpm
+#
+# See https://docs.prebid.org/dev-docs/bidder-data.csv for referencing bidder
+# names and codes.
+###############################################################################
+# Publisher (optional)
+# This can be specified at run-time like this:
+#   --network-code <code>
+#   --network-name <name>
+#
+publisher:
+  network_code: 1234
+  network_name: "Video Publisher"
+###############################################################################
+# Advertiser (required)
+# Allowed Templating Key Words: Bidder
+###############################################################################
+advertiser:
+  name: "Prebid-{{ bidder_name }}"
+###############################################################################
+# Creatives (required)
+# Allowed Templating Key Words: Bidder, Media, Misc
+###############################################################################
+creative: # at least one of the following types is required {video, banner}
+  name: "Prebid {{ bidder_name }}-{{ media_type }}"
+  video:
+    size_override: True
+    sizes: # list
+      - height: 480
+        width: 640
+      - height: 240
+        width: 320
+    vast_xml_url: "https://prebid.adnxs.com/pbc/v1/cache?uuid=%%PATTERN:{{ hb_cache_id }}%%"
+  # banner:
+  #   sizes: # list
+  #     - height: 480
+  #       width: 640
+  #   snippet: |
+  #     <script src = "https://..."></script>
+  #       <script>
+  #         ...
+  #       </script>
+    # safe_frame: False (optional: defaults to True)
+###############################################################################
+# Orders (required)
+# Allowed Templating Key Words: Bidder, Media, Order, Misc
+###############################################################################
+order:
+  name: "Prebid-{{ bidder_name }}-{{ media_type }}-{{ time }} {{ cpm_min }}-{{ cpm_max }}"
+  appliedTeamIds: # list (optional)
+    - 12345678
+    - 23456789
+###############################################################################
+# Line Items (required)
+# Allowed Templating Key Words: Bidder, Media, CPM, Misc
+#
+# Supported Types: price_priority, standard
+# datetimes use: "%m/%d/%y %H:%M" (ex. 11/17/20 21:28)
+#   - default timezone is UTC
+# timezones: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+###############################################################################
+line_item:
+  name: "Prebid-{{ bidder_name }}-{{ media_type }}-{{ time }} @ {{ cpm }}"
+  item_type: "price_priority"
+  # Optional
+  # start_datetime: "11/17/20 21:28"
+  # end_datetime: "12/17/20 21:28"
+  # timezone: "UTC"
+###############################################################################
+# Bidder Targeting Key Override Map (optional):
+#   If provided override the default bidder_targeting_key and use these
+#   targeting keys specified by bidder_code.
+#
+# bidder_key_map:
+#   <bidder_code_1>: <bidder_targeting_key_1>
+#   <bidder_code_2>: <bidder_targeting_key_2>
+###############################################################################
+# Targeting (required)
+# Allowed Templating Key Words: None
+#
+# Note: A Key-Value of 'bidder_targeting_key' with all CPM values is created
+# by default.
+###############################################################################
+targeting:
+  custom: # list (optional)
+    - name: "country"
+      values:
+        - "US"
+        - "CAN"
+  # One of the below either placemane_names or ad_unit_names is required
+  placement_names: # list of names
+    - "placement 1"
+    - "placement 2"
+  ad_unit_names: # list of names
+    - "ad unit 1"
+    - "ad unit 2"
+###############################################################################
+# Rate (required)
+# NOTE: granularity in Prebid.js config must align with this granularity
+# Allowed Templating Key Words: None
+###############################################################################
+rate:
+  currency: "USD" # required
+  granularity:
+    type: "custom"
+    custom:
+      - min: 1.25
+        max: 1.50
+        interval: 0.25
+  # optional properties
+  # vcpm: 100000 # viewable impressions will be enabled
+
