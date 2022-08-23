@@ -2,6 +2,12 @@
 History
 =======
 
+0.2.9 (2022-08-23)
+-------------------
+* Update Google Ad Manager to v202208 (#96)
+* BUG FIX: tests expect 'oneVideo' to be a Prebid listed bidder (#109)
+* Support size override for video (#111)
+
 0.2.8 (2022-05-24)
 -------------------
 * BUG FIX: Specify CA certificates file when reading bidders data file (#104)
