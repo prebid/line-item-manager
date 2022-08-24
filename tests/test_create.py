@@ -196,7 +196,7 @@ def test_cli_network_exception(monkeypatch):
     runner = CliRunner()
     result = runner.invoke(cli.create, shlex.split(command))
     assert result.exit_code == 2
-    assert "Check your network code and permissions" in result.output
+    assert "Not able to successfully access your service account" in result.output
 
 @pytest.mark.parametrize("command", [
   (f'tests/resources/cfg_video.yml -k {KEY_FILE} -b {CONFIG_BIDDER}'),

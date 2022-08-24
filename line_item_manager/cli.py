@@ -106,8 +106,10 @@ def create(ctx: click.core.Context, configfile: str, **kwargs):
             raise click.UsageError(f"Network name found \'{gam.network['displayName']}\' " \
                                    f"does not match provided \'{config.network_name}\'", ctx=ctx)
     except GoogleAdsError as _e:
-        raise click.UsageError('Check your network code and permissions. Not able to ' \
-                               'successfully access your service account', ctx=ctx)
+        logger.error(f'GoogleAdsError, {_e}')
+        raise click.UsageError(
+            'Not able to successfully access your service account.  ' \
+            'Check WARNING/ERROR messages above and consider \nupgrading to latest version.', ctx=ctx)
 
     # validate user configuration
     user_cfg = Validator(config.schema, config.user)
