@@ -189,6 +189,38 @@ class TargetingKey(AppOperations):
         kwargs['type'] = _type
         super().__init__(*args, **kwargs)
 
+class Geography(AppOperations):
+    service = 'PublisherQueryLanguageService'
+    method = 'select'
+    query_fields = ('name', )
+    def statement(self) -> ad_manager.StatementBuilder:
+        _stm = super().statement()
+        _stm.From('Geo_Target')
+        _stm.Select('Name, Id')
+        return _stm
+
+    def _results(self, one: bool=False) -> List[dict]:
+        if not self.use_statement:
+            return [getattr(self.svc(), self.method)()]
+        _stm = self.statement()
+        results = []
+        while True:
+            response = getattr(self.svc(), self.method)(_stm.ToStatement())
+            if not ("rows" in response and response["rows"]):
+                break
+            for row in response["rows"]:
+                result = dict(
+                    name = row["values"][0]["value"],
+                    id = row["values"][1]["value"],
+                )
+                if one:
+                    return [result]
+                results.append(result)
+            if len(results) < _stm.limit:
+                break
+            _stm.offset += _stm.limit
+        return results
+
 class TargetingValues(AppOperations):
     service = 'CustomTargetingService'
     method = 'getCustomTargetingValuesByStatement'

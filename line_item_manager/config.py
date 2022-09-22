@@ -113,6 +113,12 @@ class Config:
             for _c in self.user.get('targeting', {}).get('custom', [])
         ]
 
+    def geographies(self) -> Dict[str,List[str]]:
+        return dict(
+            include=[_c for _c in self.user.get('geographies', {}).get('include', [])],
+            exclude=[_c for _c in self.user.get('geographies', {}).get('exclude', [])]
+        )
+
     def cpm_buckets(self) -> List[Dict[str, float]]:
         _type = self.user['rate']['granularity']['type']
         if _type == "custom":

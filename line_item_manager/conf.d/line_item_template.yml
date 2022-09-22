@@ -49,6 +49,23 @@ targeting:
       {% for placement in li.gam.placements|sort(attribute='id') %}
       - {{ placement.id }}
       {% endfor %}
+  {% if li.gam.geographies %}
+  geoTargeting:
+    {% if li.gam.geographies.include|length != 0 %}
+    includedLocations:
+      {% for geo in li.gam.geographies.include %}
+      - xsi_type: "Location"
+        id: {{ geo.id }}
+      {% endfor %}
+    {% endif %}
+    {% if li.gam.geographies.exclude|length != 0 %}
+    excludedLocations:
+      {% for geo in li.gam.geographies.exclude %}
+      - xsi_type: "Location"
+        id: {{ geo.id }}
+      {% endfor %}
+    {% endif %}
+  {% endif %}
   customTargeting:
     xsi_type: "CustomCriteriaSet"
     logicalOperator: "AND"

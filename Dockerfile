@@ -30,6 +30,8 @@ RUN pip3 install -e .[release,test]
 
 COPY line_item_manager/ ${APP_DIR}/line_item_manager
 COPY tests/ ${APP_DIR}/tests/
+COPY config/my_config.yml ${APP_DIR}/my_config.yml
+COPY config/gam_creds.json ${APP_DIR}/gam_creds.json
 COPY Makefile ${APP_DIR}/
 COPY *.rst ${APP_DIR}/
 
