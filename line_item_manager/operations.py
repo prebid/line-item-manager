@@ -193,6 +193,11 @@ class Geography(AppOperations):
     service = 'PublisherQueryLanguageService'
     method = 'select'
     query_fields = ('name', )
+    def __init__(self, *args, name: str=None, **kwargs):
+        if not name is None:
+            kwargs['name'] = name
+        kwargs['displayName'] = kwargs.get('displayName', name)
+        super().__init__(*args, **kwargs)
     def statement(self) -> ad_manager.StatementBuilder:
         _stm = super().statement()
         _stm.From('Geo_Target')
