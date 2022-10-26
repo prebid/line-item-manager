@@ -52,7 +52,7 @@ targeting:
   {% if li.gam.geographies %}
   geoTargeting:
     {% if li.gam.geographies.include|length != 0 %}
-    includedLocations:
+    targetedLocations:
       {% for geo in li.gam.geographies.include %}
       - xsi_type: "Location"
         id: {{ geo.id }}
