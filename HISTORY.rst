@@ -2,6 +2,12 @@
 History
 =======
 
+0.2.10 (2023-08-30)
+-------------------
+* BUG FIX: Error for unsupported GAM API version is not handled properly (#116)
+* BUG FIX: bidder-data.csv has spaces, causing line-item-manager to not find line items (#128)
+* Update Google Ad Manager to v202308 (#129)
+
 0.2.9 (2022-08-23)
 -------------------
 * Update Google Ad Manager to v202208 (#96)
