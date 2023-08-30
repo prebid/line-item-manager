@@ -26,7 +26,7 @@ class Prebid:
         if self._bidders is None:
             context = ssl.create_default_context(cafile=certifi.where())
             reader = csv.DictReader([l.decode('utf-8') for l in request.urlopen(
-                BIDDERS['data'], context=context).readlines()])
+                BIDDERS['data'], context=context).readlines()], skipinitialspace=True)
             self._bidders = {row['bidder-code']:row for row in reader}
         return self._bidders
 prebid = Prebid()
