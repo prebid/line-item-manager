@@ -112,12 +112,13 @@ class GAMLineItems:
         return self.create_licas_batched(recs)
 
     @property
-    def creatives(self, copies=5) -> List[dict]:
+    def creatives(self) -> List[dict]:
         if self._creatives is None:
             cfg = render_cfg('creative', self.bidder, media_type=self.media_type)
             _name = f'creative_{self.media_type}'
             _method = getattr(self, _name)
             log(_name, obj={k:cfg[k] for k in ('name', self.media_type)})
+            copies = cfg[self.media_type].get('copies', 1) if (self.media_type == 'banner') else 1
             self._creatives = [_method(i_, cfg, size) \
                                for i_, size in enumerate(cfg[self.media_type]['sizes'] * copies)]
         return self._creatives
