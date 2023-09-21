@@ -17,7 +17,7 @@ requirements = [
     'googleads==33.0.0',
     'jinja2==3.0.3',
     'jsonschema==4.4.0',
-    'PyYAML==5.3.1',
+    'PyYAML==5.4',
     'retrying==1.3.3',
     'tqdm==4.56.0',
 ]
