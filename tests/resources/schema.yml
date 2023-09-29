@@ -1,0 +1,305 @@
+$schema: "http://json-schema.org/draft-07/schema#"
+title: "Prebid Line Item Manager Schema"
+type: "object"
+additionalProperties: False
+properties:
+  publisher:
+    type: "object"
+    additionalProperties: False
+    properties:
+      network_code:
+        $ref: "http://json-schema.org/draft-07/schema#/definitions/nonNegativeInteger"
+      network_name:
+        type: "string"
+  bidder_key_map:
+    type: "object"
+  creative:
+    type: "object"
+    additionalProperties: False
+    properties:
+      name:
+        type: "string"
+      video:
+        type: "object"
+        additionalProperties: False
+        properties:
+          sizes:
+            $ref: "#/definitions/sizeArray"
+          vast_xml_url:
+            type: "string"
+          duration:
+            $ref: "#/definitions/positiveIntegerType"
+          max_duration:
+            $ref: "#/definitions/positiveIntegerType"
+          size_override:
+            type: "boolean"
+        required:
+          - "sizes"
+          - "vast_xml_url"
+      banner:
+        type: "object"
+        additionalProperties: False
+        properties:
+          sizes:
+            $ref: "#/definitions/sizeArray"
+          snippet:
+            type: "string"
+          safe_frame:
+            type: "boolean"
+          size_override:
+            type: "boolean"
+        required:
+          - "sizes"
+          - "snippet"
+    allOf:
+      - required:
+        - "name"
+      - anyOf:
+        - required:
+          - "video"
+        - required:
+          - "banner"
+  advertiser:
+    type: "object"
+    additionalProperties: False
+    properties:
+      id:
+        type: "number"
+      name:
+        type: "string"
+      type:
+        $ref: "#/definitions/companyType"
+    anyOf:
+      - required:
+        - "id"
+      - required:
+        - "name"
+  order:
+    type: "object"
+    additionalProperties: False
+    properties:
+      name:
+        type: "string"
+      appliedTeamIds:
+        type: "array"
+        minItems: 1
+        items:
+          type: "number"
+    required:
+      - "name"
+  line_item:
+    type: "object"
+    additionalProperties: False
+    properties:
+      name:
+        type: "string"
+      item_type:
+        enum:
+          - "test_price_priority"
+          - "standard"
+          - "sponsorship"
+      priority:
+        $ref: "#/definitions/priorityType"
+      start_datetime:
+        type: "string"
+        format: "date-time"
+      end_datetime:
+        type: "string"
+        format: "date-time"
+      timezone:
+        type: "string"
+      goal:
+          type: "object"
+          additionalProperties: False
+          properties:
+              units:
+                  type: "number"
+              goalType:
+                  type: "string"
+              unitType:
+                  type: "string"
+          required:
+              - "units"
+    if:
+      properties:
+        item_type:
+          const:
+            "standard"
+      required:
+        - "name"
+        - "item_type"
+    then:
+      required:
+        - "end_datetime"
+  targeting:
+    type: "object"
+    additionalProperties: False
+    properties:
+      bidder:
+        type: "object"
+        additionalProperties: False
+        properties:
+          reportableType:
+            $ref: "#/definitions/targetingReportableType"
+      custom:
+        type: "array"
+        minItems: 1
+        items:
+          type: "object"
+          additionalProperties: False
+          properties:
+            name:
+              type: "string"
+            operator:
+              $ref: "#/definitions/targetingOperatorType"
+            values:
+              $ref: "http://json-schema.org/draft-07/schema#/definitions/stringArray"
+            reportableType:
+              $ref: "#/definitions/targetingReportableType"
+          required:
+            - name
+            - values
+      placement_names:
+        $ref: "http://json-schema.org/draft-07/schema#/definitions/stringArray"
+      ad_unit_names:
+        $ref: "http://json-schema.org/draft-07/schema#/definitions/stringArray"
+  rate:
+    type: "object"
+    additionalProperties: False
+    properties:
+      currency:
+        $ref: "#/definitions/rateCurrencyType"
+      granularity:
+        $ref: "#/definitions/granularityType"
+      vcpm:
+        $ref: "http://json-schema.org/draft-07/schema#/definitions/nonNegativeInteger"
+    required:
+      - "currency"
+      - "granularity"
+required:
+  - "advertiser"
+  - "order"
+  - "line_item"
+  - "creative"
+  - "rate"
+definitions:
+  cpmBucketArray:
+    type: "array"
+    minItems: 1
+    items:
+      $ref: "#/definitions/cpmBucketType"
+  cpmBucketType:
+    type: "object"
+    additionalProperties: False
+    properties:
+      min:
+        $ref: "#/definitions/cpmType"
+      max:
+        $ref: "#/definitions/cpmType"
+      interval:
+        $ref: "#/definitions/cpmType"
+    required:
+      - "min"
+      - "max"
+      - "interval"
+  cpmType:
+    type: "number"
+    minimum: 0.01
+  granularityType:
+    type: "object"
+    additionalProperties: False
+    properties:
+      type:
+        $ref: "#/definitions/granularityPredefinedType"
+      custom:
+        $ref: "#/definitions/cpmBucketArray"
+    if:
+      properties:
+        type:
+          const:
+            "custom"
+      required:
+        - "type"
+    then:
+      required:
+        - "custom"
+  granularityPredefinedType:
+    enum:
+      - 'low'
+      - 'med'
+      - 'high'
+      - 'auto'
+      - 'dense'
+      - 'custom'
+  positiveIntegerType:
+    type: "integer"
+    minimum: 1
+  priorityType:
+    type: "integer"
+    minimum: 1
+    maximum: 16
+  targetingOperatorType:
+    enum:
+      - 'IS'
+      - 'IS_NOT'
+  targetingReportableType:
+    enum:
+      - 'ON'
+      - 'OFF'
+      - 'CUSTOM_DIMENSION'
+  companyType:
+    enum:
+      - 'AD_NETWORK'
+      - 'ADVERTISER'
+  rateCurrencyType:
+    enum:
+      - 'AUD'
+      - 'BGN'
+      - 'BRL'
+      - 'CAD'
+      - 'CHF'
+      - 'CNY'
+      - 'CZK'
+      - 'DKK'
+      - 'EUR'
+      - 'GBP'
+      - 'HKD'
+      - 'HRK'
+      - 'HUF'
+      - 'IDR'
+      - 'ILS'
+      - 'INR'
+      - 'ISK'
+      - 'JPY'
+      - 'KRW'
+      - 'MXN'
+      - 'MYR'
+      - 'NOK'
+      - 'NZD'
+      - 'PHP'
+      - 'PLN'
+      - 'RON'
+      - 'RUB'
+      - 'SEK'
+      - 'SGD'
+      - 'THB'
+      - 'TRY'
+      - 'USD'
+      - 'ZAR'
+  sizeArray:
+    type: "array"
+    minItems: 1
+    items:
+      $ref: "#/definitions/sizeType"
+  sizeType:
+    type: "object"
+    additionalProperties: False
+    properties:
+      height:
+        $ref: "http://json-schema.org/draft-07/schema#/definitions/nonNegativeInteger"
+      width:
+        $ref: "http://json-schema.org/draft-07/schema#/definitions/nonNegativeInteger"
+    required:
+      - "height"
+      - "width"
+

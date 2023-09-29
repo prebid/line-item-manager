@@ -18,7 +18,7 @@ class Config:
     def __init__(self):
         self._schema = None
         self._cpm_names = None
-        self._app = load_package_file('settings.yml')
+        self._app = None
         self._start_time = datetime.now()
         self.set_logger()
 
@@ -42,6 +42,8 @@ class Config:
 
     @property
     def app(self) -> dict:
+        if self._app is None:
+            self._app = self.settings_obj()
         return self._app
 
     @property
@@ -88,7 +90,8 @@ class Config:
     @property
     def schema(self) -> dict:
         if self._schema is None:
-            self._schema = load_package_file('schema.yml')
+            self._schema = load_file(self.cli['schema']) if self.cli['schema'] else \
+              load_package_file('schema.yml')
         return self._schema
 
     def bidder_codes(self) -> List[str]:
@@ -140,6 +143,11 @@ class Config:
             with open(self.cli['template']) as fp:
                 return fp.read()
         return read_package_file('line_item_template.yml')
+
+    def settings_obj(self) -> dict:
+        if self.cli['settings']:
+            return load_file(self.cli['settings'])
+        return load_package_file('settings.yml')
 
     def pre_create(self) -> None:
         li_ = self.user['line_item']

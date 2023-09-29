@@ -40,6 +40,12 @@ def cli(ctx: click.core.Context, version: bool) -> None:
 @click.option('--template',
               type=click.Path(exists=True), help='Advanced users: path to custom line item template. ' \
               'Use "line_item_manager show template" to see the package default')
+@click.option('--settings',
+              type=click.Path(exists=True), help='Advanced users: path to settings file. ' \
+              'Use "line_item_manager show settings" to see the package default')
+@click.option('--schema',
+              type=click.Path(exists=True), help='Advanced users: path to schema file. ' \
+              'Use "line_item_manager show schema" to see the package default')
 @click.option('--single-order', '-s', is_flag=True,
               help='Create a single set of orders instead of orders per bidder.')
 @click.option('--bidder-code', '-b', multiple=True,
@@ -154,13 +160,18 @@ def show_resource(filename: str) -> None:
         print(fp.read())
 
 @cli.command()
-@click.argument('resource', type=click.Choice(['config', 'bidders', 'template']))
+@click.argument('resource', type=click.Choice(['config', 'bidders', 'template',
+                                               'settings', 'schema']))
 def show(resource: str) -> None:
     """Show resources"""
     if resource == 'config':
         show_resource('conf.d/line_item_manager.yml')
     if resource == 'template':
         show_resource('conf.d/line_item_template.yml')
+    if resource == 'settings':
+        show_resource('conf.d/settings.yml')
+    if resource == 'schema':
+        show_resource('conf.d/schema.yml')
     if resource == 'bidders':
         print("%-25s%s" % ('Code', 'Name'))
         print("%-25s%s" % ('----', '----'))
