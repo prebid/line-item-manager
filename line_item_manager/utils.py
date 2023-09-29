@@ -1,5 +1,5 @@
 from hashlib import sha1
-import pkg_resources
+from importlib.resources import files
 from pprint import pformat
 from typing import Any, Dict, Iterable, List
 
@@ -37,8 +37,7 @@ def package_filename(name: str) -> str:
     Returns:
       Fullpath of the package file
     """
-    return pkg_resources.resource_filename('line_item_manager',
-                                           f'conf.d/{name}') # type: ignore[misc]
+    return files('line_item_manager').joinpath(f'conf.d/{name}') # type: ignore[misc]
 
 def read_package_file(name: str) -> str:
     """Get contents of a package file specified by name.
