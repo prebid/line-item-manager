@@ -1,0 +1,84 @@
+mgr:
+  advertiser:
+    type: "TEST_ADVERTISER"
+  creative:
+    banner:
+      size_override: True
+    video:
+      size_override: False
+    size_override:
+      name_template: '{{ name }} Copy:{{ index }}'
+  date_fmt: "%m/%d/%y %H:%M"
+  dry_run:
+    id_prefix: 9999
+  test_run:
+    line_item_limit: 2
+  timezone: "UTC"
+  max_lica_records: 100
+
+googleads:
+  version: 'v202308'
+  line_items:
+    micro_cent_factor: 1000000
+    max_per_order: 450
+
+prebid:
+  bidders:
+    data: https://docs.prebid.org/dev-docs/bidder-data.csv
+    key_char_limit: 20
+    keys:
+      - "hb_pb"
+      - "hb_bidder"
+      - "hb_adid"
+      - "hb_size"
+      - "hb_source"
+      - "hb_format"
+      - "hb_cache_host"
+      - "hb_cache_id"
+      - "hb_uuid"
+      - "hb_cache_path"
+      - "hb_deal"
+    single_order:
+      code: "hb"
+      name: "Top Bid"
+    targeting_key: "hb_pb"
+  creative:
+    size_override:
+      height: 1
+      width: 1
+    video:
+      max_duration: 30000 # milliseconds
+  price_granularity:
+    low:
+      - min: 0.50
+        max: 5.00
+        interval: 0.50
+    med:
+      - min: 0.10
+        max: 20.00
+        interval: 0.10
+    high:
+      - min: 0.01
+        max: 20.00
+        interval: 0.01
+    auto:
+      - min: 0.05
+        max: 5.00
+        interval: 0.05
+      - min: 5.10
+        max: 10.00
+        interval: 0.10
+      - min: 10.50
+        max: 20.00
+        interval: 0.50
+    dense:
+      - min: 0.01
+        max: 3.00
+        interval: 0.01
+      - min: 3.05
+        max: 8.00
+        interval: 0.05
+      - min: 8.50
+        max: 20.00
+        interval: 0.50
+

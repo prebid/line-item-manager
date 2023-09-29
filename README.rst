@@ -77,6 +77,32 @@ Advanced Features
    --single-order \
    --template my_template.yml
 
+2. Use a custom settings file
+::
+
+   # 1. save and edit a copy of the default settings
+   $ line_item_manager show settings > my_settings.yml
+
+   # 2. edit my_settings.yml; e.g. use a custom bidder code
+
+   # 3. create line items referencing your custom settings
+   $ line_item_manager create my_config.yml \
+   --single-order \
+   --settings my_settings.yml
+
+3. Use a custom schema file
+::
+
+   # 1. save and edit a copy of the default schema
+   $ line_item_manager show schema > my_schema.yml
+
+   # 2. edit my_schema.yml; e.g. use a custom currency list
+
+   # 3. create line items referencing your custom schema
+   $ line_item_manager create my_config.yml \
+   --single-order \
+   --schema my_schema.yml
+
 Local Development
 -----------------
 

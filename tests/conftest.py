@@ -12,6 +12,10 @@ def pytest_configure():
 
 @pytest.fixture
 def cli_config(request):
+    config._app = None
+    config._cpm_names = None
+    config._schema = None
+
     # patch
     cli_str = request.node.get_closest_marker('command').args[0]
     cli_args = shlex.split(cli_str)
