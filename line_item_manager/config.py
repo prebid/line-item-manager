@@ -90,7 +90,7 @@ class Config:
     @property
     def schema(self) -> dict:
         if self._schema is None:
-            self._schema = load_file(self.cli['schema']) if self.cli['schema'] else \
+            self._schema = load_file(self.cli['schema']) if self.cli.get('schema') else \
               load_package_file('schema.yml')
         return self._schema
 
@@ -139,13 +139,13 @@ class Config:
         return int(float(cpm) * self.app['googleads']['line_items']['micro_cent_factor'])
 
     def template_src(self) -> str:
-        if self.cli['template']:
+        if self.cli.get('template'):
             with open(self.cli['template']) as fp:
                 return fp.read()
         return read_package_file('line_item_template.yml')
 
     def settings_obj(self) -> dict:
-        if self.cli['settings']:
+        if self.cli.get('settings'):
             return load_file(self.cli['settings'])
         return load_package_file('settings.yml')
 
