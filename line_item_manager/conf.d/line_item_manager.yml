@@ -164,3 +164,14 @@ rate:
     #     interval: 0.50
   # optional properties
   # vcpm: 100000 # viewable impressions will be enabled
+###############################################################################
+# Geographies (optional)
+# Allowed Templating Key Words: None
+#
+# Include or exclude targeted geographies by name
+###############################################################################
+# geographies:
+#   include:
+#     - United States
+#   exclude:
+#     - Florida
