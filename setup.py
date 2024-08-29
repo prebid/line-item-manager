@@ -13,10 +13,10 @@ readme = get_txt('README.rst') if os.path.isfile('README.rst') else ''
 history = get_txt('HISTORY.rst') if os.path.isfile('HISTORY.rst') else ''
 
 requirements = [
-    'Click==7.1.2',
+    'Click==8.1.7',
     'googleads==39.0.0',
     'jinja2==3.0.3',
-    'jsonschema==4.4.0',
+    'jsonschema==4.23.0',
     'PyYAML==6.0.1',
     'retrying==1.3.3',
     'tqdm==4.56.0',
@@ -45,14 +45,13 @@ test_requirements = [
 setup(
     author="the prebid contributors",
     author_email='info@prebid.org',
-    python_requires='>=3.7',
+    python_requires='>=3.8',
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: Apache Software License',
         'Natural Language :: English',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
