@@ -27,7 +27,7 @@ def test_bidders(cli_config):
     assert config.start_time == pytest.start_time
     assert not config.isLoggingEnabled(VERBOSE1)
     assert [PrebidBidder(c_).name for c_ in config.bidder_codes()] == \
-      ['InteractiveOffers', 'Index Exchange (Prebid.js)']
+      ['InteractiveOffers', 'Index Exchange']
     assert config.cpm_names() == ['0.10', '0.20', '0.30', '0.80', '1.30']
     assert [PrebidBidder(c_).targeting_key for c_ in config.bidder_codes()] == \
       ['hb_pb_interactiveOff', 'hb_pb_ix']
