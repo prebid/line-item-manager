@@ -100,7 +100,7 @@ class Advertiser(AppOperations):
         super().__init__(*args, **kwargs)
 
 class Creative(AppOperations):
-    service = "CreativeService"
+    service = 'CreativeService'
     method = 'getCreativesByStatement'
     create_method = 'createCreatives'
     query_fields = ('id', 'name', 'advertiserId', 'width', 'height')
@@ -156,7 +156,7 @@ class LineItem(AppOperations):
     create_method = 'createLineItems'
 
 class Order(AppOperations):
-    service = "OrderService"
+    service = 'OrderService'
     method = 'getOrdersByStatement'
     create_method = 'createOrders'
     query_fields = ('id', 'name', 'advertiserId', 'traffickerId')
