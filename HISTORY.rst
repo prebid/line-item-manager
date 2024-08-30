@@ -2,6 +2,13 @@
 History
 =======
 
+0.2.13 (2024-08-29)
+-------------------
+* Deprecate Python 3.7
+* Upgrade Google Ad Manager API to v202408
+* Upgrade Python package Click to 8.1.7
+* Upgrade Python package jsonschema to 4.23.0
+
 0.2.12 (2023-10-09)
 -------------------
 * Example script: Activate targeting values by network code, key Id and names (#149)
