@@ -29,7 +29,7 @@ package_data = [
 
 release_requirements = [
     'bump2version>=1',
-    'twine>=4',
+    'twine>=5',
 ]
 
 setup_requirements = []
