@@ -11,7 +11,7 @@ import pytz
 
 from .config import config, VERBOSE1, VERBOSE2
 from .exceptions import ResourceNotActive, ResourceNotFound
-from .operations import Advertiser, AdUnit, Placement, TargetingKey, TargetingValues, \
+from .operations import Advertiser, AdUnit, Placement, Geography, TargetingKey, TargetingValues, \
      CreativeBanner, CreativeVideo, Order, CurrentNetwork, CurrentUser, LineItem, LICA
 from .prebid import PrebidBidder
 from .template import render_cfg, render_src
@@ -45,6 +45,14 @@ def target_fetch(key: str, names: Iterable[str], operator='IS', match_type: str=
         operator=operator,
         values=tgt_values,
         names={v['name']:v for v in tgt_values}
+    )
+
+def geo_fetch(name: str) -> dict:
+    geo = Geography(name=name).fetchone(create=False)
+    if not ("id" in geo):
+        return {}
+    return dict(
+        id = geo["id"],
     )
 
 class GAMLineItems:
@@ -199,6 +207,7 @@ class GAMConfig:
         self._network: Optional[dict] = None
         self._placements: Optional[List[dict]] = None
         self._targeting_custom: Optional[List[dict]] = None
+        self._geographies: Optional[dict[str,List[dict]]] = None
         self._user: Optional[dict] = None
 
         self._success = False
@@ -304,6 +313,16 @@ class GAMConfig:
     @success.setter
     def success(self, val: bool) -> None:
         self._success = val
+
+    @property
+    def geographies(self) -> dict[str,List[dict]]:
+        if self._geographies is None:
+            geographies = config.geographies()
+            self._geographies = dict(
+                include = [geo_fetch(D_) for D_ in geographies['include']],
+                exclude = [geo_fetch(D_) for D_ in geographies['exclude']]
+            )
+        return self._geographies
 
     @property
     def targeting_custom(self) -> List[dict]:
