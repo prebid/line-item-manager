@@ -24,7 +24,7 @@ jobs:
         python -m pip install twine==5.1.1 wheel
     - name: Build and publish
       env:
-        TWINE_USERNAME: 'Prebid'
-        TWINE_PASSWORD: '${{ secrets.PYPI_PASSWORD }}'
+        TWINE_USERNAME: '__token__'
+        TWINE_PASSWORD: 'pypi-${{ secrets.PYPI_TOKEN }}'
       run: |
         make release
