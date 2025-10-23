@@ -40,6 +40,8 @@ properties:
         type: "object"
         additionalProperties: False
         properties:
+          copies:
+            $ref: "#/definitions/positiveIntegerType"
           sizes:
             $ref: "#/definitions/sizeArray"
           snippet:

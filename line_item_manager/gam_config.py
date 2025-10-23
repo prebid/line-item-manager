@@ -1,3 +1,5 @@
+import uuid
+
 from datetime import datetime
 from pprint import pformat
 from typing import Any, List, Iterable, Optional
@@ -116,8 +118,9 @@ class GAMLineItems:
             _name = f'creative_{self.media_type}'
             _method = getattr(self, _name)
             log(_name, obj={k:cfg[k] for k in ('name', self.media_type)})
+            copies = cfg[self.media_type].get('copies', 1) if (self.media_type == 'banner') else 1
             self._creatives = [_method(i_, cfg, size) \
-                               for i_, size in enumerate(cfg[self.media_type]['sizes'])]
+                               for i_, size in enumerate(cfg[self.media_type]['sizes'] * copies)]
         return self._creatives
 
     def creative_name(self, cfg: dict, index: int):
@@ -128,7 +131,7 @@ class GAMLineItems:
 
     def creative_banner(self, index: int, cfg: dict, size: dict) -> dict:
         params = dict(
-            name=self.creative_name(cfg, index),
+            name=f"{self.creative_name(cfg, index)}-{size['width']}x{size['height']}-{str(uuid.uuid4())[:8]}",
             advertiserId=self.advertiser['id'],
             size=config.app['prebid']['creative']['size_override'] if self.is_size_override else size,
             snippet=cfg['banner']['snippet'],
