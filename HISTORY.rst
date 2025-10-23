@@ -2,6 +2,11 @@
 History
 =======
 
+0.2.14 (2025-10-23)
+-------------------
+* Upgrade Google Ad Manager API to v202508
+* Upgrade Python package googleads to 47.0.0
+
 0.2.13 (2024-08-29)
 -------------------
 * Deprecate Python 3.7

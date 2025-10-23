@@ -14,7 +14,7 @@ history = get_txt('HISTORY.rst') if os.path.isfile('HISTORY.rst') else ''
 
 requirements = [
     'Click==8.1.7',
-    'googleads==39.0.0',
+    'googleads==47.0.0',
     'jinja2==3.0.3',
     'jsonschema==4.23.0',
     'PyYAML==6.0.1',
@@ -79,6 +79,6 @@ setup(
     setup_requires=setup_requirements,
     test_suite='tests',
     url='https://github.com/prebid/line-item-manager',
-    version='0.2.13',
+    version='0.2.14',
     zip_safe=False,
 )
