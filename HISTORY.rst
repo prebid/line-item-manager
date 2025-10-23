@@ -6,6 +6,7 @@ History
 -------------------
 * Upgrade Google Ad Manager API to v202508
 * Upgrade Python package googleads to 47.0.0
+* BUG FIX: Filter out empty bidder codes from Prebid CSV data
 
 0.2.13 (2024-08-29)
 -------------------
