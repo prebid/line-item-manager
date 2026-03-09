@@ -19,7 +19,7 @@ requirements = [
     'jsonschema==4.23.0',
     'PyYAML==6.0.1',
     'retrying==1.3.3',
-    'tqdm==4.56.0',
+    'tqdm==4.66.3',
 ]
 
 package_data = [
