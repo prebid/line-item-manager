@@ -8,7 +8,7 @@ from line_item_manager import cli
 @pytest.mark.parametrize("command, echo_str",
  [
   ('--version', 'line-item-manager version'),
-  ('', '[OPTIONS] COMMAND [ARGS]'),
+  ('', '[OPTIONS] [COMMAND] [ARGS]'),
  ]
 )
 def test_version(command, echo_str):

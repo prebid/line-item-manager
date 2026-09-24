@@ -13,13 +13,13 @@ readme = get_txt('README.rst') if os.path.isfile('README.rst') else ''
 history = get_txt('HISTORY.rst') if os.path.isfile('HISTORY.rst') else ''
 
 requirements = [
-    'Click==8.1.7',
+    'Click==8.5.0',
     'googleads==51.0.0',
-    'jinja2==3.0.3',
-    'jsonschema==4.23.0',
-    'PyYAML==6.0.1',
-    'retrying==1.3.3',
-    'tqdm==4.56.0',
+    'jinja2==3.1.6',
+    'jsonschema==4.26.0',
+    'PyYAML==6.0.3',
+    'retrying==1.4.2',
+    'tqdm==4.70.1',
 ]
 
 package_data = [
@@ -35,11 +35,11 @@ release_requirements = [
 setup_requirements = []
 
 test_requirements = [
-    'flake8==3.8.4',
-    'mock==4.0.2',
-    'pytest==7.0.0',
-    'pytest-cov==3.0.0',
-    'pytest-runner==5.3.1',
+    'flake8==7.4.1',
+    'mock==5.2.0',
+    'pytest==9.1.1',
+    'pytest-cov==7.1.0',
+    'pytest-runner==6.0.1',
  ]
 
 setup(
