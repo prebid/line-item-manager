@@ -1,7 +1,6 @@
 """Console script for line_item_manager."""
 from functools import partial
 import json
-import pkg_resources
 import sys
 
 import click
@@ -14,6 +13,7 @@ from .exceptions import ResourceNotActive, ResourceNotFound
 from .gam_config import GAMConfig
 from .gam_operations import client as gam_client
 from .prebid import prebid, PrebidBidder
+from .utils import read_package_file
 from .validate import Validator
 
 click.option = partial(click.option, show_default=True)
@@ -155,9 +155,7 @@ def create(ctx: click.core.Context, configfile: str, **kwargs):
             logger.error('Cleanup: Google Ads Error, %s', _e)
 
 def show_resource(filename: str) -> None:
-    rsrc_name = pkg_resources.resource_filename('line_item_manager', filename) # type: ignore[misc]
-    with open(rsrc_name) as fp:
-        print(fp.read())
+    print(read_package_file(filename))
 
 @cli.command()
 @click.argument('resource', type=click.Choice(['config', 'bidders', 'template',
@@ -165,13 +163,13 @@ def show_resource(filename: str) -> None:
 def show(resource: str) -> None:
     """Show resources"""
     if resource == 'config':
-        show_resource('conf.d/line_item_manager.yml')
+        show_resource('line_item_manager.yml')
     if resource == 'template':
-        show_resource('conf.d/line_item_template.yml')
+        show_resource('line_item_template.yml')
     if resource == 'settings':
-        show_resource('conf.d/settings.yml')
+        show_resource('settings.yml')
     if resource == 'schema':
-        show_resource('conf.d/schema.yml')
+        show_resource('schema.yml')
     if resource == 'bidders':
         print("%-25s%s" % ('Code', 'Name'))
         print("%-25s%s" % ('----', '----'))
