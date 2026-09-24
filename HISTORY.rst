@@ -2,6 +2,15 @@
 History
 =======
 
+0.2.15 (2026-09-24)
+-------------------
+* Upgrade Google Ad Manager API to v202608; v202508 is sunset (#171)
+* Upgrade Python package googleads to 51.0.0
+* Replace deprecated pkg_resources with importlib.resources (#142)
+* Require Python 3.10+; support Python 3.10 through 3.14
+* Upgrade Python packages Click to 8.5.0, jinja2 to 3.1.6, jsonschema to 4.26.0,
+  PyYAML to 6.0.3, retrying to 1.4.2 and tqdm to 4.70.1
+
 0.2.14 (2025-10-23)
 -------------------
 * Upgrade Google Ad Manager API to v202508
