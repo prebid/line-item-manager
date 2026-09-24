@@ -14,7 +14,7 @@ history = get_txt('HISTORY.rst') if os.path.isfile('HISTORY.rst') else ''
 
 requirements = [
     'Click==8.1.7',
-    'googleads==47.0.0',
+    'googleads==51.0.0',
     'jinja2==3.0.3',
     'jsonschema==4.23.0',
     'PyYAML==6.0.1',
