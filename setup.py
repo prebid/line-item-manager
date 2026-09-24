@@ -28,8 +28,9 @@ package_data = [
 ]
 
 release_requirements = [
+    'build>=1',
     'bump2version>=1',
-    'twine>=5',
+    'twine>=6.1',
 ]
 
 setup_requirements = []
