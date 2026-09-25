@@ -8,6 +8,10 @@ Installation
 Stable release
 --------------
 
+line-item-manager requires Python 3.10 or newer. On older Python versions pip
+installs an earlier release that targets a Google Ad Manager API version that
+has been sunset.
+
 To install line-item-manager, run this command in your terminal:
 
 .. code-block:: console
@@ -44,7 +48,7 @@ Once you have a copy of the source, you can install it with:
 
 .. code-block:: console
 
-    $ python setup.py install
+    $ pip install .
 
 
 .. _Github repo: https://github.com/prebid/line-item-manager

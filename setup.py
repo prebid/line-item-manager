@@ -13,13 +13,13 @@ readme = get_txt('README.rst') if os.path.isfile('README.rst') else ''
 history = get_txt('HISTORY.rst') if os.path.isfile('HISTORY.rst') else ''
 
 requirements = [
-    'Click==8.1.7',
-    'googleads==47.0.0',
-    'jinja2==3.0.3',
-    'jsonschema==4.23.0',
-    'PyYAML==6.0.1',
-    'retrying==1.3.3',
-    'tqdm==4.56.0',
+    'Click==8.5.0',
+    'googleads==51.0.0',
+    'jinja2==3.1.6',
+    'jsonschema==4.26.0',
+    'PyYAML==6.0.3',
+    'retrying==1.4.2',
+    'tqdm==4.70.1',
 ]
 
 package_data = [
@@ -28,34 +28,36 @@ package_data = [
 ]
 
 release_requirements = [
+    'build>=1',
     'bump2version>=1',
-    'twine>=5',
+    'twine>=6.1',
 ]
 
 setup_requirements = []
 
 test_requirements = [
-    'flake8==3.8.4',
-    'mock==4.0.2',
-    'pytest==7.0.0',
-    'pytest-cov==3.0.0',
-    'pytest-runner==5.3.1',
+    'flake8==7.4.1',
+    'mock==5.2.0',
+    'pytest==9.1.1',
+    'pytest-cov==7.1.0',
+    'pytest-runner==6.0.1',
  ]
 
 setup(
     author="the prebid contributors",
     author_email='info@prebid.org',
-    python_requires='>=3.8',
+    python_requires='>=3.10',
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: Apache Software License',
         'Natural Language :: English',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.8',
-        'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: 3.12',
+        'Programming Language :: Python :: 3.13',
+        'Programming Language :: Python :: 3.14',
     ],
     description="Create and manage line items.",
     entry_points={
@@ -79,6 +81,6 @@ setup(
     setup_requires=setup_requirements,
     test_suite='tests',
     url='https://github.com/prebid/line-item-manager',
-    version='0.2.14',
+    version='0.2.15',
     zip_safe=False,
 )
