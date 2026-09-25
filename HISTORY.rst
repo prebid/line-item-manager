@@ -10,6 +10,9 @@ History
 * Require Python 3.10+; support Python 3.10 through 3.14
 * Upgrade Python packages Click to 8.5.0, jinja2 to 3.1.6, jsonschema to 4.26.0,
   PyYAML to 6.0.3, retrying to 1.4.2 and tqdm to 4.70.1
+* Custom settings files passed with --settings must set googleads version to 'v202608'
+* BUG FIX: line_item_manager could not be run from the Docker image
+* BUG FIX: source install instructions and 'make install' now use pip, which installs dependencies
 
 0.2.14 (2025-10-23)
 -------------------
